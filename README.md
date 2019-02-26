@@ -1,2 +1,4 @@
 # Virtual-interaction-library
 Library for interaction techniques
+
+The main goal of this library is to provide an easy to use framework with a few interaction techniques as a base for developers to implement new interaction techniques. Techniques that are created using this library do not have to rely on a specific hardware solution. This is achieved by using a component that manages all interaction techniques and registered controllers while providing a method to notify interaction techniques that can be invoked from any script. Upon invocation, the library notifies all interaction techniques that are registered for a controller with the necessary information on which button was pressed or in which state a button currently is. This allows for integration into any existing solution by simply rerouting the inputs to the managing component (VRIL_Manager).
