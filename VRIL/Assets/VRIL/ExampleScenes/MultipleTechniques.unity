@@ -1506,6 +1506,11 @@ PrefabInstance:
       propertyPath: Selection_MoveToAttachmentType
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3255873710904662468, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: Selection_AudioClip
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3255873710310093429, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
       propertyPath: m_LocalPosition.z
