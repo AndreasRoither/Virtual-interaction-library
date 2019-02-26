@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.vril.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "C:\\Users\\andir\\Documents\\Git\\Bachelorarbeit\\VRIL\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "VRIL [Testing]"
+        }
+      }
+    }
+  ]
+}
