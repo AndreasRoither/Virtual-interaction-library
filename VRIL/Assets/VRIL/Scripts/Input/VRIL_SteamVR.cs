@@ -7,6 +7,15 @@ using VRIL.Manager;
 
 namespace VRIL_SteamVR
 {
+
+    /////////////////////////////////////
+    /// Important!!!!!
+    /// In order to use this script you have to generate actions via SteamVR menu! (unless you already created these actions)
+    /// Window -> SteamVR Input
+    /// There you can auto generate actions, which are used by this script!
+    /// 
+    /////////////////////////////////////
+
     /// <summary>
     /// Example script that utilizes a few default actions to show how it works
     /// </summary>
