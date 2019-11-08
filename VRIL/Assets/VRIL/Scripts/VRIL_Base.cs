@@ -25,6 +25,7 @@ namespace VRIL.Base
         OnInteraction,
         OnRelease,
         OnStop,
+        OnTravel,
         CustomScript
     }
 

@@ -11,7 +11,7 @@ namespace VRIL.NavigationTechniques
     {
         protected bool IsActivated = false;
 
-        [Header("Properties for steering technique")]
+        [Header("Properties for steering technique (Default is hand directed steering)")]
         [Tooltip("Flying mode includes y-coordinate too")]
         public bool FlyingMode = false;
         [Tooltip("Include button press strength")]
@@ -19,9 +19,18 @@ namespace VRIL.NavigationTechniques
         [Tooltip("Default velocity")]
         public float Velocity = 2.0f;
 
+        [Header("Properties for gaze directed or crosshairs mode")]
+        public bool GazeDirected = false;
+        public bool CrosshairsMode = false;
+        [Tooltip("Camera object needed in case of gaze directed steering or crosshairs mode")]
+        public GameObject Camera;
+
+        private GameObject DirectionObject;
+
         public void Awake()
         {
             base.Initialize();
+            DirectionObject = Camera != null ? Camera : RegisteredControllers[0];
         }
 
         /// <summary>
@@ -60,16 +69,17 @@ namespace VRIL.NavigationTechniques
         {
             while (IsActivated)
             {
+                Vector3 forward = (CrosshairsMode ? (Camera.transform.position - RegisteredControllers[0].transform.position) : DirectionObject.transform.forward).normalized;
+
                 // in flying mode include y axis too
                 if (FlyingMode)
                 {
-                    SelectedPosition = Viewpoint.transform.position + (RegisteredControllers[0].transform.forward.normalized * Velocity * Time.deltaTime);
+                    SelectedPosition = Viewpoint.transform.position + (forward * Velocity * Time.deltaTime);
                 }
                 // else y axis is not included
                 else
                 {
-                    Vector3 forwardVec = RegisteredControllers[0].transform.forward.normalized;
-                    SelectedPosition = Viewpoint.transform.position + (new Vector3(forwardVec.x, 0, forwardVec.z) * Velocity * Time.deltaTime);
+                    SelectedPosition = Viewpoint.transform.position + (new Vector3(forward.x, 0, forward.z) * Velocity * Time.deltaTime);
                 }
                 InitDistancesToViewpoint();
                 Viewpoint.transform.position = SelectedPosition;

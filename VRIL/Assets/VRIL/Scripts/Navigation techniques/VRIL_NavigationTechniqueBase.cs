@@ -14,7 +14,7 @@
     /// </summary>
     public abstract class VRIL_NavigationTechniqueBase : VRIL_TechniqueBase
     {
-        [Header("Viewpoint object")]
+        [Header("Viewpoint object (Usually the camera rig)")]
         public GameObject Viewpoint;
 
         protected bool PositionSelected = false;
@@ -52,8 +52,7 @@
                             actionDone = true;
                             OnActivation(e);
                             break;
-                        //TODO: OnTrave would be better here
-                        case VRIL_ActionTypes.OnRelease:
+                        case VRIL_ActionTypes.OnTravel:
                             actionDone = true;
                             OnTravel(e);
                             break;
@@ -68,7 +67,6 @@
                     }
                 }
             }
-            //}
         }
 
         /// <summary>

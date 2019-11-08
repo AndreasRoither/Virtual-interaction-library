@@ -16,14 +16,14 @@ namespace VRIL.NavigationTechniques
 
         public override void OnTravel(VRIL_ControllerActionEventArgs e)
         {
-            if (PositionSelected && Timer > WaitTime)
+            if (PositionSelected && Timer > TimeToWaitForNextTeleport)
             {
                 // allow no other input while travelling to target position
                 Manager.InputLocked = true;
                 TravelMode = true;
                 InitDistancesToViewpoint();
             }
-            point.SetActive(false);
+            HitEntity?.SetActive(false);
             IsActivated = false;
         }
 
