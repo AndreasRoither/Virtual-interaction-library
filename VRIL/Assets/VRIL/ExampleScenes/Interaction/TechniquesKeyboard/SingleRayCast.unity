@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028355, g: 0.22571374, b: 0.30692255, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -396,6 +396,24 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 2078909f331693a4c8cd995ad1d359a8, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85b8f3ce06cdce847bbb80d0df9b4f39, type: 3}
+--- !u!1 &555241006 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3255873711382807572, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+    type: 3}
+  m_PrefabInstance: {fileID: 555241005}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &555241007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 555241006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2ec08181590e064198d92fe7d9b330a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &720628085
 GameObject:
   m_ObjectHideFlags: 0
@@ -882,10 +900,12 @@ MonoBehaviour:
   - Controller: {fileID: 725915494}
     InteractionTechniques:
     - {fileID: 1028674145}
+    NavigationTechniques: []
   LoadedSdkName: 0
   OpenVR_Script: {fileID: 0}
   Oculus_Script: {fileID: 0}
   CustomSDK_Script: {fileID: 0}
+  InputLocked: 0
 --- !u!1 &2099451161
 GameObject:
   m_ObjectHideFlags: 0
