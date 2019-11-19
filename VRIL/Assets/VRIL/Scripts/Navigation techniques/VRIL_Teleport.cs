@@ -19,7 +19,7 @@ namespace VRIL.NavigationTechniques
         [Header("Technique settings")]
         [Tooltip("Time to next teleport")]
         public float TimeToWaitForNextTeleport = 0.5f;
-        [Tooltip("0 = Horizontal surfaces, 90 = Vertical surfaces")]
+        [Tooltip("Angle in degrees: 0 = Horizontal surfaces, 90 = Vertical surfaces")]
         [Range(0.0f, 90.0f)]
         public float MaximumSurfaceSkewness = 0;
 
