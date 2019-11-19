@@ -19,6 +19,9 @@ namespace VRIL.NavigationTechniques
         [Header("Technique settings")]
         [Tooltip("Time to next teleport")]
         public float TimeToWaitForNextTeleport = 0.5f;
+        [Tooltip("0 = Horizontal surfaces, 90 = Vertical surfaces")]
+        [Range(0.0f, 90.0f)]
+        public float MaximumSurfaceSkewness = 0;
 
         [Header("Ray Settings")]
         [Range(0.01f, 1f)]
@@ -40,6 +43,8 @@ namespace VRIL.NavigationTechniques
         [Header("Selection Point Settings")]
         [Tooltip("Visualisation object")]
         public GameObject HitEntity;
+        [Tooltip("Distance of hit entity object to ground")]
+        public float DistanceHitEntityToGround = 0.005f;
 
         protected bool IsActivated = false;
         protected float Timer = 0.0f;
@@ -69,7 +74,7 @@ namespace VRIL.NavigationTechniques
             {
                 TeleportLineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             }
-            if(HitEntity)
+            if(HitEntity != null)
             {
                 Renderer rend = HitEntity.GetComponent<Renderer>();
                 rend.material.SetColor("_Color", ValidPositionColor);
@@ -119,7 +124,7 @@ namespace VRIL.NavigationTechniques
                 PositionSelected = false;
                 Timer = 0.0f;
             }
-            if(HitEntity)
+            if(HitEntity != null)
             {
                 HitEntity.SetActive(false);
             }
@@ -165,7 +170,7 @@ namespace VRIL.NavigationTechniques
             TeleportLineRenderer.enabled = true;
             while (IsActivated)
             {
-                if(HitEntity)
+                if(HitEntity != null)
                 {
                     HitEntity.SetActive(false);
                 }
@@ -198,13 +203,13 @@ namespace VRIL.NavigationTechniques
                         VRIL_Navigable navigableObject = raycastHit.transform.gameObject.GetComponent<VRIL_Navigable>();
 
                         // valid position in case it is navigable and ray hits even surface
-                        if (navigableObject && raycastHit.normal == new Vector3(0, 1, 0))
+                        if(navigableObject && Vector3.Angle(raycastHit.normal, new Vector3(0, 1, 0)) <= MaximumSurfaceSkewness)
                         {
                             SelectedPosition = raycastHit.point;
                             PositionSelected = true;
-                            if (HitEntity)
+                            if (HitEntity != null)
                             {
-                                HitEntity.transform.position = SelectedPosition + new Vector3(0f, 0.0001f, 0f);
+                                HitEntity.transform.position = SelectedPosition + new Vector3(0f, DistanceHitEntityToGround, 0f);
                                 HitEntity.SetActive(true);
                             }
                             SelectedPosition += new Vector3(0, DistanceToGround, 0);
@@ -226,6 +231,10 @@ namespace VRIL.NavigationTechniques
                 }
                 if(!hit)
                 {
+                    if(HitEntity != null)
+                    {
+                        HitEntity.SetActive(false);
+                    }
                     PositionSelected = false;
                 }
                 // set line renderer
