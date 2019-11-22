@@ -33,6 +33,7 @@ namespace VRIL.NavigationTechniques
         public float DistanceControllerToWIM = 0.005f;
 
         [Header("Ray Settings")]
+        public float MaxRayDistance = 1.0f;
         public Color ValidPositionColor = Color.green;
         public Color InvalidPositionColor = Color.red;
         [Tooltip("Required or the laser color might be something different")]
@@ -42,6 +43,12 @@ namespace VRIL.NavigationTechniques
         public float StartRayWidth = 0.005f;
         [Range(0.01f, 1f)]
         public float EndRayWidth = 0.005f;
+
+        [Header("Selection Point Settings")]
+        [Tooltip("Visualisation object")]
+        public GameObject HitEntity;
+        [Tooltip("Distance of hit entity object to ground")]
+        public float DistanceHitEntityToGround = 0.005f;
 
         private GameObject WIMHand;
         private GameObject RayHand;
@@ -53,7 +60,6 @@ namespace VRIL.NavigationTechniques
         private Quaternion CurrentWIMRotation;
         private Vector3 CurrentScale;
 
-        private GameObject selectionPointWIM;
         private bool TravelMode = false;
         private GameObject Wim;
         private float TimeScale;
@@ -61,8 +67,11 @@ namespace VRIL.NavigationTechniques
         public void Awake()
         {
             base.Initialize();
-            Doll?.SetActive(false);
-            selectionPointWIM = new GameObject();
+            if(Doll != null)
+            {
+                Doll.SetActive(false);
+            }
+            //selectionPointWIM = new GameObject();
             WIMLineRendererObject = new GameObject("VRIL_WIM_LineRenderer");
             WIMLineRendererObject.AddComponent<LineRenderer>();
             WIMLineRenderer = WIMLineRendererObject.GetComponent<LineRenderer>();
@@ -71,6 +80,7 @@ namespace VRIL.NavigationTechniques
             WIMLineRenderer.startColor = ValidPositionColor;
             WIMLineRenderer.endColor = ValidPositionColor;
             WIMLineRenderer.material = LaserMaterial;
+            WIMLineRenderer.enabled = false;
             if (CastShadows)
             {
                 WIMLineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
@@ -92,6 +102,14 @@ namespace VRIL.NavigationTechniques
             {
                 Debug.LogError($"<b>{nameof(VRIL_WIM)}:</b>\n This technique requires at least two controllers!");
             }
+            if(HitEntity == null)
+            {
+                Debug.LogError("No hit entity object for WIM!");
+            }
+            else
+            {
+                HitEntity.SetActive(false);
+            }
         }
 
         /// <summary>
@@ -99,6 +117,10 @@ namespace VRIL.NavigationTechniques
         /// </summary>
         public override void OnActivation(VRIL_ControllerActionEventArgs e)
         {
+            if(e.ControllerIndex != 0)
+            {
+                return;
+            }
             if (RegisteredControllers.Count > 1)
             {
                 // differentiate between ButtonStates
@@ -137,45 +159,58 @@ namespace VRIL.NavigationTechniques
         private void CreateWim(VRIL_ControllerActionEventArgs e)
         {
             // create WIM as new object
-            Wim = new GameObject();
+            Wim = new GameObject("WIM");
+            Wim.AddComponent<VRIL_WIMObject>();
             Wim.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
             Wim.transform.position = new Vector3(0, 0, 0);
-            selectionPointWIM.transform.parent = Wim.transform;
+            HitEntity.SetActive(false);
             
             // clone all relevant MeshRenderer
-            MeshRenderer[] allObjects = UnityEngine.Object.FindObjectsOfType<MeshRenderer>().Where(m => m.bounds.size.x >= TresholdX || m.bounds.size.y >= TresholdY || m.bounds.size.z >= TresholdZ).ToArray();
-            IList<MeshRenderer> clones = new List<MeshRenderer>();
+            MeshRenderer[] allObjects = FindObjectsOfType<MeshRenderer>().Where(
+                m => m.gameObject != null &&
+                m.gameObject.activeSelf &&
+                Array.IndexOf(RegisteredControllers.ToArray(), m.gameObject) < 0 &&
+                (m.bounds.size.x >= TresholdX || m.bounds.size.y >= TresholdY || m.bounds.size.z >= TresholdZ)).ToArray();
+
+            IList<GameObject> clones = new List<GameObject>();
             foreach (MeshRenderer obj in allObjects)
             {
-                MeshRenderer objClone = UnityEngine.Object.Instantiate(obj);
+                GameObject objClone = Instantiate(obj.gameObject);
+                //MeshRenderer objClone = Instantiate(obj);
+                objClone.tag = "WIMclone";
                 objClone.transform.parent = Wim.transform;
                 objClone.transform.position = obj.transform.position;
-                objClone.transform.gameObject.AddComponent<VRIL_WIMObject>();
+                objClone.AddComponent<VRIL_WIMObject>();
+                //objClone.AddComponent<Collider>();
                 clones.Add(objClone);
             }
 
             // add figure to represent current position in WIM
             if (Doll != null)
             {
-                GameObject tempDoll = UnityEngine.Object.Instantiate(Doll);
+                GameObject tempDoll = Instantiate(Doll);
                 tempDoll.SetActive(true);
                 tempDoll.transform.position = Viewpoint.transform.position - new Vector3(0, DistanceToGround, 0);
                 tempDoll.transform.forward = new Vector3(Viewpoint.transform.forward.x, 0, Viewpoint.transform.forward.z);
-                tempDoll.transform.gameObject.AddComponent<VRIL_WIMObject>();
+                tempDoll.AddComponent<VRIL_WIMObject>();
                 tempDoll.transform.parent = Wim.transform;
             }
 
+            // attach selection point
+            HitEntity.transform.parent = Wim.transform;
+            
             // downscale the world
             Wim.transform.localScale = CurrentScale;
 
             // set kinematic for all WIM objects (removes physics)
-            foreach (MeshRenderer objClone in clones)
+            foreach (GameObject objClone in clones)
             {
                 if (objClone.GetComponent<Rigidbody>() != null)
                 {
                     objClone.GetComponent<Rigidbody>().isKinematic = true;
                 }
             }
+            HitEntity.transform.localScale *= 10.0f;
         }
 
         /// <summary>
@@ -186,7 +221,10 @@ namespace VRIL.NavigationTechniques
             // recreate always WIM if not paused (keep in mind this might be slow)
             if (!PauseOnWIM)
             {
-                Destroy(Wim);
+                HitEntity.transform.parent = null;
+
+                // destroy before next frame
+                DestroyImmediate(Wim);
                 CreateWim(e);
             }
             // no travel mode: refresh WIM position and rotation according to controller
@@ -210,44 +248,91 @@ namespace VRIL.NavigationTechniques
         /// </summary>
         protected IEnumerator WIM(VRIL_ControllerActionEventArgs e)
         {
-            WIMLineRenderer.enabled = true;
             while (IsActivated && !TravelMode)
             {
                 DrawWIM(e);
+                HitEntity.SetActive(false);
                 Ray selectionRay = new Ray(RayHand.transform.position, RayHand.transform.forward);
-                RaycastHit raycastHit;
-                if (Physics.Raycast(selectionRay, out raycastHit, 2.0f))
+
+                //Debug.DrawRay(selectionRay.origin, selectionRay.GetPoint(MaxRayDistance * 2));
+                if (Physics.Raycast(selectionRay, out RaycastHit raycastHit, MaxRayDistance))
                 {
                     VRIL_WIMObject wimSpace = raycastHit.transform.gameObject.GetComponent<VRIL_WIMObject>();
-                    if (wimSpace != null)
+                    if(wimSpace != null)
                     {
                         WIMLineRenderer.enabled = true;
+                        WIMLineRenderer.positionCount = 2;
                         WIMLineRenderer.SetPosition(0, selectionRay.origin);
                         WIMLineRenderer.SetPosition(1, raycastHit.point);
-                        VRIL_Navigable navigable = wimSpace.transform.gameObject.GetComponent<VRIL_Navigable>();
-                        if (navigable != null)
-                        {
-                            WIMLineRenderer.startColor = ValidPositionColor;
-                            WIMLineRenderer.endColor = ValidPositionColor;
-                            selectionPointWIM.transform.position = navigable.transform.position;
-                        }
-                        else
-                        {
-                            WIMLineRenderer.startColor = InvalidPositionColor;
-                            WIMLineRenderer.endColor = InvalidPositionColor;
-                        }
+                        WIMLineRenderer.startColor = ValidPositionColor;
+                        WIMLineRenderer.endColor = ValidPositionColor;
+                        HitEntity.SetActive(true);
+                        Debug.Log("raycastHit.transform.position: " + raycastHit.point);
+
+                        HitEntity.transform.position = raycastHit.point;
                     }
-                    else
-                    {
-                        WIMLineRenderer.enabled = false;
-                    }
+                    //GameObject ooo = raycastHit.transform.gameObject;
+                    //ooo.transform.position += new Vector3(0, 0.001f, 0);
+                    //Renderer rend = raycastHit.transform.gameObject.GetComponent<Renderer>();
+                    //rend.material.SetColor("_Color", ValidPositionColor);
+                    //Debug.Log("Hit: " + raycastHit.transform.gameObject.name);
                 }
                 else
                 {
-                    WIMLineRenderer.enabled = false;
+                    //WIMLineRenderer.enabled = true;
+                    //WIMLineRenderer.positionCount = 2;
+                    //WIMLineRenderer.SetPosition(0, selectionRay.origin);
+                    //WIMLineRenderer.SetPosition(1, selectionRay.GetPoint(MaxRayDistance));
+                    //WIMLineRenderer.startColor = InvalidPositionColor;
+                    //WIMLineRenderer.endColor = InvalidPositionColor;
                 }
+                    //    VRIL_WIMObject wimSpace = raycastHit.transform.gameObject.GetComponent<VRIL_WIMObject>();
+                    //    if (wimSpace != null)
+                    //    {
+                    //        WIMLineRenderer.enabled = true;
+                    //        WIMLineRenderer.positionCount = 2;
+                    //        WIMLineRenderer.SetPosition(0, selectionRay.origin);
+                    //        WIMLineRenderer.SetPosition(1, raycastHit.point);
+                    //        WIMLineRenderer.startColor = ValidPositionColor;
+                    //        WIMLineRenderer.endColor = ValidPositionColor;
+                    //        VRIL_Navigable navigable = wimSpace.gameObject.GetComponent<VRIL_Navigable>();
+                    //        if (navigable != null)
+                    //        {
+                    //            Debug.Log("Valid position");
+                    //            WIMLineRenderer.startColor = ValidPositionColor;
+                    //            WIMLineRenderer.endColor = ValidPositionColor;
+                    //            HitEntity.SetActive(true);
+                    //            HitEntity.transform.position = navigable.transform.position;
+                    //        }
+                    //        else
+                    //        {
+                    //            Debug.Log("Invalid position");
+                    //            HitEntity.SetActive(false);
+                    //            WIMLineRenderer.startColor = InvalidPositionColor;
+                    //            WIMLineRenderer.endColor = InvalidPositionColor;
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        WIMLineRenderer.enabled = false;
+                    //        Debug.Log("No WIM");
+                    //        HitEntity.SetActive(false);
+                    //        //WIMLineRenderer.enabled = false;
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    WIMLineRenderer.enabled = false;
+                    //    Debug.Log("Nothing");
+                    //    HitEntity.SetActive(false);
+                    //    //WIMLineRenderer.enabled = false;
+                    //}
+                    Vector3 diff = WIMLineRenderer.GetPosition(1) - WIMLineRenderer.GetPosition(0);
+                    Debug.Log("Length: " + diff.magnitude);
+
                 yield return null;
             }
+            HitEntity.SetActive(false);
             WIMLineRenderer.enabled = false;
         }
 
@@ -277,13 +362,15 @@ namespace VRIL.NavigationTechniques
                 {
                     flying = false;
                 }
-                //Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position, selectionPointWIM.transform.position, Velocity * Time.unscaledDeltaTime);
+                //Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position, HitEntity.transform.position, Velocity * Time.unscaledDeltaTime);
                 yield return null;
             }
             IsActivated = false;
 
             // destroy WIM after
-            Destroy(Wim);
+            HitEntity.transform.parent = null;
+            DestroyImmediate(Wim);
+
             TravelMode = false;
             Time.timeScale = TimeScale;
             Manager.InputLocked = false;

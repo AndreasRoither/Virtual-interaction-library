@@ -14,8 +14,6 @@ namespace VRIL.NavigationTechniques
         [Header("Properties for steering technique (Default is hand directed steering)")]
         [Tooltip("Flying mode includes y-coordinate too")]
         public bool FlyingMode = false;
-        [Tooltip("Include button press strength")]
-        public bool IncludeButtonPressStrength = false;
         [Tooltip("Default velocity")]
         public float Velocity = 2.0f;
 
