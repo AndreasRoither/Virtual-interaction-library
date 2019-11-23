@@ -181,6 +181,7 @@ namespace VRIL.NavigationTechniques
                 objClone.transform.parent = Wim.transform;
                 objClone.transform.position = obj.transform.position;
                 objClone.AddComponent<VRIL_WIMObject>();
+                objClone.layer = LayerMask.NameToLayer("WIMLayer");
                 //objClone.AddComponent<Collider>();
                 clones.Add(objClone);
             }
@@ -255,7 +256,8 @@ namespace VRIL.NavigationTechniques
                 Ray selectionRay = new Ray(RayHand.transform.position, RayHand.transform.forward);
 
                 //Debug.DrawRay(selectionRay.origin, selectionRay.GetPoint(MaxRayDistance * 2));
-                if (Physics.Raycast(selectionRay, out RaycastHit raycastHit, MaxRayDistance))
+                Debug.Log("Layer: " + LayerMask.NameToLayer("WIMLayer"));
+                if (Physics.Raycast(selectionRay, out RaycastHit raycastHit, MaxRayDistance, 1 << LayerMask.NameToLayer("WIMLayer")))
                 {
                     VRIL_WIMObject wimSpace = raycastHit.transform.gameObject.GetComponent<VRIL_WIMObject>();
                     if(wimSpace != null)
@@ -268,11 +270,10 @@ namespace VRIL.NavigationTechniques
                         WIMLineRenderer.endColor = ValidPositionColor;
                         HitEntity.SetActive(true);
                         Debug.Log("raycastHit.transform.position: " + raycastHit.point);
-
                         HitEntity.transform.position = raycastHit.point;
                     }
-                    //GameObject ooo = raycastHit.transform.gameObject;
-                    //ooo.transform.position += new Vector3(0, 0.001f, 0);
+                    GameObject ooo = raycastHit.transform.gameObject;
+                    ooo.transform.position += new Vector3(0, 0.001f, 0);
                     //Renderer rend = raycastHit.transform.gameObject.GetComponent<Renderer>();
                     //rend.material.SetColor("_Color", ValidPositionColor);
                     //Debug.Log("Hit: " + raycastHit.transform.gameObject.name);
@@ -327,8 +328,8 @@ namespace VRIL.NavigationTechniques
                     //    HitEntity.SetActive(false);
                     //    //WIMLineRenderer.enabled = false;
                     //}
-                    Vector3 diff = WIMLineRenderer.GetPosition(1) - WIMLineRenderer.GetPosition(0);
-                    Debug.Log("Length: " + diff.magnitude);
+                    //Vector3 diff = WIMLineRenderer.GetPosition(1) - WIMLineRenderer.GetPosition(0);
+                    //Debug.Log("Length: " + diff.magnitude);
 
                 yield return null;
             }
