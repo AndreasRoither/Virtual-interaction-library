@@ -64,6 +64,7 @@ namespace VRIL.NavigationTechniques
         private GameObject Wim;
         private float TimeScale;
 
+        private IList<GameObject> clones;
         public void Awake()
         {
             base.Initialize();
@@ -109,6 +110,8 @@ namespace VRIL.NavigationTechniques
             else
             {
                 HitEntity.SetActive(false);
+                Renderer rend = HitEntity.transform.gameObject.GetComponent<Renderer>();
+                rend.material.SetColor("_Color", ValidPositionColor);
             }
         }
 
@@ -172,15 +175,30 @@ namespace VRIL.NavigationTechniques
                 Array.IndexOf(RegisteredControllers.ToArray(), m.gameObject) < 0 &&
                 (m.bounds.size.x >= TresholdX || m.bounds.size.y >= TresholdY || m.bounds.size.z >= TresholdZ)).ToArray();
 
-            IList<GameObject> clones = new List<GameObject>();
+
+            clones = new List<GameObject>();
             foreach (MeshRenderer obj in allObjects)
             {
                 GameObject objClone = Instantiate(obj.gameObject);
                 //MeshRenderer objClone = Instantiate(obj);
                 objClone.tag = "WIMclone";
+                objClone.name = "WIM" + obj.gameObject.name;
                 objClone.transform.parent = Wim.transform;
                 objClone.transform.position = obj.transform.position;
                 objClone.AddComponent<VRIL_WIMObject>();
+
+                Collider col = obj.GetComponent<Collider>();
+                col.isTrigger = true;
+
+                if(obj.GetComponent<MeshCollider>() != null)
+                {
+                    MeshCollider mesh = objClone.GetComponent<MeshCollider>();
+                    //mesh.convex = true;
+                    mesh.isTrigger = true;
+                    objClone.AddComponent<BoxCollider>();
+                }
+
+                //objClone.AddComponent<BoxCollider>();
                 //objClone.AddComponent<Collider>();
                 clones.Add(objClone);
             }
@@ -209,6 +227,7 @@ namespace VRIL.NavigationTechniques
                 {
                     objClone.GetComponent<Rigidbody>().isKinematic = true;
                 }
+                objClone.SetActive(false);
             }
             HitEntity.transform.localScale *= 10.0f;
         }
@@ -255,10 +274,10 @@ namespace VRIL.NavigationTechniques
                 Ray selectionRay = new Ray(RayHand.transform.position, RayHand.transform.forward);
 
                 //Debug.DrawRay(selectionRay.origin, selectionRay.GetPoint(MaxRayDistance * 2));
-                if (Physics.Raycast(selectionRay, out RaycastHit raycastHit, MaxRayDistance))
+                if (Physics.Raycast(selectionRay, out RaycastHit raycastHit, MaxRayDistance) && raycastHit.transform.CompareTag("WIMclone"))
                 {
                     VRIL_WIMObject wimSpace = raycastHit.transform.gameObject.GetComponent<VRIL_WIMObject>();
-                    if(wimSpace != null)
+                    if(wimSpace != null && wimSpace.GetComponent<VRIL_Navigable>() != null)
                     {
                         WIMLineRenderer.enabled = true;
                         WIMLineRenderer.positionCount = 2;
@@ -267,24 +286,29 @@ namespace VRIL.NavigationTechniques
                         WIMLineRenderer.startColor = ValidPositionColor;
                         WIMLineRenderer.endColor = ValidPositionColor;
                         HitEntity.SetActive(true);
-                        Debug.Log("raycastHit.transform.position: " + raycastHit.point);
-
                         HitEntity.transform.position = raycastHit.point;
+
+                        //Renderer rend = raycastHit.transform.gameObject.GetComponent<Renderer>();
+                        //rend.material.SetColor("_Color", ValidPositionColor);
                     }
-                    //GameObject ooo = raycastHit.transform.gameObject;
-                    //ooo.transform.position += new Vector3(0, 0.001f, 0);
+                    else
+                    {
+                        WIMLineRenderer.enabled = true;
+                        WIMLineRenderer.positionCount = 2;
+                        WIMLineRenderer.SetPosition(0, selectionRay.origin);
+                        WIMLineRenderer.SetPosition(1, raycastHit.point);
+                        WIMLineRenderer.startColor = InvalidPositionColor;
+                        WIMLineRenderer.endColor = InvalidPositionColor;
+                        HitEntity.SetActive(false);
+                    }
+
                     //Renderer rend = raycastHit.transform.gameObject.GetComponent<Renderer>();
                     //rend.material.SetColor("_Color", ValidPositionColor);
                     //Debug.Log("Hit: " + raycastHit.transform.gameObject.name);
                 }
                 else
                 {
-                    //WIMLineRenderer.enabled = true;
-                    //WIMLineRenderer.positionCount = 2;
-                    //WIMLineRenderer.SetPosition(0, selectionRay.origin);
-                    //WIMLineRenderer.SetPosition(1, selectionRay.GetPoint(MaxRayDistance));
-                    //WIMLineRenderer.startColor = InvalidPositionColor;
-                    //WIMLineRenderer.endColor = InvalidPositionColor;
+                    WIMLineRenderer.enabled = false;
                 }
                     //    VRIL_WIMObject wimSpace = raycastHit.transform.gameObject.GetComponent<VRIL_WIMObject>();
                     //    if (wimSpace != null)
@@ -329,7 +353,10 @@ namespace VRIL.NavigationTechniques
                     //}
                     Vector3 diff = WIMLineRenderer.GetPosition(1) - WIMLineRenderer.GetPosition(0);
                     Debug.Log("Length: " + diff.magnitude);
-
+                foreach (GameObject objClone in clones)
+                {
+                    objClone.SetActive(true);
+                }
                 yield return null;
             }
             HitEntity.SetActive(false);
