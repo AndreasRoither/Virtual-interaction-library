@@ -13,9 +13,6 @@ namespace VRIL.NavigationTechniques
         private bool IsActivated;
 
         [Header("WIM Settings")]
-        [Tooltip("Flying into the miniature for viewpoint translation")]
-        public bool FlyingIntoTheMiniature = false;
-
         [Tooltip("Player representation in WIM (real world size)")]
         public GameObject Doll;
 
@@ -66,11 +63,6 @@ namespace VRIL.NavigationTechniques
         private bool TravelMode = false;
         private GameObject Wim;
         private float TimeScale;
-        //private GameObject WimClone;
-        private Vector3 origPos;
-        private Quaternion origRot;
-
-        private IList<GameObject> clones;
 
         public void Awake()
         {
@@ -117,8 +109,6 @@ namespace VRIL.NavigationTechniques
             else
             {
                 HitEntity.SetActive(false);
-                Renderer rend = HitEntity.transform.gameObject.GetComponent<Renderer>();
-                rend.material.SetColor("_Color", ValidPositionColor);
             }
         }
 
@@ -136,11 +126,7 @@ namespace VRIL.NavigationTechniques
                 // differentiate between ButtonStates
                 if (e.ButtonInteractionType == VRIL_ButtonInteractionType.Released)
                 {
-                    Debug.Log("Released!!");
-                    if(PositionSelected)
-                    {
-                        OnTravel(e);
-                    }
+                    OnTravel(e);
                 }
                 else if (e.ButtonInteractionType == VRIL_ButtonInteractionType.Pressed)
                 {
@@ -177,10 +163,7 @@ namespace VRIL.NavigationTechniques
             Wim.AddComponent<VRIL_WIMObject>();
             Wim.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
             Wim.transform.position = new Vector3(0, 0, 0);
-            if(!TravelMode)
-            {
-                HitEntity.SetActive(false);
-            }
+            HitEntity.SetActive(false);
             
             // clone all relevant MeshRenderer
             MeshRenderer[] allObjects = FindObjectsOfType<MeshRenderer>().Where(
@@ -189,38 +172,17 @@ namespace VRIL.NavigationTechniques
                 Array.IndexOf(RegisteredControllers.ToArray(), m.gameObject) < 0 &&
                 (m.bounds.size.x >= TresholdX || m.bounds.size.y >= TresholdY || m.bounds.size.z >= TresholdZ)).ToArray();
 
-
-            clones = new List<GameObject>();
+            IList<GameObject> clones = new List<GameObject>();
             foreach (MeshRenderer obj in allObjects)
             {
                 GameObject objClone = Instantiate(obj.gameObject);
                 //MeshRenderer objClone = Instantiate(obj);
                 objClone.tag = "WIMclone";
-                objClone.name = "WIM" + obj.gameObject.name;
                 objClone.transform.parent = Wim.transform;
                 objClone.transform.position = obj.transform.position;
                 objClone.AddComponent<VRIL_WIMObject>();
-
-                if(obj.GetComponent<MeshCollider>() != null)
-                {
-                    MeshCollider mesh = objClone.GetComponent<MeshCollider>();
-                    mesh.convex = true;
-                    mesh.isTrigger = true;
-                    objClone.AddComponent<BoxCollider>();
-                }
-                else
-                {
-                    Collider col = obj.GetComponent<Collider>();
-                    col.isTrigger = true;
-                }
-
-                // set kinematic for all WIM objects (removes physics)
-                if (objClone.GetComponent<Rigidbody>() != null)
-                {
-                    objClone.GetComponent<Rigidbody>().isKinematic = true;
-                }
-                objClone.SetActive(false);
-
+                objClone.layer = LayerMask.NameToLayer("WIMLayer");
+                //objClone.AddComponent<Collider>();
                 clones.Add(objClone);
             }
 
@@ -237,15 +199,19 @@ namespace VRIL.NavigationTechniques
 
             // attach selection point
             HitEntity.transform.parent = Wim.transform;
-
-            Vector3 before = HitEntity.transform.position;
-
-            origPos = Wim.transform.position;
-            origRot = Wim.transform.rotation;
-
+            
             // downscale the world
             Wim.transform.localScale = CurrentScale;
-            
+
+            // set kinematic for all WIM objects (removes physics)
+            foreach (GameObject objClone in clones)
+            {
+                if (objClone.GetComponent<Rigidbody>() != null)
+                {
+                    objClone.GetComponent<Rigidbody>().isKinematic = true;
+                }
+            }
+            HitEntity.transform.localScale *= 10.0f;
         }
 
         /// <summary>
@@ -272,13 +238,10 @@ namespace VRIL.NavigationTechniques
             // travel mode: refresh the scale of the world
             else
             {
-                Vector3 before = HitEntity.transform.position;
                 Wim.transform.localScale = CurrentScale;
-                Debug.Log("Pos before scale: " + before + ", after: " + HitEntity.transform.position);
             }
             Wim.transform.position = CurrentWIMPosition;
             Wim.transform.rotation = CurrentWIMRotation;
-            //diffWIMViewpoint = Viewpoint.transform.rotation * Quaternion.Inverse(Wim.transform.rotation);
         }
 
         /// <summary>
@@ -290,15 +253,14 @@ namespace VRIL.NavigationTechniques
             {
                 DrawWIM(e);
                 HitEntity.SetActive(false);
-                PositionSelected = false;
-
                 Ray selectionRay = new Ray(RayHand.transform.position, RayHand.transform.forward);
 
                 //Debug.DrawRay(selectionRay.origin, selectionRay.GetPoint(MaxRayDistance * 2));
-                if (Physics.Raycast(selectionRay, out RaycastHit raycastHit, MaxRayDistance) && raycastHit.transform.CompareTag("WIMclone"))
+                Debug.Log("Layer: " + LayerMask.NameToLayer("WIMLayer"));
+                if (Physics.Raycast(selectionRay, out RaycastHit raycastHit, MaxRayDistance, 1 << LayerMask.NameToLayer("WIMLayer")))
                 {
                     VRIL_WIMObject wimSpace = raycastHit.transform.gameObject.GetComponent<VRIL_WIMObject>();
-                    if(wimSpace != null && wimSpace.GetComponent<VRIL_Navigable>() != null)
+                    if(wimSpace != null)
                     {
                         WIMLineRenderer.enabled = true;
                         WIMLineRenderer.positionCount = 2;
@@ -307,42 +269,71 @@ namespace VRIL.NavigationTechniques
                         WIMLineRenderer.startColor = ValidPositionColor;
                         WIMLineRenderer.endColor = ValidPositionColor;
                         HitEntity.SetActive(true);
+                        Debug.Log("raycastHit.transform.position: " + raycastHit.point);
                         HitEntity.transform.position = raycastHit.point;
-                        PositionSelected = true;
-                        //Debug.Log("HitEntity-Position: " + HitEntity.transform.position);
-                        //Renderer rend = raycastHit.transform.gameObject.GetComponent<Renderer>();
-                        //rend.material.SetColor("_Color", ValidPositionColor);
-                        
-                        //SelectedPosition = HitEntity.transform.position * (1 / ScaleFactor);
                     }
-                    else
-                    {
-                        WIMLineRenderer.enabled = true;
-                        WIMLineRenderer.positionCount = 2;
-                        WIMLineRenderer.SetPosition(0, selectionRay.origin);
-                        WIMLineRenderer.SetPosition(1, raycastHit.point);
-                        WIMLineRenderer.startColor = InvalidPositionColor;
-                        WIMLineRenderer.endColor = InvalidPositionColor;
-                        HitEntity.SetActive(false);
-                    }
-
+                    GameObject ooo = raycastHit.transform.gameObject;
+                    ooo.transform.position += new Vector3(0, 0.001f, 0);
                     //Renderer rend = raycastHit.transform.gameObject.GetComponent<Renderer>();
                     //rend.material.SetColor("_Color", ValidPositionColor);
                     //Debug.Log("Hit: " + raycastHit.transform.gameObject.name);
                 }
                 else
                 {
-                    WIMLineRenderer.enabled = false;
+                    //WIMLineRenderer.enabled = true;
+                    //WIMLineRenderer.positionCount = 2;
+                    //WIMLineRenderer.SetPosition(0, selectionRay.origin);
+                    //WIMLineRenderer.SetPosition(1, selectionRay.GetPoint(MaxRayDistance));
+                    //WIMLineRenderer.startColor = InvalidPositionColor;
+                    //WIMLineRenderer.endColor = InvalidPositionColor;
                 }
+                    //    VRIL_WIMObject wimSpace = raycastHit.transform.gameObject.GetComponent<VRIL_WIMObject>();
+                    //    if (wimSpace != null)
+                    //    {
+                    //        WIMLineRenderer.enabled = true;
+                    //        WIMLineRenderer.positionCount = 2;
+                    //        WIMLineRenderer.SetPosition(0, selectionRay.origin);
+                    //        WIMLineRenderer.SetPosition(1, raycastHit.point);
+                    //        WIMLineRenderer.startColor = ValidPositionColor;
+                    //        WIMLineRenderer.endColor = ValidPositionColor;
+                    //        VRIL_Navigable navigable = wimSpace.gameObject.GetComponent<VRIL_Navigable>();
+                    //        if (navigable != null)
+                    //        {
+                    //            Debug.Log("Valid position");
+                    //            WIMLineRenderer.startColor = ValidPositionColor;
+                    //            WIMLineRenderer.endColor = ValidPositionColor;
+                    //            HitEntity.SetActive(true);
+                    //            HitEntity.transform.position = navigable.transform.position;
+                    //        }
+                    //        else
+                    //        {
+                    //            Debug.Log("Invalid position");
+                    //            HitEntity.SetActive(false);
+                    //            WIMLineRenderer.startColor = InvalidPositionColor;
+                    //            WIMLineRenderer.endColor = InvalidPositionColor;
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        WIMLineRenderer.enabled = false;
+                    //        Debug.Log("No WIM");
+                    //        HitEntity.SetActive(false);
+                    //        //WIMLineRenderer.enabled = false;
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    WIMLineRenderer.enabled = false;
+                    //    Debug.Log("Nothing");
+                    //    HitEntity.SetActive(false);
+                    //    //WIMLineRenderer.enabled = false;
+                    //}
+                    //Vector3 diff = WIMLineRenderer.GetPosition(1) - WIMLineRenderer.GetPosition(0);
+                    //Debug.Log("Length: " + diff.magnitude);
 
-                foreach (GameObject objClone in clones)
-                {
-                    objClone.SetActive(true);
-                }
                 yield return null;
-                //yield return new WaitForFixedUpdate();
             }
-            //HitEntity.SetActive(false);
+            HitEntity.SetActive(false);
             WIMLineRenderer.enabled = false;
         }
 
@@ -351,29 +342,30 @@ namespace VRIL.NavigationTechniques
         /// </summary>
         public override void OnTravel(VRIL_ControllerActionEventArgs e)
         {
-            if(FlyingIntoTheMiniature)
-            {
-                TravelMode = true;
-            }
-            else
-            {
-                if (PositionSelected)
-                {
-                    Wim.transform.position = origPos;
-                    Wim.transform.rotation = origRot;
-                    Wim.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-                    SelectedPosition = HitEntity.transform.position + new Vector3(0, DistanceToGround, 0);
-                    InitDistancesToViewpoint();
-                    Viewpoint.transform.position = SelectedPosition;
-                    UpdateObjects();
-                    PositionSelected = false;
-                }
-                if (HitEntity != null)
-                {
-                    HitEntity.SetActive(false);
-                }
-            }
+            TravelMode = true;
+            StartCoroutine(FlyingIntoMiniature(e));
+        }
 
+        /// <summary>
+        /// Coroutine for the flight into the miniature
+        /// </summary>
+        protected IEnumerator FlyingIntoMiniature(VRIL_ControllerActionEventArgs e)
+        {
+            bool flying = true;
+
+            // no inputs allowed while flying into the miniature world
+            Manager.InputLocked = true;
+            while (flying)
+            {
+                DrawWIM(e);
+                CurrentScale *= (1 + ScaleFactor * 0.5f);
+                if (CurrentScale.x >= 1.0f)
+                {
+                    flying = false;
+                }
+                //Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position, HitEntity.transform.position, Velocity * Time.unscaledDeltaTime);
+                yield return null;
+            }
             IsActivated = false;
 
             // destroy WIM after
@@ -383,49 +375,6 @@ namespace VRIL.NavigationTechniques
             TravelMode = false;
             Time.timeScale = TimeScale;
             Manager.InputLocked = false;
-            //GameObject clone = Instantiate(Wim);
-
-            //Vector3 prevScale = Wim.transform.localScale;
-            //Vector3 prevPosition = Wim.transform.position;
-            //Quaternion prevRotation = Wim.transform.rotation;
-
-            //StartCoroutine(FlyingIntoMiniature(e));
-        }
-
-        /// <summary>
-        /// Coroutine for the flight into the miniature
-        /// </summary>
-        protected IEnumerator FlyingIntoMiniature(VRIL_ControllerActionEventArgs e)
-        {
-            // no inputs allowed while flying into the miniature world
-            Manager.InputLocked = true;
-            while (TravelMode)
-            {
-                DrawWIM(e);
-                CurrentScale *= (1 + ScaleFactor);
-                if (CurrentScale.x >= 1.0f)
-                {
-                    TravelMode = false;
-                }
-                Debug.Log("HitEntity-Position scaled: " + HitEntity.transform.position);
-                Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position, HitEntity.transform.position, (1 + ScaleFactor) * (1 + ScaleFactor) * Time.unscaledDeltaTime);
-
-
-                if (Vector3.Distance(Viewpoint.transform.position, HitEntity.transform.position) < 0.0001f)
-                {
-                    Debug.Log("Distance!");
-                    TravelMode = false;
-                    PositionSelected = false;
-                    TravelMode = false;
-                    Manager.InputLocked = false;
-                }
-
-                //Debug.Log("Viewpoint: " + Viewpoint.transform.position);
-                //Debug.Log("HitEntity-Position scaled: " + HitEntity.transform.position);
-                yield return null;
-            }
-            //Viewpoint.transform.rotation = diffWIMViewpoint * Viewpoint.transform.rotation;
-
         }
     }
 }
