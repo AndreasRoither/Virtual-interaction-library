@@ -340,6 +340,7 @@ namespace VRIL.NavigationTechniques
                     objClone.SetActive(true);
                 }
                 yield return null;
+                //yield return new WaitForFixedUpdate();
             }
             //HitEntity.SetActive(false);
             WIMLineRenderer.enabled = false;
@@ -371,10 +372,17 @@ namespace VRIL.NavigationTechniques
                 {
                     HitEntity.SetActive(false);
                 }
-                IsActivated = false;
             }
-            Time.timeScale = TimeScale;
 
+            IsActivated = false;
+
+            // destroy WIM after
+            HitEntity.transform.parent = null;
+            DestroyImmediate(Wim);
+
+            TravelMode = false;
+            Time.timeScale = TimeScale;
+            Manager.InputLocked = false;
             //GameObject clone = Instantiate(Wim);
 
             //Vector3 prevScale = Wim.transform.localScale;
@@ -418,15 +426,6 @@ namespace VRIL.NavigationTechniques
             }
             //Viewpoint.transform.rotation = diffWIMViewpoint * Viewpoint.transform.rotation;
 
-            IsActivated = false;
-
-            // destroy WIM after
-            HitEntity.transform.parent = null;
-            DestroyImmediate(Wim);
-
-            TravelMode = false;
-            Time.timeScale = TimeScale;
-            Manager.InputLocked = false;
         }
     }
 }
