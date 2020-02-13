@@ -14,11 +14,14 @@
     /// </summary>
     public abstract class VRIL_NavigationTechniqueBase : VRIL_TechniqueBase
     {
+        
+        //General properties
         [Header("Viewpoint object (Usually the camera rig)")]
         public GameObject Viewpoint;
 
-        protected bool PositionSelected = false;
-        protected Vector3 SelectedPosition = new Vector3(0, 0, 0);
+        [Header("Audio clip for travel")]
+        public AudioClip Travel_AudioClip;
+        public AudioSource Travel_AudioSource;
 
         [Tooltip("Define distance viewpoint to ground")]
         public float DistanceToGround = 1.3f;
@@ -26,8 +29,14 @@
         [Tooltip("Allow to travel with selected objects")]
         public bool MoveSelectedObjects = false;
 
+        [Tooltip("Only necessary when controllers are no child objects of viewpoint")]
+        public bool MoveControllerSeperately = false;
+
+        //Internal
         protected Dictionary<int, Vector3> ControllerDistancesToViewpoint = new Dictionary<int, Vector3>();
         protected Dictionary<int, Vector3> SelectedObjectDistancesToViewpoint = new Dictionary<int, Vector3>();
+        protected bool PositionSelected = false;
+        protected Vector3 SelectedPosition = new Vector3(0, 0, 0);
 
         /// <summary>
         /// Called from VRIL_Manager when a button is pressed
@@ -86,8 +95,10 @@
                         }
                     }
                 }
-                //TODO: Is it necessary with HTC Vive?
-                ControllerDistancesToViewpoint[regController.Controller.GetInstanceID()] = regController.Controller.transform.position - Viewpoint.transform.position;
+                if(MoveControllerSeperately)
+                {
+                    ControllerDistancesToViewpoint[regController.Controller.GetInstanceID()] = regController.Controller.transform.position - Viewpoint.transform.position;
+                }
             }
         }
 
@@ -108,9 +119,28 @@
                         }
                     }
                 }
-                //TODO: Is it necessary with HTC Vive?
-                regController.Controller.transform.position = ControllerDistancesToViewpoint[regController.Controller.GetInstanceID()] + Viewpoint.transform.position;
+                if (MoveControllerSeperately)
+                {
+                    regController.Controller.transform.position = ControllerDistancesToViewpoint[regController.Controller.GetInstanceID()] + Viewpoint.transform.position;
+                }
             }
+        }
+
+        protected void PlayAudio()
+        {
+            if(Travel_AudioSource && Travel_AudioClip)
+            {
+                Travel_AudioSource.clip = Travel_AudioClip;
+                Travel_AudioSource.Play(0);
+            }
+        }
+
+        protected void StopAudio()
+        {
+            if (Travel_AudioSource)
+            {
+                Travel_AudioSource.Stop();
+            }  
         }
 
         /// <summary>

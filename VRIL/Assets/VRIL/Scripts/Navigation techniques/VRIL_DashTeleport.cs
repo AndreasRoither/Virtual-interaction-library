@@ -22,18 +22,20 @@ namespace VRIL.NavigationTechniques
                 Manager.InputLocked = true;
                 TravelMode = true;
                 InitDistancesToViewpoint();
+                PlayAudio();
+                StartCoroutine(DashMovement());
             }
             HitEntity?.SetActive(false);
             IsActivated = false;
         }
 
         /// <summary>
-        /// Perform dash movement
+        /// Performs the dash movement
         /// </summary>
-        protected override void Update()
+        /// <returns></returns>
+        protected IEnumerator DashMovement()
         {
-            base.Update();
-            if (TravelMode)
+            while (TravelMode)
             {
                 if (Vector3.Distance(Viewpoint.transform.position, SelectedPosition) <= Velocity * Time.deltaTime)
                 {
@@ -44,7 +46,7 @@ namespace VRIL.NavigationTechniques
                     Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position, SelectedPosition, Velocity * Time.deltaTime);
                 }
                 UpdateObjects();
-                
+
                 // check if the positions are approximately equal
                 if (Vector3.Distance(Viewpoint.transform.position, SelectedPosition) < 0.001f)
                 {
@@ -53,6 +55,7 @@ namespace VRIL.NavigationTechniques
                     Manager.InputLocked = false;
                     Timer = 0.0f;
                 }
+                yield return null;
             }
         }
     }

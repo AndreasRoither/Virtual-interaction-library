@@ -59,15 +59,16 @@ namespace VRIL.NavigationTechniques
 
         public override void OnTravel(VRIL_ControllerActionEventArgs e)
         {
+            PlayAudio();
             IsActivated = true;
-            StartCoroutine(PerformTravel(e));
+            StartCoroutine(Steering(e));
         }
 
-        protected IEnumerator PerformTravel(VRIL_ControllerActionEventArgs e)
+        protected IEnumerator Steering(VRIL_ControllerActionEventArgs e)
         {
             while (IsActivated)
             {
-                Vector3 forward = (CrosshairsMode ? (Camera.transform.position - RegisteredControllers[0].transform.position) : DirectionObject.transform.forward).normalized;
+                Vector3 forward = (CrosshairsMode ? (RegisteredControllers[0].transform.position - Camera.transform.position) : DirectionObject.transform.forward).normalized;
 
                 // in flying mode include y axis too
                 if (FlyingMode)
@@ -84,6 +85,7 @@ namespace VRIL.NavigationTechniques
                 UpdateObjects();
                 yield return null;
             }
+            StopAudio();
         }
     }
 }

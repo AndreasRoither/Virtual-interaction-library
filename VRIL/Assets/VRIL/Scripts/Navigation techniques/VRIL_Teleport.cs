@@ -118,6 +118,7 @@ namespace VRIL.NavigationTechniques
         {
             if (PositionSelected && Timer > TimeToWaitForNextTeleport)
             {
+                PlayAudio();
                 InitDistancesToViewpoint();
                 Viewpoint.transform.position = SelectedPosition;
                 UpdateObjects();
