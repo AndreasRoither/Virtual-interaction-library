@@ -14,23 +14,20 @@
     /// </summary>
     public abstract class VRIL_NavigationTechniqueBase : VRIL_TechniqueBase
     {
-        
+
         //General properties
-        [Header("Viewpoint object (Usually the camera rig)")]
+        [Header("Technique settings")]
         public GameObject Viewpoint;
-
-        [Header("Audio clip for travel")]
-        public AudioClip Travel_AudioClip;
-        public AudioSource Travel_AudioSource;
-
         [Tooltip("Define distance viewpoint to ground")]
         public float DistanceToGround = 1.3f;
-
         [Tooltip("Allow to travel with selected objects")]
         public bool MoveSelectedObjects = false;
-
         [Tooltip("Only necessary when controllers are no child objects of viewpoint")]
         public bool MoveControllerSeperately = false;
+
+        [Header("Audio settings")]
+        public AudioClip TravelAudioClip;
+        public AudioSource TravelAudioSource;
 
         //Internal
         protected Dictionary<int, Vector3> ControllerDistancesToViewpoint = new Dictionary<int, Vector3>();
@@ -128,18 +125,18 @@
 
         protected void PlayAudio()
         {
-            if(Travel_AudioSource && Travel_AudioClip)
+            if(TravelAudioSource && TravelAudioClip)
             {
-                Travel_AudioSource.clip = Travel_AudioClip;
-                Travel_AudioSource.Play(0);
+                TravelAudioSource.clip = TravelAudioClip;
+                TravelAudioSource.Play(0);
             }
         }
 
         protected void StopAudio()
         {
-            if (Travel_AudioSource)
+            if (TravelAudioSource)
             {
-                Travel_AudioSource.Stop();
+                TravelAudioSource.Stop();
             }  
         }
 
