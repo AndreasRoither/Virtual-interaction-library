@@ -234,6 +234,7 @@ namespace VRIL.NavigationTechniques
             m => m.gameObject != null &&
             m.gameObject.activeSelf &&
             m.GetComponent<Collider>() != null &&
+            m.GetComponent<VRIL_WIMObject>() == null &&
             Array.IndexOf(RegisteredControllers.ToArray(), m.gameObject) < 0 && (m.gameObject.GetInstanceID() != HitEntity.gameObject.GetInstanceID()) &&
             (m.bounds.size.x >= TresholdX || m.bounds.size.y >= TresholdY || m.bounds.size.z >= TresholdZ)).ToArray();
             return allObjects;
@@ -339,37 +340,49 @@ namespace VRIL.NavigationTechniques
             // refresh positions and rotations in WIM if property set
             if (RefreshWIM)
             {
+                // find mesh renderer objects again
+                MeshRenderer[] findAll = FindMeshRenderers();
+
+                // delete old objects
+                foreach(KeyValuePair<int, MeshRenderer> m in MappingCloneIdsToOriginals.ToList())
+                {
+                    if(!m.Value)
+                    {
+                        MeshRenderer mToDelete = (from del in Clones where del.GetInstanceID() == m.Key select del).FirstOrDefault();
+                        Clones.Remove(mToDelete);
+                        MappingCloneIdsToOriginals.Remove(m.Key);
+                        Destroy(mToDelete);
+                    }
+                }
+
+                // check wether new objects exists and add them
+                foreach (MeshRenderer m in findAll)
+                {
+                    bool found = false;
+                    foreach(MeshRenderer orig in MappingCloneIdsToOriginals.Values)
+                    {
+                        if(orig.GetInstanceID() == m.GetInstanceID())
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(!found)
+                    {
+                        MeshRenderer clone = GetWIMClone(m);
+                        clone.transform.localPosition = m.transform.position;
+                        clone.transform.localRotation = m.transform.rotation;
+                        Clones.Add(clone);
+                    }
+                }
+
+                // refresh all WIM objects
                 foreach (MeshRenderer clone in Clones)
                 {
                     MeshRenderer m = MappingCloneIdsToOriginals[clone.GetInstanceID()];
                     clone.transform.localPosition = m.transform.position;
                     clone.transform.localRotation = m.transform.rotation;
                 }
-
-                // find all objects again
-                MeshRenderer[] findAll = FindMeshRenderers();
-
-                // add new objects to WIM
-                MeshRenderer[] toAdd = (from m in findAll where m.GetComponent<VRIL_WIMObject>() == null 
-                                        && (from val in MappingCloneIdsToOriginals.Values where val.GetInstanceID() == m.GetInstanceID() select val).FirstOrDefault() == default select m).ToArray();
-                foreach(MeshRenderer newM in toAdd)
-                {
-                    MeshRenderer clone = GetWIMClone(newM);
-                    clone.transform.localScale = CurrentScale;
-                    clone.transform.localPosition = newM.transform.position;
-                    clone.transform.localRotation = newM.transform.rotation;
-                    Clones.Add(clone);
-                }
-
-                // delete old objects also in WIM
-                MeshRenderer[] toDelete = (from m in MappingCloneIdsToOriginals.Values where (from cur in findAll where cur.GetInstanceID() == m.GetInstanceID() select cur).FirstOrDefault() == default select m).ToArray();
-                foreach (MeshRenderer oldM in toDelete)
-                {
-                    int instanceID = MappingCloneIdsToOriginals.FirstOrDefault(x => x.Value.GetInstanceID() == oldM.GetInstanceID()).Key;
-                    MeshRenderer mToDelete = (from del in Clones where del.GetInstanceID() == instanceID select del).FirstOrDefault();
-                    Clones.Remove(mToDelete);
-                }
-
             }
 
             // no travel mode: refresh WIM position and rotation according to controller
