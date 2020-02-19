@@ -7,7 +7,7 @@ using VRIL.ControllerActionEventArgs;
 namespace VRIL.NavigationTechniques
 {
     /// <summary>
-    /// Implementation for a teleport with dash mode
+    /// Implementation of a teleport technique with dash mode
     /// </summary>
     public class VRIL_DashTeleport : VRIL_TeleportBase
     {

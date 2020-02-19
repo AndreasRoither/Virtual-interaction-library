@@ -13,7 +13,7 @@ namespace VRIL.NavigationTechniques
 {
 
     /// <summary>
-    /// Implementation of a teleport which allows to blink the scene away
+    /// Implementation of a teleport technique which allows to blink the scene away during travel
     /// </summary>
     public class VRIL_BlinkTeleport : VRIL_TeleportBase
     {

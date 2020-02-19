@@ -12,7 +12,7 @@ using VRIL.NavigationTechniques;
 namespace Assets.VRIL.Scripts.Navigation_techniques
 {
     /// <summary>
-    /// Implementation for grab the air technique
+    /// Implementation for the grab the air technique
     /// </summary>
     public class VRIL_GrabTheAir : VRIL_NavigationTechniqueBase
     {

@@ -9,7 +9,7 @@ using System.Linq;
 namespace VRIL.NavigationTechniques
 {
     /// <summary>
-    /// Implementation for a WIM
+    /// Implementation for a WIM technique
     /// </summary>
     public class VRIL_WIM : VRIL_NavigationTechniqueBase
     {

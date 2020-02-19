@@ -36,7 +36,7 @@ public class VRIL_Keyboard2 : MonoBehaviour
     }
 
     private Controller selectedController = Controller.LeftController;
-    private Dictionary<Controller, int> ControllerNumberMapping = new Dictionary<Controller, int>();
+    private readonly Dictionary<Controller, int> ControllerNumberMapping = new Dictionary<Controller, int>();
 
     void Start()
     {
@@ -127,9 +127,9 @@ public class VRIL_Keyboard2 : MonoBehaviour
                 if (bindControllerVertical)
                 {
                     Viewpoint?.transform.Rotate(0, -RotationFactor, 0);
-                    LeftHand?.transform.RotateAround(Viewpoint.transform.position, new Vector3(0, 1, 0), -RotationFactor);
-                    RightHand?.transform.RotateAround(Viewpoint.transform.position, new Vector3(0, 1, 0), -RotationFactor);
-                    AdditionalHand?.transform.RotateAround(Viewpoint.transform.position, new Vector3(0, 1, 0), -RotationFactor);
+                    LeftHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.up, -RotationFactor);
+                    RightHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.up, -RotationFactor);
+                    AdditionalHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.up, -RotationFactor);
                 }
                 else
                 {
@@ -153,9 +153,9 @@ public class VRIL_Keyboard2 : MonoBehaviour
                 if (bindControllerVertical)
                 {
                     Viewpoint?.transform.Rotate(0, RotationFactor, 0);
-                    LeftHand?.transform.RotateAround(Viewpoint.transform.position, new Vector3(0, 1, 0), RotationFactor);
-                    RightHand?.transform.RotateAround(Viewpoint.transform.position, new Vector3(0, 1, 0), RotationFactor);
-                    AdditionalHand?.transform.RotateAround(Viewpoint.transform.position, new Vector3(0, 1, 0), RotationFactor);
+                    LeftHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.up, RotationFactor);
+                    RightHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.up, RotationFactor);
+                    AdditionalHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.up, RotationFactor);
                 }
                 else
                 {
@@ -210,9 +210,9 @@ public class VRIL_Keyboard2 : MonoBehaviour
                 if (bindControllerHorizontal)
                 {
                     Viewpoint?.transform.Rotate(-RotationFactor, 0, 0);
-                    LeftHand?.transform.RotateAround(Viewpoint.transform.position, new Vector3(1, 0, 0), -RotationFactor);
-                    RightHand?.transform.RotateAround(Viewpoint.transform.position, new Vector3(1, 0, 0), -RotationFactor);
-                    AdditionalHand?.transform.RotateAround(Viewpoint.transform.position, new Vector3(1, 0, 0), -RotationFactor);
+                    LeftHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.right, -RotationFactor);
+                    RightHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.right, -RotationFactor);
+                    AdditionalHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.right, -RotationFactor);
                 }
                 else
                 {
@@ -236,9 +236,9 @@ public class VRIL_Keyboard2 : MonoBehaviour
                 if (bindControllerHorizontal)
                 {
                     Viewpoint?.transform.Rotate(RotationFactor, 0, 0);
-                    LeftHand?.transform.RotateAround(Viewpoint.transform.position, new Vector3(1, 0, 0), RotationFactor);
-                    RightHand?.transform.RotateAround(Viewpoint.transform.position, new Vector3(1, 0, 0), RotationFactor);
-                    AdditionalHand?.transform.RotateAround(Viewpoint.transform.position, new Vector3(1, 0, 0), RotationFactor);
+                    LeftHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.right, RotationFactor);
+                    RightHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.right, RotationFactor);
+                    AdditionalHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.right, RotationFactor);
                 }
                 else
                 {
