@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Only for testing the WIM to demonstrate removed objects will be also removed in WIM
+/// </summary>
 public class SelfDestruction : MonoBehaviour
 {
 

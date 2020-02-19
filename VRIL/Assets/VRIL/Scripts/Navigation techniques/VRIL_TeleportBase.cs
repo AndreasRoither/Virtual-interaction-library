@@ -1,27 +1,35 @@
-﻿using System.Collections;
-using UnityEngine;
-using VRIL.Base;
-using VRIL.ControllerActionEventArgs;
-using VRIL.Interactable;
-using VRIL.Manager;
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
+using Valve.VR;
+using VRIL.Base;
+using VRIL.ControllerActionEventArgs;
 
 namespace VRIL.NavigationTechniques
 {
-
-    public class VRIL_Teleport : VRIL_NavigationTechniqueBase
+    /// <summary>
+    /// Abstract base class for teleport techniques
+    /// </summary>
+    public abstract class VRIL_TeleportBase : VRIL_NavigationTechniqueBase
     {
-        protected LineRenderer TeleportLineRenderer;
-        protected GameObject TeleportLineRendererObject;
 
-        [Header("Technique settings")]
-        [Tooltip("Time to next teleport")]
-        public float TimeToWaitForNextTeleport = 0.5f;
-        [Tooltip("Angle in degrees: 0 = Horizontal surfaces, 90 = Vertical surfaces")]
+
+        // *************************************
+        // public properties
+        // *************************************
+
+        [Header("Teleport settings")]
+        [Tooltip("Time to unlock next teleport")]
+        public float SecondsToWaitForNextTeleport = 0.5f;
+        [Tooltip("Travel task triggers selection mode again.")]
+        public bool OnTravelDisablesTechnique = true;
+        [Tooltip("Sets the maximum allowed angle for a navigable WIM object surface (0° = positions only on horizontal surfaces are allowed, 90° = all positions are allowed)")]
         [Range(0.0f, 90.0f)]
-        public float MaximumSurfaceSkewness = 0;
+        public float MaximumSurfaceAngle = 0;
 
         [Header("Ray Settings")]
         [Range(0.01f, 1f)]
@@ -34,30 +42,46 @@ namespace VRIL.NavigationTechniques
         public Material LaserMaterial;
         [Tooltip("The assigned material can cast shadows if its not set to transparent")]
         public bool CastShadows = false;
-        [Tooltip("Set how many points are used for the curve")]
-        public int NumberOfPoints = 20;
-        [Tooltip("Set how many points for no target selected")]
-        public int NumberOfPointsNoTarget = 3;
-        [Tooltip("Velocity to take for trajectory calculation")]
+        [Tooltip("Set how many line fragments are used for the curve")]
+        public int NumberOfRayFragments = 20;
+        [Tooltip("Set how many line fragments are used target is out of range")]
+        public int NumberOfRayFragmentsNoObject = 3;
+        [Tooltip("Velocity to take for trajectory calculation (base is thrown objects curve)")]
         public float CurveVelocity = 6f;
+
         [Header("Selection Point Settings")]
         [Tooltip("Visualisation object")]
         public GameObject HitEntity;
         [Tooltip("Distance of hit entity object to ground")]
         public float DistanceHitEntityToGround = 0.005f;
 
-        protected bool IsActivated = false;
-        protected float Timer = 0.0f;
 
+        // *************************************
+        // constants
+        // *************************************
+
+        private const string NAME_LINE_RENDERER = "VRIL_Teleport_LineRenderer";
+
+
+        // *************************************
+        // protected members
+        // *************************************
+
+        protected bool IsActivated = false;
+        protected float TravelPauseTimer = 0.0f;
         protected Transform TransformToMove;
+        protected Camera Camera;
+        protected LineRenderer TeleportLineRenderer;
+        protected GameObject TeleportLineRendererObject;
 
         /// <summary>
         /// Initialize technique
         /// </summary>
         public virtual void Awake()
         {
-            base.Initialize();
-            TeleportLineRendererObject = new GameObject("VRIL_Teleport_LineRenderer");
+            Initialize();
+            CheckInputOnRelease();
+            TeleportLineRendererObject = new GameObject(NAME_LINE_RENDERER);
             TeleportLineRendererObject.AddComponent<LineRenderer>();
             TeleportLineRenderer = TeleportLineRendererObject.GetComponent<LineRenderer>();
             TeleportLineRenderer.startWidth = StartRayWidth;
@@ -74,7 +98,7 @@ namespace VRIL.NavigationTechniques
             {
                 TeleportLineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             }
-            if(HitEntity != null)
+            if (HitEntity != null)
             {
                 Renderer rend = HitEntity.GetComponent<Renderer>();
                 rend.material.SetColor("_Color", ValidPositionColor);
@@ -90,51 +114,52 @@ namespace VRIL.NavigationTechniques
         {
             if (RegisteredControllers.Count > 0)
             {
-                // differentiate between ButtonStates
-                if (e.ButtonInteractionType == VRIL_ButtonInteractionType.Released)
+                if (!OnTravelDisablesTechnique)
                 {
-                    OnTravel(e);
-                }
-                else if (e.ButtonInteractionType == VRIL_ButtonInteractionType.Pressed)
-                {
-                    if (!IsActivated)
+                    if (e.ButtonInteractionType == VRIL_ButtonInteractionType.Pressed)
                     {
-                        IsActivated = true;
-                        StartCoroutine(ShowRay(e));
+                        if (IsActivated)
+                        {
+                            IsActivated = false;
+                            PositionSelected = false;
+                            if (HitEntity != null)
+                            {
+                                HitEntity.SetActive(false);
+                            }
+                        }
+                        else
+                        {
+                            IsActivated = true;
+                            StartCoroutine(ShowRay(e));
+                        }
+                    }
+                }
+                else
+                {
+                    // differentiate between ButtonStates
+                    if (TravelOnRelease && e.ButtonInteractionType == VRIL_ButtonInteractionType.Released)
+                    {
+                        OnTravel(e);
+                    }
+                    else if (e.ButtonInteractionType == VRIL_ButtonInteractionType.Pressed)
+                    {
+                        if (!IsActivated)
+                        {
+                            IsActivated = true;
+                            StartCoroutine(ShowRay(e));
+                        }
                     }
                 }
             }
             else
             {
-                Debug.LogError($"<b>{nameof(VRIL_Teleport)}:</b>\n No controller registered");
+                Debug.LogError($"<b>{nameof(VRIL_BlinkTeleport)}:</b>\n No controller registered");
             }
-        }
-
-        /// <summary>
-        /// Called when the travel should be performed
-        /// </summary>
-        /// <param name="e">ControllerActionEventArgs</param>
-        public override void OnTravel(VRIL_ControllerActionEventArgs e)
-        {
-            if (PositionSelected && Timer > TimeToWaitForNextTeleport)
-            {
-                PlayAudio();
-                InitDistancesToViewpoint();
-                Viewpoint.transform.position = SelectedPosition;
-                UpdateObjects();
-                PositionSelected = false;
-                Timer = 0.0f;
-            }
-            if(HitEntity != null)
-            {
-                HitEntity.SetActive(false);
-            }
-            IsActivated = false;
         }
 
         protected virtual void Update()
         {
-            Timer += Time.deltaTime;
+            TravelPauseTimer += Time.deltaTime;
         }
 
         /// <summary>
@@ -171,7 +196,8 @@ namespace VRIL.NavigationTechniques
             TeleportLineRenderer.enabled = true;
             while (IsActivated)
             {
-                if(HitEntity != null)
+                // disable hit entity to avoid ray cast blocking
+                if (HitEntity != null)
                 {
                     HitEntity.SetActive(false);
                 }
@@ -190,11 +216,10 @@ namespace VRIL.NavigationTechniques
                 float t = 0;
 
                 // calculate all points
-                for (int i = 1; i <= NumberOfPoints && !hit; i++)
+                for (int i = 1; i <= NumberOfRayFragments && !hit; i++)
                 {
                     t += 0.3f / ParabolicCurveDeriv(velocity, Physics.gravity, t).magnitude;
                     Vector3 curPoint = GetTrajectoryVector(p0, velocity, Physics.gravity, t);
-                    //positions.Add(curPoint);
                     Vector3 diff = curPoint - lastPoint;
                     Ray ray = new Ray(lastPoint, diff.normalized);
 
@@ -203,8 +228,8 @@ namespace VRIL.NavigationTechniques
                     {
                         VRIL_Navigable navigableObject = raycastHit.transform.gameObject.GetComponent<VRIL_Navigable>();
 
-                        // valid position in case it is navigable and ray hits even surface
-                        if(navigableObject && Vector3.Angle(raycastHit.normal, new Vector3(0, 1, 0)) <= MaximumSurfaceSkewness)
+                        // valid position in case it is navigable and angle is allowed
+                        if (navigableObject && Vector3.Angle(raycastHit.normal, Vector3.up) <= MaximumSurfaceAngle)
                         {
                             SelectedPosition = raycastHit.point;
                             PositionSelected = true;
@@ -230,17 +255,17 @@ namespace VRIL.NavigationTechniques
                     }
                     lastPoint = curPoint;
                 }
-                if(!hit)
+                if (!hit)
                 {
-                    if(HitEntity != null)
+                    if (HitEntity != null)
                     {
                         HitEntity.SetActive(false);
                     }
                     PositionSelected = false;
                 }
                 // set line renderer
-                TeleportLineRenderer.positionCount = hit ? positions.Count : NumberOfPointsNoTarget;
-                TeleportLineRenderer.SetPositions(hit ? positions.ToArray() : positions.Take(NumberOfPointsNoTarget).ToArray());
+                TeleportLineRenderer.positionCount = hit ? positions.Count : NumberOfRayFragmentsNoObject;
+                TeleportLineRenderer.SetPositions(hit ? positions.ToArray() : positions.Take(NumberOfRayFragmentsNoObject).ToArray());
                 yield return null;
             }
             TeleportLineRenderer.enabled = false;

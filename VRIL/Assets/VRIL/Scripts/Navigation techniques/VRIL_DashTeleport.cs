@@ -6,17 +6,37 @@ using VRIL.ControllerActionEventArgs;
 
 namespace VRIL.NavigationTechniques
 {
-    public class VRIL_DashTeleport : VRIL_Teleport
+    /// <summary>
+    /// Implementation for a teleport with dash mode
+    /// </summary>
+    public class VRIL_DashTeleport : VRIL_TeleportBase
     {
-        [Header("Dash Teleport Settings")]
+
+        // *************************************
+        // public properties
+        // *************************************
+
+        [Header("Dash Settings")]
         [Tooltip("Define velocity of dash movement")]
         public float Velocity = 60.0f;
+
+
+        // *************************************
+        // constants
+        // *************************************
+
+        private const float TOLERANCE_POINT_REACHED = 0.001f;
+
+
+        // *************************************
+        // private members
+        // *************************************
 
         private bool TravelMode = false;
 
         public override void OnTravel(VRIL_ControllerActionEventArgs e)
         {
-            if (PositionSelected && Timer > TimeToWaitForNextTeleport)
+            if (PositionSelected && TravelPauseTimer > SecondsToWaitForNextTeleport)
             {
                 // allow no other input while travelling to target position
                 Manager.InputLocked = true;
@@ -25,7 +45,10 @@ namespace VRIL.NavigationTechniques
                 PlayAudio();
                 StartCoroutine(DashMovement());
             }
-            HitEntity?.SetActive(false);
+            if(HitEntity)
+            {
+                HitEntity.SetActive(false);
+            }
             IsActivated = false;
         }
 
@@ -48,12 +71,12 @@ namespace VRIL.NavigationTechniques
                 UpdateObjects();
 
                 // check if the positions are approximately equal
-                if (Vector3.Distance(Viewpoint.transform.position, SelectedPosition) < 0.001f)
+                if (Vector3.Distance(Viewpoint.transform.position, SelectedPosition) <= TOLERANCE_POINT_REACHED)
                 {
                     PositionSelected = false;
                     TravelMode = false;
                     Manager.InputLocked = false;
-                    Timer = 0.0f;
+                    TravelPauseTimer = 0.0f;
                 }
                 yield return null;
             }

@@ -58,16 +58,6 @@ namespace VRIL_SteamVR
                 return;
             }
 
-            /*interactUIAction.AddOnStateDownListener(OnInteractUIDown, SteamVR_Input_Sources.Any);
-            teleportAction.AddOnStateDownListener(OnTeleportDown, SteamVR_Input_Sources.Any);
-            grabPinchAction.AddOnStateDownListener(OnGrabPinchDown, SteamVR_Input_Sources.Any);
-            grabGripAction.AddOnStateDownListener(OnGripActionDown, SteamVR_Input_Sources.Any);
-
-            interactUIAction.AddOnStateUpListener(OnInteractUIUp, SteamVR_Input_Sources.Any);
-            teleportAction.AddOnStateUpListener(OnTeleportUp, SteamVR_Input_Sources.Any);
-            grabPinchAction.AddOnStateUpListener(OnGrabPinchUp, SteamVR_Input_Sources.Any);
-            grabGripAction.AddOnStateUpListener(OnGrabGripUp, SteamVR_Input_Sources.Any);*/
-
             interactUIAction.AddOnStateDownListener(OnInteractUIDown, SteamVR_Input_Sources.LeftHand);
             teleportAction.AddOnStateDownListener(OnTeleportDown, SteamVR_Input_Sources.LeftHand);
             grabPinchAction.AddOnStateDownListener(OnGrabPinchDown, SteamVR_Input_Sources.LeftHand);
@@ -185,7 +175,6 @@ namespace VRIL_SteamVR
             {
                 v.ControllerIndex = 1;
             }
-
             manager.OnControllerAction(v);
         }
     }

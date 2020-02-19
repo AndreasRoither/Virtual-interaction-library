@@ -11,16 +11,36 @@ using VRIL.NavigationTechniques;
 
 namespace Assets.VRIL.Scripts.Navigation_techniques
 {
+    /// <summary>
+    /// Implementation for grab the air technique
+    /// </summary>
     public class VRIL_GrabTheAir : VRIL_NavigationTechniqueBase
     {
 
+
+        // *************************************
+        // public properties
+        // *************************************
+
+        [Header("Grab the Air Settings")]
+        [Tooltip("The parent object of the whole world")]
         public GameObject World;
+        [Tooltip("The movement gets multiplicated with this factor")]
+        public float MovementMultiplicator = 1.0f;
+        [Tooltip("Include changes of y-axis")]
+        public bool Flying = false;
+
+
+        // *************************************
+        // private and protected members
+        // *************************************
 
         protected bool IsActivated = false;
+        private Vector3 PrevPosition;
 
         public void Awake()
         {
-            base.Initialize();
+            Initialize();
         }
 
         public override void OnActivation(VRIL_ControllerActionEventArgs e)
@@ -31,7 +51,6 @@ namespace Assets.VRIL.Scripts.Navigation_techniques
                 if (e.ButtonInteractionType == VRIL_ButtonInteractionType.Released)
                 {
                     IsActivated = false;
-                    World.transform.parent = null;
                 }
                 else if (e.ButtonInteractionType == VRIL_ButtonInteractionType.Pressed)
                 {
@@ -57,9 +76,12 @@ namespace Assets.VRIL.Scripts.Navigation_techniques
         protected IEnumerator GrabTheAir(VRIL_ControllerActionEventArgs e)
         {
             Vector3 diff = World.transform.position - RegisteredControllers[0].transform.position;
+            PrevPosition = RegisteredControllers[0].transform.position;
             while (IsActivated)
             {
-                World.transform.position = diff + RegisteredControllers[0].transform.position;
+                Vector3 newDiff = (RegisteredControllers[0].transform.position - PrevPosition) * MovementMultiplicator;
+                World.transform.position += (Flying ? newDiff : new Vector3(newDiff.x, 0, newDiff.z));
+                PrevPosition = RegisteredControllers[0].transform.position;
                 yield return null;
             }
             StopAudio();

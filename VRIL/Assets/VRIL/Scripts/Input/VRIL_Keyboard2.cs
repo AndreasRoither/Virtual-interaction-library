@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using VRIL.Manager;
 using VRIL.ControllerActionEventArgs;
 
+/// <summary>
+/// This keyboard script is used for navigation technique examples
+/// </summary>
 public class VRIL_Keyboard2 : MonoBehaviour
 {
     public VRIL_Manager Manager;
