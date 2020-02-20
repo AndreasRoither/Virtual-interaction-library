@@ -98,6 +98,7 @@ namespace VRIL.NavigationTechniques
         protected LineRenderer WIMLineRenderer;
         protected GameObject WIMLineRendererObject;
         protected float Timer = 0.0f;
+        private bool DelayToNextTravel = false;
 
         // current doll instance
         private GameObject CurrentDoll;
@@ -131,7 +132,15 @@ namespace VRIL.NavigationTechniques
 
         protected virtual void Update()
         {
-            Timer += Time.deltaTime;
+            if(DelayToNextTravel)
+            {
+                Timer += Time.deltaTime;
+                if(Timer >= SecondsToWaitForNextWIM)
+                {
+                    DelayToNextTravel = false;
+                    Timer = 0.0f;
+                }
+            }
         }
 
         public void Awake()
@@ -220,9 +229,8 @@ namespace VRIL.NavigationTechniques
                 }
                 else if (e.ButtonInteractionType == VRIL_ButtonInteractionType.Pressed)
                 {
-                    if (!IsActivated && Timer > SecondsToWaitForNextWIM)
+                    if (!IsActivated && !DelayToNextTravel)
                     {
-                        Timer = 0.0f;
                         SelectedPosition = Viewpoint.transform.position;
                         CurrentVelocity = ViewpointVelocity;
                         CurrentScale = Vector3.one;
@@ -669,6 +677,8 @@ namespace VRIL.NavigationTechniques
 
                 // finally destroy WIM
                 DestroyImmediate(Wim);
+
+                DelayToNextTravel = true;
             }
         }
     }

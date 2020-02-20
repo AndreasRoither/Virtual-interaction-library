@@ -26,7 +26,7 @@ namespace VRIL.NavigationTechniques
         [Tooltip("Time to unlock next teleport")]
         public float SecondsToWaitForNextTeleport = 0.5f;
         [Tooltip("Travel task triggers selection mode again.")]
-        public bool OnTravelDisablesTechnique = true;
+        public bool TravelDisablesTechnique = true;
         [Tooltip("Sets the maximum allowed angle for a navigable WIM object surface (0° = positions only on horizontal surfaces are allowed, 90° = all positions are allowed)")]
         [Range(0.0f, 90.0f)]
         public float MaximumSurfaceAngle = 0;
@@ -68,11 +68,12 @@ namespace VRIL.NavigationTechniques
         // *************************************
 
         protected bool IsActivated = false;
-        protected float TravelPauseTimer = 0.0f;
+        protected float Timer = 0.0f;
         protected Transform TransformToMove;
         protected Camera Camera;
         protected LineRenderer TeleportLineRenderer;
         protected GameObject TeleportLineRendererObject;
+        protected bool DelayToNextTravel = false;
 
         /// <summary>
         /// Initialize technique
@@ -101,7 +102,10 @@ namespace VRIL.NavigationTechniques
             if (HitEntity != null)
             {
                 Renderer rend = HitEntity.GetComponent<Renderer>();
-                rend.material.SetColor("_Color", ValidPositionColor);
+                if(rend)
+                {
+                    rend.material.SetColor("_Color", ValidPositionColor);
+                }
                 HitEntity.SetActive(false);
             }
         }
@@ -114,7 +118,7 @@ namespace VRIL.NavigationTechniques
         {
             if (RegisteredControllers.Count > 0)
             {
-                if (!OnTravelDisablesTechnique)
+                if (!TravelDisablesTechnique)
                 {
                     if (e.ButtonInteractionType == VRIL_ButtonInteractionType.Pressed)
                     {
@@ -159,7 +163,15 @@ namespace VRIL.NavigationTechniques
 
         protected virtual void Update()
         {
-            TravelPauseTimer += Time.deltaTime;
+            if(DelayToNextTravel)
+            {
+                Timer += Time.deltaTime;
+                if(Timer >= SecondsToWaitForNextTeleport)
+                {
+                    DelayToNextTravel = false;
+                    Timer = 0.0f;
+                }
+            }
         }
 
         /// <summary>

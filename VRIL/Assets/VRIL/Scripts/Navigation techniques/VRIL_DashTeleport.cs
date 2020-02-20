@@ -36,7 +36,7 @@ namespace VRIL.NavigationTechniques
 
         public override void OnTravel(VRIL_ControllerActionEventArgs e)
         {
-            if (PositionSelected && TravelPauseTimer > SecondsToWaitForNextTeleport)
+            if (PositionSelected && !DelayToNextTravel)
             {
                 // allow no other input while travelling to target position
                 Manager.InputLocked = true;
@@ -44,6 +44,7 @@ namespace VRIL.NavigationTechniques
                 InitDistancesToViewpoint();
                 PlayAudio();
                 StartCoroutine(DashMovement());
+                DelayToNextTravel = true;
             }
             if(HitEntity)
             {
@@ -76,7 +77,7 @@ namespace VRIL.NavigationTechniques
                     PositionSelected = false;
                     TravelMode = false;
                     Manager.InputLocked = false;
-                    TravelPauseTimer = 0.0f;
+                    Timer = 0.0f;
                 }
                 yield return null;
             }

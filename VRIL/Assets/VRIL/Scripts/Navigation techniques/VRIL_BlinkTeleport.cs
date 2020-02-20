@@ -48,17 +48,18 @@ namespace VRIL.NavigationTechniques
         /// <param name="e">ControllerActionEventArgs</param>
         public override void OnTravel(VRIL_ControllerActionEventArgs e)
         {
-            if(IsActivated)
+            if(IsActivated && !DelayToNextTravel)
             {
-                if (PositionSelected && TravelPauseTimer > SecondsToWaitForNextTeleport)
+                if (PositionSelected)
                 {
                     PlayAudio();
                     InitDistancesToViewpoint();
                     Viewpoint.transform.position = SelectedPosition;
                     UpdateObjects();
                     PositionSelected = false;
-                    TravelPauseTimer = 0.0f;
-                    if(SceneBlinksAway)
+                    Timer = 0.0f;
+                    DelayToNextTravel = true;
+                    if (SceneBlinksAway)
                     {
                         SteamVR_Fade.View(SceneOffColor, 0);
                         SceneOff = true;
@@ -69,7 +70,7 @@ namespace VRIL.NavigationTechniques
                     HitEntity.SetActive(false);
                 }
                 IsActivated = false;
-                if (!OnTravelDisablesTechnique)
+                if (!TravelDisablesTechnique)
                 {
                     IsActivated = true;
                     StartCoroutine(ShowRay(e));
@@ -79,7 +80,7 @@ namespace VRIL.NavigationTechniques
 
         protected override void Update()
         {
-            TravelPauseTimer += Time.deltaTime;
+            base.Update();
             if (SceneOff)
             {
                 SceneOffTimer += Time.deltaTime;
