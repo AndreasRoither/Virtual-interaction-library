@@ -20,7 +20,7 @@ namespace VRIL.TechniqueBase
 
         protected List<GameObject> RegisteredControllers = new List<GameObject>();
 
-        public void Initialize()
+        public virtual void Initialize()
         {
             if (Manager != null)
             {

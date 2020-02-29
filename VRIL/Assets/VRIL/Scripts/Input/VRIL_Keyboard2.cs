@@ -14,7 +14,6 @@ public class VRIL_Keyboard2 : MonoBehaviour
 
     public GameObject LeftHand = null;
     public GameObject RightHand = null;
-    public GameObject AdditionalHand = null;
 
     public float RotationFactor = 1f;
     public float MoveFactor = 0.02f;
@@ -23,16 +22,12 @@ public class VRIL_Keyboard2 : MonoBehaviour
 
     public bool pressedF = false;
 
-    [Header("Properties for viewpoint")]
     public GameObject Viewpoint = null;
-    public bool bindControllerVertical = true;
-    public bool bindControllerHorizontal = false;
 
     private enum Controller
     {
         LeftController,
         RightController,
-        AdditionalController
     }
 
     private Controller selectedController = Controller.LeftController;
@@ -43,7 +38,6 @@ public class VRIL_Keyboard2 : MonoBehaviour
         UIText.text = "Selected Controller: LeftController";
         ControllerNumberMapping[Controller.LeftController] = 0;
         ControllerNumberMapping[Controller.RightController] = 1;
-        ControllerNumberMapping[Controller.AdditionalController] = 2;
     }
 
     void Update()
@@ -60,12 +54,6 @@ public class VRIL_Keyboard2 : MonoBehaviour
             {
                 selectedController = Controller.RightController;
                 UIText.text = "Selected Controller: RightController";
-            }
-
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                selectedController = Controller.AdditionalController;
-                UIText.text = "Selected Controller: 3rd Controller";
             }
 
             if (Input.GetMouseButtonDown(0))
@@ -124,69 +112,22 @@ public class VRIL_Keyboard2 : MonoBehaviour
             // rotation
             if (Input.GetKey(KeyCode.Q))
             {
-                if (bindControllerVertical)
-                {
-                    Viewpoint?.transform.Rotate(0, -RotationFactor, 0);
-                    LeftHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.up, -RotationFactor);
-                    RightHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.up, -RotationFactor);
-                    AdditionalHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.up, -RotationFactor);
-                }
-                else
-                {
-                    if (selectedController == Controller.LeftController)
-                    {
-                        LeftHand.transform.Rotate(0, -RotationFactor, 0);
-                    }
-                    else if (selectedController == Controller.RightController)
-                    {
-                        RightHand.transform.Rotate(0, -RotationFactor, 0);
-                    }
-                    else
-                    {
-                        AdditionalHand.transform.Rotate(0, -RotationFactor, 0);
-                    }
-                }
+                Viewpoint?.transform.Rotate(0, -RotationFactor, 0);
             }
 
             if (Input.GetKey(KeyCode.E))
             {
-                if (bindControllerVertical)
-                {
-                    Viewpoint?.transform.Rotate(0, RotationFactor, 0);
-                    LeftHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.up, RotationFactor);
-                    RightHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.up, RotationFactor);
-                    AdditionalHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.up, RotationFactor);
-                }
-                else
-                {
-                    if (selectedController == Controller.LeftController)
-                    {
-                        LeftHand.transform.Rotate(0, RotationFactor, 0);
-                    }
-                    else if (selectedController == Controller.RightController)
-                    {
-                        RightHand.transform.Rotate(0, RotationFactor, 0);
-                    }
-                    else
-                    {
-                        AdditionalHand.transform.Rotate(0, RotationFactor, 0);
-                    }
-                }
+                Viewpoint?.transform.Rotate(0, RotationFactor, 0);
             }
-            // up down
             if (Input.GetKey(KeyCode.W))
             {
                 if (selectedController == Controller.LeftController)
                 {
-                    LeftHand.transform.localPosition = new Vector3(LeftHand.transform.position.x, LeftHand.transform.position.y + MoveFactor, LeftHand.transform.position.z);
+                    LeftHand.transform.position = new Vector3(LeftHand.transform.position.x, LeftHand.transform.position.y + MoveFactor, LeftHand.transform.position.z);
                 }
                 else if (selectedController == Controller.RightController)
                 {
-                    RightHand.transform.localPosition = new Vector3(RightHand.transform.position.x, RightHand.transform.position.y + MoveFactor, RightHand.transform.position.z);
-                }
-                else
-                {
-                    AdditionalHand.transform.localPosition = new Vector3(AdditionalHand.transform.position.x, AdditionalHand.transform.position.y + MoveFactor, AdditionalHand.transform.position.z);
+                    RightHand.transform.position = new Vector3(RightHand.transform.position.x, RightHand.transform.position.y + MoveFactor, RightHand.transform.position.z);
                 }
             }
 
@@ -194,68 +135,62 @@ public class VRIL_Keyboard2 : MonoBehaviour
             {
                 if (selectedController == Controller.LeftController)
                 {
-                    LeftHand.transform.localPosition = new Vector3(LeftHand.transform.position.x, LeftHand.transform.position.y - MoveFactor, LeftHand.transform.position.z);
+                    LeftHand.transform.position = new Vector3(LeftHand.transform.position.x, LeftHand.transform.position.y - MoveFactor, LeftHand.transform.position.z);
                 }
                 else if (selectedController == Controller.RightController)
                 {
-                    RightHand.transform.localPosition = new Vector3(RightHand.transform.position.x, RightHand.transform.position.y - MoveFactor, RightHand.transform.position.z);
-                }
-                else
-                {
-                    AdditionalHand.transform.localPosition = new Vector3(AdditionalHand.transform.position.x, AdditionalHand.transform.position.y - MoveFactor, AdditionalHand.transform.position.z);
+                    RightHand.transform.position = new Vector3(RightHand.transform.position.x, RightHand.transform.position.y - MoveFactor, RightHand.transform.position.z);
                 }
             }
+
             if (Input.GetKey(KeyCode.Y))
             {
-                if (bindControllerHorizontal)
+                if (selectedController == Controller.LeftController)
                 {
-                    Viewpoint?.transform.Rotate(-RotationFactor, 0, 0);
-                    LeftHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.right, -RotationFactor);
-                    RightHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.right, -RotationFactor);
-                    AdditionalHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.right, -RotationFactor);
+                    LeftHand.transform.Rotate(-RotationFactor, 0, 0);
                 }
-                else
+                else if (selectedController == Controller.RightController)
                 {
-                    if (selectedController == Controller.LeftController)
-                    {
-                        LeftHand.transform.Rotate(-RotationFactor, 0, 0);
-                    }
-                    else if (selectedController == Controller.RightController)
-                    {
-                        RightHand.transform.Rotate(-RotationFactor, 0, 0);
-                    }
-                    else
-                    {
-                        AdditionalHand.transform.Rotate(-RotationFactor, 0, 0);
-                    }
+                    RightHand.transform.Rotate(-RotationFactor, 0, 0);
                 }
             }
 
             if (Input.GetKey(KeyCode.X))
             {
-                if (bindControllerHorizontal)
+                if (selectedController == Controller.LeftController)
                 {
-                    Viewpoint?.transform.Rotate(RotationFactor, 0, 0);
-                    LeftHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.right, RotationFactor);
-                    RightHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.right, RotationFactor);
-                    AdditionalHand?.transform.RotateAround(Viewpoint.transform.position, Vector3.right, RotationFactor);
+                    LeftHand.transform.Rotate(RotationFactor, 0, 0);
                 }
-                else
+                else if (selectedController == Controller.RightController)
                 {
-                    if (selectedController == Controller.LeftController)
-                    {
-                        LeftHand.transform.Rotate(RotationFactor, 0, 0);
-                    }
-                    else if (selectedController == Controller.RightController)
-                    {
-                        RightHand.transform.Rotate(RotationFactor, 0, 0);
-                    }
-                    else
-                    {
-                        AdditionalHand.transform.Rotate(RotationFactor, 0, 0);
-                    }
+                    RightHand.transform.Rotate(RotationFactor, 0, 0);
                 }
             }
+
+            if (Input.GetKey(KeyCode.A))
+            {
+                if (selectedController == Controller.LeftController)
+                {
+                    LeftHand.transform.Rotate(0, -RotationFactor, 0);
+                }
+                else if (selectedController == Controller.RightController)
+                {
+                    RightHand.transform.Rotate(0, -RotationFactor, 0);
+                }
+            }
+
+            if (Input.GetKey(KeyCode.D))
+            {
+                if (selectedController == Controller.LeftController)
+                {
+                    LeftHand.transform.Rotate(0, RotationFactor, 0);
+                }
+                else if (selectedController == Controller.RightController)
+                {
+                    RightHand.transform.Rotate(0, RotationFactor, 0);
+                }
+            }
+
         }
     }
 }

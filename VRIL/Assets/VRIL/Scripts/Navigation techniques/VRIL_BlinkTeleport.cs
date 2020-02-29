@@ -28,7 +28,7 @@ namespace VRIL.NavigationTechniques
         public bool SceneBlinksAway = true;
         [Tooltip("Set how many seconds should the scene be turned off")]
         public float SceneOffDuration = 1.0f;
-        [Tooltip("Set how long the fade in effect should take")]
+        [Tooltip("Set how long the fade-in effect should take")]
         public float FadeInDuration = 1.0f;
         [Tooltip("Choose the color that will be shown while the scene is off")]
         public Color SceneOffColor = Color.black;
@@ -53,9 +53,9 @@ namespace VRIL.NavigationTechniques
                 if (PositionSelected)
                 {
                     PlayAudio();
-                    InitDistancesToViewpoint();
-                    Viewpoint.transform.position = SelectedPosition;
-                    UpdateObjects();
+                    SaveDistancesToViewpoint();
+                    Viewpoint.transform.position = TargetPosition;
+                    TransferSelectedObjects();
                     PositionSelected = false;
                     Timer = 0.0f;
                     DelayToNextTravel = true;

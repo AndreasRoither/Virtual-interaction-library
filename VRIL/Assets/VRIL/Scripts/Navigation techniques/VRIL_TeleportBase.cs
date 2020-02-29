@@ -23,8 +23,8 @@ namespace VRIL.NavigationTechniques
         // *************************************
 
         [Header("Teleport settings")]
-        [Tooltip("Time to unlock next teleport")]
-        public float SecondsToWaitForNextTeleport = 0.5f;
+        [Tooltip("Time in seconds to unlock next teleport (avoids too many teleports)")]
+        public float DelayToNextActivation = 0.5f;
         [Tooltip("Travel task triggers selection mode again.")]
         public bool TravelDisablesTechnique = true;
         [Tooltip("Sets the maximum allowed angle for a navigable WIM object surface (0° = positions only on horizontal surfaces are allowed, 90° = all positions are allowed)")]
@@ -81,7 +81,6 @@ namespace VRIL.NavigationTechniques
         public virtual void Awake()
         {
             Initialize();
-            CheckInputOnRelease();
             TeleportLineRendererObject = new GameObject(NAME_LINE_RENDERER);
             TeleportLineRendererObject.AddComponent<LineRenderer>();
             TeleportLineRenderer = TeleportLineRendererObject.GetComponent<LineRenderer>();
@@ -166,7 +165,7 @@ namespace VRIL.NavigationTechniques
             if(DelayToNextTravel)
             {
                 Timer += Time.deltaTime;
-                if(Timer >= SecondsToWaitForNextTeleport)
+                if(Timer >= DelayToNextActivation)
                 {
                     DelayToNextTravel = false;
                     Timer = 0.0f;
@@ -244,14 +243,14 @@ namespace VRIL.NavigationTechniques
                         // valid position in case it is navigable and angle is allowed
                         if (navigableObject && Vector3.Angle(raycastHit.normal, Vector3.up) <= MaximumSurfaceAngle)
                         {
-                            SelectedPosition = raycastHit.point;
+                            TargetPosition = raycastHit.point;
                             PositionSelected = true;
                             if (HitEntity != null)
                             {
-                                HitEntity.transform.position = SelectedPosition + new Vector3(0f, DistanceHitEntityToGround, 0f);
+                                HitEntity.transform.position = TargetPosition + new Vector3(0f, DistanceHitEntityToGround, 0f);
                                 HitEntity.SetActive(true);
                             }
-                            SelectedPosition += new Vector3(0, DistanceToGround, 0);
+                            TargetPosition += new Vector3(0, DistanceViewpointToGround, 0);
                             TeleportLineRenderer.startColor = ValidPositionColor;
                             TeleportLineRenderer.endColor = ValidPositionColor;
                         }

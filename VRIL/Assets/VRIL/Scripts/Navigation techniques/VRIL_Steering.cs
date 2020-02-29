@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using VRIL.Base;
 using VRIL.ControllerActionEventArgs;
@@ -17,26 +18,33 @@ namespace VRIL.NavigationTechniques
         // *************************************
 
         [Header("Steering Settings")]
-        [Tooltip("Select steering mode")]
-        public SteeringMode Mode;
-        [Tooltip("Flying mode includes y-coordinate in travel too")]
-        public bool Flying = false;
+        [Tooltip("Enable axes for navigation (for flying mode enable all axes for navigation)")]
+        //public bool Flying = false;
+        public bool EnableNavigationX = true;
+        public bool EnableNavigationY = false;
+        public bool EnableNavigationZ = true;
+
         [Tooltip("Viewpoint velocity")]
         public float Velocity = 2.0f;
+        [Tooltip("Select steering type")]
+        public SteeringTechnique Technique;
+        [HideInInspector]
+        [Tooltip("Select steering mode")]
+        public SteeringMode Mode;
 
 
         // *************************************
         // private and protected members
         // *************************************
 
-        private GameObject DirectionObject;
+        private GameObject SteeringObject;
         protected bool IsActivated = false;
         private GameObject Camera;
 
         public void Awake()
         {
             Initialize();
-            if(Mode == SteeringMode.CrosshairsMode || Mode == SteeringMode.GazeDirected)
+            if(Mode == SteeringMode.CrosshairsMode || Technique == SteeringTechnique.GazeDirected)
             {
                 if(Viewpoint.GetComponent<Camera>())
                 {
@@ -52,7 +60,7 @@ namespace VRIL.NavigationTechniques
                     Debug.LogWarning("Could not set camera object. No camera found in viewpoint object! Use hand-directed steering or check camera first.");
                 }
             }
-            DirectionObject = Camera != null ? Camera : RegisteredControllers[0];
+            SteeringObject = Camera != null ? Camera : RegisteredControllers[0];
         }
 
         /// <summary>
@@ -92,31 +100,56 @@ namespace VRIL.NavigationTechniques
         {
             while (IsActivated)
             {
-                Vector3 forward = (Mode == SteeringMode.CrosshairsMode ? (RegisteredControllers[0].transform.position - Camera.transform.position) : DirectionObject.transform.forward).normalized;
+                Vector3 direction = (Mode == SteeringMode.CrosshairsMode ? (RegisteredControllers[0].transform.position - Camera.transform.position) : SteeringObject.transform.forward).normalized;
 
-                // in flying mode include y axis too
-                if (Flying)
+                Vector3 newPosition = Vector3.zero;
+                if(EnableNavigationX)
                 {
-                    SelectedPosition = Viewpoint.transform.position + (forward * Velocity * Time.deltaTime);
+                    newPosition.x = direction.x;
                 }
-                // else y axis is not included
-                else
+                if (EnableNavigationY)
                 {
-                    SelectedPosition = Viewpoint.transform.position + (new Vector3(forward.x, 0, forward.z) * Velocity * Time.deltaTime);
+                    newPosition.y = direction.y;
                 }
-                InitDistancesToViewpoint();
-                Viewpoint.transform.position = SelectedPosition;
-                UpdateObjects();
+                if (EnableNavigationZ)
+                {
+                    newPosition.z = direction.z;
+                }
+                Vector3 CalculatedPosition = Viewpoint.transform.position + (newPosition * Velocity * Time.deltaTime);
+                TargetPosition = CalculatedPosition;
+                SaveDistancesToViewpoint();
+                Viewpoint.transform.position = TargetPosition;
+                TransferSelectedObjects();
                 yield return null;
             }
             StopAudio();
         }
 
-        public enum SteeringMode
+        public enum SteeringTechnique
         {
             HandDirected,
             GazeDirected,
+        }
+
+        public enum SteeringMode
+        {
+            PointingMode,
             CrosshairsMode
+        }
+    }
+
+    [CustomEditor(typeof(VRIL_Steering))]
+    public class SteeringEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            var steering = target as VRIL_Steering;
+
+            DrawDefaultInspector();
+            if (steering.Technique == VRIL_Steering.SteeringTechnique.HandDirected)
+            {
+                steering.Mode = (VRIL_Steering.SteeringMode)EditorGUILayout.EnumPopup("Mode: ", steering.Mode);
+            }
         }
     }
 }

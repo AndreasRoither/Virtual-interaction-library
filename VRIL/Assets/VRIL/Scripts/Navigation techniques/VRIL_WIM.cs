@@ -146,7 +146,6 @@ namespace VRIL.NavigationTechniques
         public void Awake()
         {
             Initialize();
-            CheckInputOnRelease();
             if (Doll)
             {
                 Doll.SetActive(false);
@@ -231,7 +230,7 @@ namespace VRIL.NavigationTechniques
                 {
                     if (!IsActivated && !DelayToNextTravel)
                     {
-                        SelectedPosition = Viewpoint.transform.position;
+                        TargetPosition = Viewpoint.transform.position;
                         CurrentVelocity = ViewpointVelocity;
                         CurrentScale = Vector3.one;
                         CurrentScale *= ScaleFactor;
@@ -327,7 +326,7 @@ namespace VRIL.NavigationTechniques
             {
                 CurrentDoll = Instantiate(Doll);
                 CurrentDoll.SetActive(true);
-                CurrentDoll.transform.position = SelectedPosition;
+                CurrentDoll.transform.position = TargetPosition;
                 CurrentDoll.transform.localPosition += new Vector3(0, Doll.transform.position.y, 0);
                 
                 CurrentDoll.transform.forward = new Vector3(Viewpoint.transform.forward.x, 0, Viewpoint.transform.forward.z);
@@ -517,7 +516,7 @@ namespace VRIL.NavigationTechniques
                         if (CurrentShadowDoll)
                         {
                             CurrentShadowDoll.transform.position = raycastHit.point;
-                            CurrentShadowDoll.transform.localPosition += new Vector3(0, (ShadowDoll ? ShadowDoll.transform.position.y : Doll.transform.position.y) + DistanceToGround, 0);
+                            CurrentShadowDoll.transform.localPosition += new Vector3(0, (ShadowDoll ? ShadowDoll.transform.position.y : Doll.transform.position.y) + DistanceViewpointToGround, 0);
                             float diffZ = RayHand.transform.localEulerAngles.z - PrevControllerRotation.z;
                             PrevControllerRotation = RayHand.transform.localEulerAngles;
                             
@@ -547,6 +546,7 @@ namespace VRIL.NavigationTechniques
                 else
                 {
                     WIMLineRenderer.enabled = false;
+                    WIMObjectHit = false;
                 }
 
                 // disable colliders
@@ -578,7 +578,7 @@ namespace VRIL.NavigationTechniques
                 if (PositionSelected)
                 {
                     PlayAudio();
-                    InitDistancesToViewpoint();
+                    SaveDistancesToViewpoint();
 
                     // trigger flight into the miniature
                     if (UseFlightIntoTheMiniature)
@@ -655,8 +655,8 @@ namespace VRIL.NavigationTechniques
                 // replace viewpoint
                 if (PositionSelected)
                 {
-                    SelectedPosition = HitEntity.transform.position + new Vector3(0, DistanceToGround, 0);
-                    Viewpoint.transform.position = SelectedPosition;
+                    TargetPosition = HitEntity.transform.position + new Vector3(0, DistanceViewpointToGround, 0);
+                    Viewpoint.transform.position = TargetPosition;
 
                     float? rotationDiffY = null;
                     if (Doll)
@@ -664,7 +664,7 @@ namespace VRIL.NavigationTechniques
                         Viewpoint.transform.rotation = CurrentShadowDoll.transform.localRotation;
                         rotationDiffY = CurrentDoll.transform.localEulerAngles.y - CurrentShadowDoll.transform.localEulerAngles.y;
                     }
-                    UpdateObjects(rotationDiffY);
+                    TransferSelectedObjects(rotationDiffY);
                     PositionSelected = false;
                 }
                 Manager.InputLocked = false;

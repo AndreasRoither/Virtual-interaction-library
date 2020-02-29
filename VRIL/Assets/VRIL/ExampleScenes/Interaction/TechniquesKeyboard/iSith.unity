@@ -876,12 +876,16 @@ MonoBehaviour:
   - Controller: {fileID: 989247570}
     InteractionTechniques:
     - {fileID: 44795325}
+    NavigationTechniques: []
   - Controller: {fileID: 851289060}
-    InteractionTechniques: []
+    InteractionTechniques:
+    - {fileID: 44795325}
+    NavigationTechniques: []
   LoadedSdkName: 0
   OpenVR_Script: {fileID: 0}
   Oculus_Script: {fileID: 0}
   CustomSDK_Script: {fileID: 0}
+  InputLocked: 0
 --- !u!1001 &1667788926
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -949,11 +953,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3255873711400380801, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
-        type: 3}
-      propertyPath: m_Name
-      value: Interactable Capsule 2
-      objectReference: {fileID: 0}
     - target: {fileID: 3255873709820566338, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -964,5 +963,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 2078909f331693a4c8cd995ad1d359a8, type: 2}
+    - target: {fileID: 3255873711400380801, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_Name
+      value: Interactable Capsule 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85b8f3ce06cdce847bbb80d0df9b4f39, type: 3}

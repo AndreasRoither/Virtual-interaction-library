@@ -41,7 +41,7 @@ namespace VRIL.NavigationTechniques
                 // allow no other input while travelling to target position
                 Manager.InputLocked = true;
                 TravelMode = true;
-                InitDistancesToViewpoint();
+                SaveDistancesToViewpoint();
                 PlayAudio();
                 StartCoroutine(DashMovement());
                 DelayToNextTravel = true;
@@ -61,18 +61,18 @@ namespace VRIL.NavigationTechniques
         {
             while (TravelMode)
             {
-                if (Vector3.Distance(Viewpoint.transform.position, SelectedPosition) <= Velocity * Time.deltaTime)
+                if (Vector3.Distance(Viewpoint.transform.position, TargetPosition) <= Velocity * Time.deltaTime)
                 {
-                    Viewpoint.transform.position = SelectedPosition;
+                    Viewpoint.transform.position = TargetPosition;
                 }
                 else
                 {
-                    Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position, SelectedPosition, Velocity * Time.deltaTime);
+                    Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position, TargetPosition, Velocity * Time.deltaTime);
                 }
-                UpdateObjects();
+                TransferSelectedObjects();
 
                 // check if the positions are approximately equal
-                if (Vector3.Distance(Viewpoint.transform.position, SelectedPosition) <= TOLERANCE_POINT_REACHED)
+                if (Vector3.Distance(Viewpoint.transform.position, TargetPosition) <= TOLERANCE_POINT_REACHED)
                 {
                     PositionSelected = false;
                     TravelMode = false;
