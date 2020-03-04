@@ -73,7 +73,7 @@ namespace VRIL.NavigationTechniques
                 if (!TravelDisablesTechnique)
                 {
                     IsActivated = true;
-                    StartCoroutine(ShowRay(e));
+                    StartCoroutine(SelectPosition(e));
                 }
             }
         }

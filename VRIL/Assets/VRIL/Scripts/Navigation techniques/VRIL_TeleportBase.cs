@@ -133,7 +133,7 @@ namespace VRIL.NavigationTechniques
                         else
                         {
                             IsActivated = true;
-                            StartCoroutine(ShowRay(e));
+                            StartCoroutine(SelectPosition(e));
                         }
                     }
                 }
@@ -149,7 +149,7 @@ namespace VRIL.NavigationTechniques
                         if (!IsActivated)
                         {
                             IsActivated = true;
-                            StartCoroutine(ShowRay(e));
+                            StartCoroutine(SelectPosition(e));
                         }
                     }
                 }
@@ -200,10 +200,10 @@ namespace VRIL.NavigationTechniques
 
         /// <summary>
         /// Coroutine for vizualization of the target selection
-        /// It is virtual to allow custom ray implementation in future (such as curved trajectories or just a straight line)
+        /// It is "virtual" to allow custom ray implementation in future (such as curved trajectories or just a straight line)
         /// </summary>
         /// <returns>WaitForSeconds()</returns>
-        protected virtual IEnumerator ShowRay(VRIL_ControllerActionEventArgs e)
+        protected virtual IEnumerator SelectPosition(VRIL_ControllerActionEventArgs e)
         {
             TeleportLineRenderer.enabled = true;
             while (IsActivated)
