@@ -329,7 +329,15 @@ namespace VRIL.NavigationTechniques
                 CurrentDoll.transform.position = TargetPosition;
                 CurrentDoll.transform.localPosition += new Vector3(0, Doll.transform.position.y, 0);
                 
-                CurrentDoll.transform.forward = new Vector3(Viewpoint.transform.forward.x, 0, Viewpoint.transform.forward.z);
+                if(ViewpointCamera)
+                {
+                    CurrentDoll.transform.forward = new Vector3(ViewpointCamera.transform.forward.x, 0, ViewpointCamera.transform.forward.z);
+                }
+                else
+                {
+                    CurrentDoll.transform.forward = new Vector3(Viewpoint.transform.forward.x, 0, Viewpoint.transform.forward.z);
+                }
+                
                 CurrentDoll.AddComponent<VRIL_WIMObject>();
                 CurrentDoll.transform.eulerAngles = new Vector3(CurrentDoll.transform.rotation.eulerAngles.x, CurrentDoll.transform.rotation.eulerAngles.y, CurrentDoll.transform.rotation.eulerAngles.z);
                 CurrentDoll.transform.parent = Wim.transform;
@@ -619,6 +627,14 @@ namespace VRIL.NavigationTechniques
 
             Manager.InputLocked = true;
 
+            // target rotation is not rotation of shadow doll - subtract local camera rotation first!
+            Vector3 origRotShadowDoll = CurrentShadowDoll.transform.localEulerAngles;
+            Vector3 temp = CurrentShadowDoll.transform.localEulerAngles;
+            temp.y -= ViewpointCamera.transform.localEulerAngles.y;
+            CurrentShadowDoll.transform.localEulerAngles = temp;
+            Quaternion rotation = Quaternion.Euler(CurrentShadowDoll.transform.eulerAngles);
+            CurrentShadowDoll.transform.localEulerAngles = origRotShadowDoll;
+
             // start animation
             while (TravelMode)
             {
@@ -630,7 +646,8 @@ namespace VRIL.NavigationTechniques
                 if (CurrentShadowDoll)
                 {
                     float step = viewpointRotation * Time.deltaTime;
-                    Viewpoint.transform.rotation = Quaternion.RotateTowards(Viewpoint.transform.rotation, CurrentShadowDoll.transform.rotation, step);
+                    //Viewpoint.transform.rotation = Quaternion.RotateTowards(Viewpoint.transform.rotation, CurrentShadowDoll.transform.rotation, step);
+                    Viewpoint.transform.rotation = Quaternion.RotateTowards(Viewpoint.transform.rotation, rotation, step);
                 }
                 Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position, HitEntity.transform.position, CurrentVelocity * Time.deltaTime);
                 if (CurrentScale.x >= FINAL_SCALE)
@@ -661,7 +678,10 @@ namespace VRIL.NavigationTechniques
                     float? rotationDiffY = null;
                     if (Doll)
                     {
-                        Viewpoint.transform.rotation = CurrentShadowDoll.transform.localRotation;
+                        Vector3 temp = CurrentShadowDoll.transform.localEulerAngles;
+                        temp.y -= ViewpointCamera.transform.localEulerAngles.y;
+                        Quaternion rotation = Quaternion.Euler(temp);
+                        Viewpoint.transform.rotation = rotation;//CurrentShadowDoll.transform.localRotation;
                         rotationDiffY = CurrentDoll.transform.localEulerAngles.y - CurrentShadowDoll.transform.localEulerAngles.y;
                     }
                     TransferSelectedObjects(rotationDiffY);
