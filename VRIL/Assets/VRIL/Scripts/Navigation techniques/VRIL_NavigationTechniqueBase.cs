@@ -162,7 +162,7 @@
                 if (mapping.ActionType == VRIL_ActionTypes.OnTravel)
                 {
                     TravelOnRelease = false;
-                    return;
+                    break;
                 }
             }
 
