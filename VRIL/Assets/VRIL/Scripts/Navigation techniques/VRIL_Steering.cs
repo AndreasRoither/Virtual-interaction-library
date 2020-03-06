@@ -18,14 +18,14 @@ namespace VRIL.NavigationTechniques
         // *************************************
 
         [Header("Steering Settings")]
-        [Tooltip("Enable axes for navigation (for flying mode enable all axes for navigation)")]
-        //public bool Flying = false;
+        [Tooltip("Enable axes for navigation (for flying mode enable all axes for navigation) and set separate velocities")]
         public bool EnableNavigationX = true;
+        public float VelocityX = 2.0f;
         public bool EnableNavigationY = false;
+        public float VelocityY = 2.0f;
         public bool EnableNavigationZ = true;
+        public float VelocityZ = 2.0f;
 
-        [Tooltip("Viewpoint velocity")]
-        public float Velocity = 2.0f;
         [Tooltip("Select steering type")]
         public SteeringTechnique Technique;
         [HideInInspector]
@@ -116,7 +116,13 @@ namespace VRIL.NavigationTechniques
                 {
                     newPosition.z = direction.z;
                 }
-                Vector3 CalculatedPosition = Viewpoint.transform.position + (newPosition * Velocity * Time.deltaTime);
+                Vector3 vectorToNextPositon = newPosition;
+                float deltaTime = Time.deltaTime;
+                vectorToNextPositon.x *= VelocityX * deltaTime;
+                vectorToNextPositon.y *= VelocityY * deltaTime;
+                vectorToNextPositon.z *= VelocityZ * deltaTime;
+
+                Vector3 CalculatedPosition = Viewpoint.transform.position + vectorToNextPositon;
                 TargetPosition = CalculatedPosition;
                 SaveDistancesToViewpoint();
                 Viewpoint.transform.position = TargetPosition;

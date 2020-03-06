@@ -83,7 +83,7 @@
         /// </summary>
         protected void SaveDistancesToViewpoint()
         {
-            if (!MoveSelectedObjects)
+            if (!MoveSelectedObjects || !Viewpoint)
             {
                 return;
             }
@@ -106,7 +106,7 @@
         /// </summary>
         protected void TransferSelectedObjects(float? angle = null)
         {
-            if(!MoveSelectedObjects)
+            if(!MoveSelectedObjects || !Viewpoint)
             {
                 return;
             }
@@ -177,14 +177,17 @@
             }
 
             //check distance to ground and save it
-            Ray ray = new Ray(Viewpoint.transform.position, Viewpoint.transform.up * -1);
-            if (Physics.Raycast(ray, out RaycastHit raycastHit))
+            if(Viewpoint)
             {
-                VRIL_Navigable navigableObject = raycastHit.transform.gameObject.GetComponent<VRIL_Navigable>();
-                if(navigableObject != null)
+                Ray ray = new Ray(Viewpoint.transform.position, Viewpoint.transform.up * -1);
+                if (Physics.Raycast(ray, out RaycastHit raycastHit))
                 {
-                    DistanceViewpointToGround = Mathf.Abs(Viewpoint.transform.position.y - navigableObject.transform.position.y);
-                    return;
+                    VRIL_Navigable navigableObject = raycastHit.transform.gameObject.GetComponent<VRIL_Navigable>();
+                    if (navigableObject != null)
+                    {
+                        DistanceViewpointToGround = Mathf.Abs(Viewpoint.transform.position.y - navigableObject.transform.position.y);
+                        return;
+                    }
                 }
             }
             DistanceViewpointToGround = 0;
