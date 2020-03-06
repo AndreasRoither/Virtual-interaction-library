@@ -627,13 +627,18 @@ namespace VRIL.NavigationTechniques
 
             Manager.InputLocked = true;
 
-            // target rotation is not rotation of shadow doll - subtract local camera rotation first!
-            Vector3 origRotShadowDoll = CurrentShadowDoll.transform.localEulerAngles;
-            Vector3 temp = CurrentShadowDoll.transform.localEulerAngles;
-            temp.y -= ViewpointCamera.transform.localEulerAngles.y;
-            CurrentShadowDoll.transform.localEulerAngles = temp;
-            Quaternion rotation = Quaternion.Euler(CurrentShadowDoll.transform.eulerAngles);
-            CurrentShadowDoll.transform.localEulerAngles = origRotShadowDoll;
+            Quaternion rotation = new Quaternion();
+            if(CurrentShadowDoll)
+            {
+                // target rotation is not rotation of shadow doll - subtract local camera rotation first!
+                Vector3 origRotShadowDoll = CurrentShadowDoll.transform.localEulerAngles;
+                Vector3 temp = CurrentShadowDoll.transform.localEulerAngles;
+                temp.y -= ViewpointCamera.transform.localEulerAngles.y;
+                CurrentShadowDoll.transform.localEulerAngles = temp;
+                rotation = Quaternion.Euler(CurrentShadowDoll.transform.eulerAngles);
+                CurrentShadowDoll.transform.localEulerAngles = origRotShadowDoll;
+            }
+
 
             // start animation
             while (TravelMode)
