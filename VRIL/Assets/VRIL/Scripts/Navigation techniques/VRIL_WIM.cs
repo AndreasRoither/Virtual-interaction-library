@@ -68,7 +68,7 @@ namespace VRIL.NavigationTechniques
         public float EndRayWidth = 0.005f;
 
         [Header("Selection Point Settings")]
-        [Tooltip("An object that represents the selected position in the WIM. It is required.")]
+        [Tooltip("An object that represents the selected position in the WIM (for example, can be a disc similar to teleport).")]
         public GameObject HitEntity;
         [Tooltip("Distance of hit entity object to WIM ground.")]
         public float DistanceHitEntityToGround = 0.005f;
@@ -180,6 +180,15 @@ namespace VRIL.NavigationTechniques
             {
                 ViewpointCamera = Viewpoint.GetComponentsInChildren<Camera>().FirstOrDefault();
             }
+            // bot required for changing position and orientation (create empty in case nothing defined)
+            if(!HitEntity)
+            {
+                HitEntity = new GameObject();
+            }
+            if(!Doll)
+            {
+                Doll = new GameObject();
+            }
         }
 
         public void Start()
@@ -193,14 +202,10 @@ namespace VRIL.NavigationTechniques
             {
                 Debug.LogError($"<b>{nameof(VRIL_WIM)}:</b>\n This technique requires at least two controllers!");
             }
-            if (HitEntity == null)
+            HitEntity.SetActive(false);
+            Renderer rend = HitEntity.transform.gameObject.GetComponent<Renderer>();
+            if (rend)
             {
-                Debug.LogError("No hit entity object for WIM!");
-            }
-            else
-            {
-                HitEntity.SetActive(false);
-                Renderer rend = HitEntity.transform.gameObject.GetComponent<Renderer>();
                 rend.material.SetColor("_Color", ValidPositionColor);
             }
             if(Doll == null)
@@ -341,7 +346,7 @@ namespace VRIL.NavigationTechniques
                 CurrentDoll.AddComponent<VRIL_WIMObject>();
                 CurrentDoll.transform.eulerAngles = new Vector3(CurrentDoll.transform.rotation.eulerAngles.x, CurrentDoll.transform.rotation.eulerAngles.y, CurrentDoll.transform.rotation.eulerAngles.z);
                 CurrentDoll.transform.parent = Wim.transform;
-                CurrentShadowDoll = Instantiate(ShadowDoll != null ? ShadowDoll : CurrentDoll);
+                CurrentShadowDoll = Instantiate(ShadowDoll != null ? ShadowDoll : new GameObject());
                 CurrentShadowDoll.transform.parent = Wim.transform;
                 if (ViewpointCamera)
                 {
