@@ -102,10 +102,10 @@ namespace VRIL.NavigationTechniques
         {
             while (IsActivated)
             {
-                Vector3 direction = (Mode == SteeringMode.CrosshairsMode
-                    ? (RegisteredControllers[0].transform.position - Camera.transform.position)
-                    : SteeringObject.transform.forward).normalized;
-
+                Vector3 direction = (
+                    Mode == SteeringMode.CrosshairsMode ? 
+                        (RegisteredControllers[0].transform.position - Camera.transform.position) : SteeringObject.transform.forward
+                ).normalized;
 
                 Vector3 newPosition = Vector3.zero;
                 if (EnableNavigationX)

@@ -56,6 +56,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -161,6 +162,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -252,7 +254,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: dbf37170840828344ae352756e49a99a, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -392,6 +394,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -485,6 +488,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -722,6 +726,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -813,7 +818,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3255873710676035637}
   m_Layer: 0
-  m_Name: '---- World ----'
+  m_Name: ---- World ----
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -911,8 +916,9 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3255873711129459919}
   m_Enabled: 1
-  serializedVersion: 9
+  serializedVersion: 10
   m_Type: 1
+  m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
   m_Range: 10
@@ -1018,6 +1024,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1112,6 +1119,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -1204,7 +1212,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: dbf37170840828344ae352756e49a99a, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.43
   m_Pitch: 1
   Loop: 0
@@ -1507,7 +1515,8 @@ MonoBehaviour:
 
     F to select
 
-    Left Mouse to activate the technique'
+    Left Mouse to activate
+    the technique'
 --- !u!1 &7238477268808757424
 GameObject:
   m_ObjectHideFlags: 0
@@ -1564,6 +1573,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1623,50 +1633,6 @@ PrefabInstance:
     - target: {fileID: 303541723, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
       propertyPath: m_Name
       value: Interactable Capsule
-      objectReference: {fileID: 0}
-    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 5.08
-      objectReference: {fileID: 0}
-    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 2.04
-      objectReference: {fileID: 0}
-    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 303541725, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
       propertyPath: Interaction_AudioSource
@@ -1740,6 +1706,50 @@ PrefabInstance:
       propertyPath: Interaction_Manipulation_RotationChangeAble
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 5.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1393178159, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b8a1435ed5908f3469afaa56959b155b, type: 3}
 --- !u!4 &77100870934160029 stripped
@@ -1755,10 +1765,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3255873711720657688}
     m_Modifications:
-    - target: {fileID: 847431870, guid: bcadc5610697d484ca5a8cb08f15cb97, type: 3}
-      propertyPath: m_Name
-      value: Interactable Sphere
-      objectReference: {fileID: 0}
     - target: {fileID: 364349659, guid: bcadc5610697d484ca5a8cb08f15cb97, type: 3}
       propertyPath: m_LocalPosition.x
       value: 7.25
@@ -1810,6 +1816,10 @@ PrefabInstance:
     - target: {fileID: 364349659, guid: bcadc5610697d484ca5a8cb08f15cb97, type: 3}
       propertyPath: m_LocalScale.z
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 847431870, guid: bcadc5610697d484ca5a8cb08f15cb97, type: 3}
+      propertyPath: m_Name
+      value: Interactable Sphere
       objectReference: {fileID: 0}
     - target: {fileID: 847431871, guid: bcadc5610697d484ca5a8cb08f15cb97, type: 3}
       propertyPath: Selection_MoveToAttachmentTypeSpeed

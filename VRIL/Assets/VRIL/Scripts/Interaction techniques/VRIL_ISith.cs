@@ -59,7 +59,7 @@ namespace VRIL.InteractionTechniques
         public float CoroutineWaitTime = 0.03f;
 
         /// <summary>
-        /// Called before the start function to initialize base
+        /// Called before the start function to initialize base class
         /// </summary>
         public void Awake()
         {
@@ -159,8 +159,8 @@ namespace VRIL.InteractionTechniques
         }
 
         /// <summary>
-        /// Unity specific, When drawing gizmos is activated
-        /// Shows the sphere in which Interactable Objects can be selected
+        /// Unity specific, when drawing gizmos is activated
+        /// Shows the sphere in which <see cref="VRIL_Interactable"/> objects can be selected
         /// </summary>
         public void OnDrawGizmos()
         {

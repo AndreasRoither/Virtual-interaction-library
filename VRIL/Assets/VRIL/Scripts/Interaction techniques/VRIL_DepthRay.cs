@@ -58,7 +58,7 @@ namespace VRIL.InteractionTechniques
         }
 
         /// <summary>
-        /// Technique activation
+        /// Activate the technique which starts the coroutine. If no controllers are active, an error will be shown.
         /// </summary>
         /// <param name="e">ControllerEvent</param>
         public override void OnActivation(VRIL_ControllerActionEventArgs e)
@@ -78,7 +78,7 @@ namespace VRIL.InteractionTechniques
         }
 
         /// <summary>
-        /// Select objects
+        /// Select objects which are of type <see cref="VRIL_Interactable"/>
         /// </summary>
         /// <param name="e">ControllerEvent</param>
         public override void OnSelection(VRIL_ControllerActionEventArgs e)
@@ -95,7 +95,7 @@ namespace VRIL.InteractionTechniques
         }
 
         /// <summary>
-        /// Stop technique
+        /// Stop technique and it's coroutine
         /// </summary>
         /// <param name="e">ControllerEvent</param>
         public override void OnStop(VRIL_ControllerActionEventArgs e)
@@ -105,8 +105,8 @@ namespace VRIL.InteractionTechniques
         }
 
         /// <summary>
-        /// Unity specific, When drawing gizmos is activated
-        /// Shows the sphere in which Interactable Objects can be selected
+        /// Unity specific, when drawing gizmos is activated
+        /// Shows the sphere in which <see cref="VRIL_Interactable"/> objects can be selected
         /// </summary>
         public void OnDrawGizmos()
         {
@@ -119,7 +119,7 @@ namespace VRIL.InteractionTechniques
 
         /// <summary>
         /// Coroutine for Depthray
-        /// <para>Controller is used with a selectionmodel to select objects</para>
+        /// <para>Controller is used with a selection model to select objects</para>
         /// </summary>
         /// <returns></returns>
         private IEnumerator ShowRay()

@@ -38,7 +38,7 @@ namespace VRIL.NavigationTechniques
         protected bool MoveSelectedObjects = true;
 
         /// <summary>
-        /// Called from VRIL_Manager when a button is pressed
+        /// Called from <see cref="VRIL_Manager"/> when a button is pressed
         /// </summary>
         /// <param name="sender">sending class</param>
         /// <param name="e">EventArgs that contains the controller, buttonType, buttonInteractionType</param>

@@ -164,6 +164,17 @@ namespace VRIL.NavigationTechniques
         public void Awake()
         {
             Initialize();
+            
+            WIMLineRendererObject = new GameObject(LINE_RENDERER);
+            WIMLineRendererObject.AddComponent<LineRenderer>();
+            WIMLineRenderer = WIMLineRendererObject.GetComponent<LineRenderer>();
+            WIMLineRenderer.startWidth = StartRayWidth;
+            WIMLineRenderer.endWidth = EndRayWidth;
+            WIMLineRenderer.startColor = ValidPositionColor;
+            WIMLineRenderer.endColor = ValidPositionColor;
+            WIMLineRenderer.material = LaserMaterial;
+            WIMLineRenderer.enabled = false;
+            
             if (Doll)
             {
                 Doll.SetActive(false);
@@ -174,33 +185,10 @@ namespace VRIL.NavigationTechniques
                 ShadowDoll.SetActive(false);
             }
 
-            WIMLineRendererObject = new GameObject(LINE_RENDERER);
-            WIMLineRendererObject.AddComponent<LineRenderer>();
-            WIMLineRenderer = WIMLineRendererObject.GetComponent<LineRenderer>();
-            WIMLineRenderer.startWidth = StartRayWidth;
-            WIMLineRenderer.endWidth = EndRayWidth;
-            WIMLineRenderer.startColor = ValidPositionColor;
-            WIMLineRenderer.endColor = ValidPositionColor;
-            WIMLineRenderer.material = LaserMaterial;
-            WIMLineRenderer.enabled = false;
-            if (CastShadows)
-            {
-                WIMLineRenderer.shadowCastingMode = ShadowCastingMode.On;
-            }
-            else
-            {
-                WIMLineRenderer.shadowCastingMode = ShadowCastingMode.Off;
-            }
+            WIMLineRenderer.shadowCastingMode = CastShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
 
             // get camera object
-            if (Viewpoint.GetComponent<Camera>())
-            {
-                ViewpointCamera = Viewpoint.GetComponent<Camera>();
-            }
-            else
-            {
-                ViewpointCamera = Viewpoint.GetComponentsInChildren<Camera>().FirstOrDefault();
-            }
+            ViewpointCamera = Viewpoint.GetComponent<Camera>() ? Viewpoint.GetComponent<Camera>() : Viewpoint.GetComponentsInChildren<Camera>().FirstOrDefault();
 
             // bot required for changing position and orientation (create empty in case nothing defined)
             if (!HitEntity)

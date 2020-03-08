@@ -74,9 +74,10 @@ namespace VRIL.InteractionTechniques
                 Debug.LogError($"<b>{nameof(VRIL_SpindleAndWheel)}:</b>\n DominantControllerIndex is greater than registered controllers! {this.DominantControllerIndex} > {this.RegisteredControllers.Count} \n Info: index starts at 0!");
             }
         }
-
-        /// <summary>
-        /// Draws collider spere in the scene view
+        
+        /// /// <summary>
+        /// Unity specific, when drawing gizmos is activated
+        /// Shows the sphere in which <see cref="VRIL_Interactable"/> objects can be selected
         /// </summary>
         public void OnDrawGizmos()
         {
@@ -152,7 +153,7 @@ namespace VRIL.InteractionTechniques
         }
 
         /// <summary>
-        /// Spindle and Wheel coroutine to manipulate a selected object
+        /// Spindle and Wheel coroutine to manipulate a <see cref="VRIL_Interactable"/> object
         /// </summary>
         /// <returns></returns>
         private IEnumerator SpindleAndWheelManpulation()

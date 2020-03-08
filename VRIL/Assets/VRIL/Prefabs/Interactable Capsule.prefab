@@ -56,6 +56,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -67,6 +68,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -120,12 +122,13 @@ MonoBehaviour:
   Selection_FeedbackScript: {fileID: 0}
   Interactable: 0
   Interaction_HoldButtonToInteract: 0
-  Interaction_Feedback: 0
+  Interaction_Feedback: 1
   Interaction_Manipulatable: 0
   Interaction_Manipulation_PositionChangeAble: 0
   Interaction_Manipulation_RotationChangeAble: 0
   Interaction_ObjectAttachment: 0
-  Interaction_AudioClip: {fileID: 0}
+  Interaction_AudioClip: {fileID: 8300000, guid: e9befd794befe7540ad040be41dba757,
+    type: 3}
   Interaction_AudioSource: {fileID: 0}
   Interaction_Script: {fileID: 0}
   Interaction_FeedbackScript: {fileID: 0}

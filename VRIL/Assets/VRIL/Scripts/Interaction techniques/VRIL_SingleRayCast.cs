@@ -44,7 +44,7 @@ namespace VRIL.InteractionTechniques
         }
 
         /// <summary>
-        /// Select object only if button is pressed
+        /// Select objects only if a button is pressed
         /// </summary>
         /// <param name="e"></param>
         public override void OnSelection(VRIL_ControllerActionEventArgs e)

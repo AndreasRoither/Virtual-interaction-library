@@ -11,7 +11,8 @@ namespace VRIL.TechniqueBase
     /// </summary>
     public abstract class VRIL_TechniqueBase : MonoBehaviour
     {
-        [Header("VRIL Manager")] public VRIL_Manager Manager;
+        [Header("VRIL Manager")] 
+        public VRIL_Manager Manager;
 
         [Header("Controller - Action Mapping")]
         public List<VRIL_ActionMapping> Mappings = new List<VRIL_ActionMapping>();

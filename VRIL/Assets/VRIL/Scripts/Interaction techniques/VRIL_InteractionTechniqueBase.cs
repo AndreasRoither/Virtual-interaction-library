@@ -22,7 +22,7 @@ namespace VRIL.InteractionTechniques
         public int DominantControllerIndex;
 
         /// <summary>
-        /// Called from VRIL_Manager when a button is pressed
+        /// Called from <see cref="VRIL_Manager"/> when a button is pressed
         /// </summary>
         /// <param name="sender">sending class</param>
         /// <param name="e">EventArgs that contains the controller, buttonType, buttonInteractionType</param>
@@ -135,7 +135,7 @@ namespace VRIL.InteractionTechniques
         }
 
         /// <summary>
-        /// Check ButtonState
+        /// Check ButtonState of a <see cref="VRIL_ButtonType"/> for a specific controller
         /// </summary>
         /// <param name="button">Button that should be checked</param>
         /// <param name="controller">Controller that should be checked</param>

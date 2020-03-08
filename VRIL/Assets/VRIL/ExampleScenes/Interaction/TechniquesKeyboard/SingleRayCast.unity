@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028355, g: 0.22571374, b: 0.30692255, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -96,6 +96,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -166,6 +167,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -319,10 +321,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 77100869844924783, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: Selection_AudioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: e9befd794befe7540ad040be41dba757, type: 3}
+    - target: {fileID: 3255873709769256329, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873709820566338, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2078909f331693a4c8cd995ad1d359a8, type: 2}
+    - target: {fileID: 3255873710632021380, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2078909f331693a4c8cd995ad1d359a8, type: 2}
     - target: {fileID: 3255873710676035636, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
       propertyPath: m_Name
-      value: '---- World ----'
+      value: ---- World ----
       objectReference: {fileID: 0}
     - target: {fileID: 3255873710676035637, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
@@ -379,21 +401,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3255873710904662468, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: Selection_AudioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: e9befd794befe7540ad040be41dba757, type: 3}
     - target: {fileID: 3255873711400380801, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
       propertyPath: m_Name
       value: Interactable Capsule 2
       objectReference: {fileID: 0}
-    - target: {fileID: 3255873709820566338, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+    - target: {fileID: 3255873711686322631, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2078909f331693a4c8cd995ad1d359a8, type: 2}
-    - target: {fileID: 3255873710632021380, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2078909f331693a4c8cd995ad1d359a8, type: 2}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85b8f3ce06cdce847bbb80d0df9b4f39, type: 3}
 --- !u!1 &555241006 stripped
@@ -495,11 +517,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1743232995}
     m_Modifications:
-    - target: {fileID: 4437820315775973794, guid: c3a060553de41c54c9a66c9a2be4a902,
+    - target: {fileID: 4437820315775973792, guid: c3a060553de41c54c9a66c9a2be4a902,
         type: 3}
-      propertyPath: m_Name
-      value: SingleRayCast
-      objectReference: {fileID: 0}
+      propertyPath: Manager
+      value: 
+      objectReference: {fileID: 1835083041}
     - target: {fileID: 4437820315775973793, guid: c3a060553de41c54c9a66c9a2be4a902,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -555,11 +577,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4437820315775973792, guid: c3a060553de41c54c9a66c9a2be4a902,
+    - target: {fileID: 4437820315775973794, guid: c3a060553de41c54c9a66c9a2be4a902,
         type: 3}
-      propertyPath: Manager
-      value: 
-      objectReference: {fileID: 1835083041}
+      propertyPath: m_Name
+      value: SingleRayCast
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c3a060553de41c54c9a66c9a2be4a902, type: 3}
 --- !u!4 &1028674144 stripped
@@ -590,7 +612,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1151162537}
   m_Layer: 0
-  m_Name: '---- VRIL Controller ----'
+  m_Name: ---- VRIL Controller ----
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -691,6 +713,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -769,6 +792,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -864,7 +888,7 @@ GameObject:
   - component: {fileID: 1835083040}
   - component: {fileID: 1835083041}
   m_Layer: 0
-  m_Name: '---- VRIL Manager ----'
+  m_Name: ---- VRIL Manager ----
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -952,6 +976,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
