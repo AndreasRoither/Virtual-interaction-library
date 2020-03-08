@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using Valve.VR;
+using UnityEngine.Rendering;
 using VRIL.Base;
 using VRIL.ControllerActionEventArgs;
 
@@ -16,42 +13,46 @@ namespace VRIL.NavigationTechniques
     /// </summary>
     public abstract class VRIL_TeleportBase : VRIL_NavigationTechniqueBase
     {
-
-
         // *************************************
         // public properties
         // *************************************
 
-        [Header("Teleport settings")]
-        [Tooltip("Time in seconds to unlock next teleport (avoids too many teleports)")]
+        [Header("Teleport settings")] [Tooltip("Time in seconds to unlock next teleport (avoids too many teleports)")]
         public float DelayToNextActivation = 0.5f;
+
         [Tooltip("Travel task triggers selection mode again.")]
         public bool TravelDisablesTechnique = true;
-        [Tooltip("Sets the maximum allowed angle for a navigable WIM object surface (0° = positions only on horizontal surfaces are allowed, 90° = all positions are allowed)")]
+
+        [Tooltip(
+            "Sets the maximum allowed angle for a navigable WIM object surface (0° = positions only on horizontal surfaces are allowed, 90° = all positions are allowed)")]
         [Range(0.0f, 90.0f)]
         public float MaximumSurfaceAngle = 0;
 
-        [Header("Ray Settings")]
-        [Range(0.01f, 1f)]
+        [Header("Ray Settings")] [Range(0.01f, 1f)]
         public float StartRayWidth = 0.01f;
-        [Range(0.01f, 1f)]
-        public float EndRayWidth = 0.01f;
+
+        [Range(0.01f, 1f)] public float EndRayWidth = 0.01f;
         public Color ValidPositionColor = Color.green;
         public Color InvalidPositionColor = Color.red;
+
         [Tooltip("Required or the laser color might be something different")]
         public Material LaserMaterial;
+
         [Tooltip("The assigned material can cast shadows if its not set to transparent")]
         public bool CastShadows = false;
+
         [Tooltip("Set how many line fragments are used for the curve")]
         public int NumberOfRayFragments = 20;
+
         [Tooltip("Set how many line fragments are used target is out of range")]
         public int NumberOfRayFragmentsNoObject = 3;
+
         [Tooltip("Velocity to take for trajectory calculation (base is thrown objects curve)")]
         public float CurveVelocity = 6f;
 
-        [Header("Selection Point Settings")]
-        [Tooltip("Visualisation object")]
+        [Header("Selection Point Settings")] [Tooltip("Visualisation object")]
         public GameObject HitEntity;
+
         [Tooltip("Distance of hit entity object to ground")]
         public float DistanceHitEntityToGround = 0.005f;
 
@@ -92,19 +93,21 @@ namespace VRIL.NavigationTechniques
 
             if (CastShadows)
             {
-                TeleportLineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+                TeleportLineRenderer.shadowCastingMode = ShadowCastingMode.On;
             }
             else
             {
-                TeleportLineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                TeleportLineRenderer.shadowCastingMode = ShadowCastingMode.Off;
             }
+
             if (HitEntity != null)
             {
                 Renderer rend = HitEntity.GetComponent<Renderer>();
-                if(rend)
+                if (rend)
                 {
                     rend.material.SetColor("_Color", ValidPositionColor);
                 }
+
                 HitEntity.SetActive(false);
             }
         }
@@ -162,10 +165,10 @@ namespace VRIL.NavigationTechniques
 
         protected virtual void Update()
         {
-            if(DelayToNextTravel)
+            if (DelayToNextTravel)
             {
                 Timer += Time.deltaTime;
-                if(Timer >= DelayToNextActivation)
+                if (Timer >= DelayToNextActivation)
                 {
                     DelayToNextTravel = false;
                     Timer = 0.0f;
@@ -187,7 +190,8 @@ namespace VRIL.NavigationTechniques
         /// </summary>
         private Vector3 GetTrajectoryVector(Vector3 p0, Vector3 velocity, Vector3 acc, float t)
         {
-            return new Vector3(CalcPoint(p0.x, velocity.x, acc.x, t), CalcPoint(p0.y, velocity.y, acc.y, t), CalcPoint(p0.z, velocity.z, acc.z, t));
+            return new Vector3(CalcPoint(p0.x, velocity.x, acc.x, t), CalcPoint(p0.y, velocity.y, acc.y, t),
+                CalcPoint(p0.z, velocity.z, acc.z, t));
         }
 
         /// <summary>
@@ -213,12 +217,13 @@ namespace VRIL.NavigationTechniques
                 {
                     HitEntity.SetActive(false);
                 }
+
                 TeleportLineRenderer.startColor = InvalidPositionColor;
                 TeleportLineRenderer.endColor = InvalidPositionColor;
 
                 // first point of curve is at controller
                 Vector3 p0 = RegisteredControllers[0].transform.position;
-                List<Vector3> positions = new List<Vector3>() { p0 };
+                List<Vector3> positions = new List<Vector3>() {p0};
 
                 // save last point
                 Vector3 lastPoint = p0;
@@ -247,9 +252,11 @@ namespace VRIL.NavigationTechniques
                             PositionSelected = true;
                             if (HitEntity != null)
                             {
-                                HitEntity.transform.position = TargetPosition + new Vector3(0f, DistanceHitEntityToGround, 0f);
+                                HitEntity.transform.position =
+                                    TargetPosition + new Vector3(0f, DistanceHitEntityToGround, 0f);
                                 HitEntity.SetActive(true);
                             }
+
                             TargetPosition += new Vector3(0, DistanceViewpointToGround, 0);
                             TeleportLineRenderer.startColor = ValidPositionColor;
                             TeleportLineRenderer.endColor = ValidPositionColor;
@@ -258,6 +265,7 @@ namespace VRIL.NavigationTechniques
                         {
                             PositionSelected = false;
                         }
+
                         positions.Add(raycastHit.point);
                         hit = true;
                     }
@@ -265,21 +273,28 @@ namespace VRIL.NavigationTechniques
                     {
                         positions.Add(curPoint);
                     }
+
                     lastPoint = curPoint;
                 }
+
                 if (!hit)
                 {
                     if (HitEntity != null)
                     {
                         HitEntity.SetActive(false);
                     }
+
                     PositionSelected = false;
                 }
+
                 // set line renderer
                 TeleportLineRenderer.positionCount = hit ? positions.Count : NumberOfRayFragmentsNoObject;
-                TeleportLineRenderer.SetPositions(hit ? positions.ToArray() : positions.Take(NumberOfRayFragmentsNoObject).ToArray());
+                TeleportLineRenderer.SetPositions(hit
+                    ? positions.ToArray()
+                    : positions.Take(NumberOfRayFragmentsNoObject).ToArray());
                 yield return null;
             }
+
             TeleportLineRenderer.enabled = false;
         }
     }

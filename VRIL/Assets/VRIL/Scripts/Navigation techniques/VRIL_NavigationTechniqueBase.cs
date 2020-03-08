@@ -1,28 +1,27 @@
-﻿namespace VRIL.NavigationTechniques
-{
-    using System.Collections.Generic;
-    using UnityEngine;
-    using VRIL.Interactable;
-    using VRIL.Manager;
-    using VRIL.ControllerActionEventArgs;
-    using VRIL.Base;
-    using VRIL.TechniqueBase;
-    using VRIL.InteractionTechniques;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using VRIL.Base;
+using VRIL.ControllerActionEventArgs;
+using VRIL.Interactable;
+using VRIL.InteractionTechniques;
+using VRIL.Manager;
+using VRIL.TechniqueBase;
 
+namespace VRIL.NavigationTechniques
+{
     /// <summary>
     /// Base class for all VRIL Navigation Techniques
     /// </summary>
     public abstract class VRIL_NavigationTechniqueBase : VRIL_TechniqueBase
     {
-
         // *************************************
         // public properties
         // *************************************
 
-        [Header("General Technique Settings")]
+        [Header("General Technique Settings")] 
         public GameObject Viewpoint;
 
-        [Header("Travel Audio Settings")]
+        [Header("Travel Audio Settings")] 
         public AudioClip AudioClip;
         public AudioSource AudioSource;
 
@@ -70,6 +69,7 @@
                             mapping.Script.OnCall();
                             break;
                     }
+
                     if (actionDone)
                     {
                         return;
@@ -90,12 +90,12 @@
 
             foreach (VRIL_RegisteredController regController in Manager.RegisteredControllers)
             {
-
                 foreach (VRIL_InteractionTechniqueBase interactionTechnique in regController.InteractionTechniques)
                 {
                     foreach (VRIL_Interactable selectedObject in interactionTechnique.GetSelectedObjects())
                     {
-                        SelectedObjectDistancesToViewpoint[selectedObject.GetInstanceID()] = selectedObject.transform.position - Viewpoint.transform.position;
+                        SelectedObjectDistancesToViewpoint[selectedObject.GetInstanceID()] =
+                            selectedObject.transform.position - Viewpoint.transform.position;
                     }
                 }
             }
@@ -106,10 +106,11 @@
         /// </summary>
         protected void TransferSelectedObjects(float? angle = null)
         {
-            if(!MoveSelectedObjects || !Viewpoint)
+            if (!MoveSelectedObjects || !Viewpoint)
             {
                 return;
             }
+
             foreach (VRIL_RegisteredController regController in Manager.RegisteredControllers)
             {
                 if (MoveSelectedObjects)
@@ -118,10 +119,13 @@
                     {
                         foreach (VRIL_Interactable selectedObject in interactionTechnique.GetSelectedObjects())
                         {
-                            selectedObject.transform.position = SelectedObjectDistancesToViewpoint[selectedObject.GetInstanceID()] + Viewpoint.transform.position;
-                            if(angle != null)
+                            selectedObject.transform.position =
+                                SelectedObjectDistancesToViewpoint[selectedObject.GetInstanceID()] +
+                                Viewpoint.transform.position;
+                            if (angle != null)
                             {
-                                selectedObject.transform.RotateAround(Viewpoint.transform.position, Viewpoint.transform.up, angle ?? 0.0f);
+                                selectedObject.transform.RotateAround(Viewpoint.transform.position,
+                                    Viewpoint.transform.up, angle ?? 0.0f);
                             }
                         }
                     }
@@ -134,7 +138,7 @@
         /// </summary>
         protected void PlayAudio()
         {
-            if(AudioSource && AudioClip)
+            if (AudioSource && AudioClip)
             {
                 AudioSource.clip = AudioClip;
                 AudioSource.Play(0);
@@ -149,7 +153,7 @@
             if (AudioSource)
             {
                 AudioSource.Stop();
-            }  
+            }
         }
 
         public override void Initialize()
@@ -169,7 +173,7 @@
             // check if any interaction techniques are registered
             foreach (VRIL_RegisteredController regController in Manager.RegisteredControllers)
             {
-                if(regController.InteractionTechniques.Count > 0)
+                if (regController.InteractionTechniques.Count > 0)
                 {
                     MoveSelectedObjects = true;
                     break;
@@ -177,7 +181,7 @@
             }
 
             //check distance to ground and save it
-            if(Viewpoint)
+            if (Viewpoint)
             {
                 Ray ray = new Ray(Viewpoint.transform.position, Viewpoint.transform.up * -1);
                 if (Physics.Raycast(ray, out RaycastHit raycastHit))
@@ -185,11 +189,13 @@
                     VRIL_Navigable navigableObject = raycastHit.transform.gameObject.GetComponent<VRIL_Navigable>();
                     if (navigableObject != null)
                     {
-                        DistanceViewpointToGround = Mathf.Abs(Viewpoint.transform.position.y - navigableObject.transform.position.y);
+                        DistanceViewpointToGround =
+                            Mathf.Abs(Viewpoint.transform.position.y - navigableObject.transform.position.y);
                         return;
                     }
                 }
             }
+
             DistanceViewpointToGround = 0;
         }
 
@@ -198,6 +204,5 @@
         /// </summary>
         /// <param name="e">ControllerActionEventArgs</param>
         public abstract void OnTravel(VRIL_ControllerActionEventArgs e);
-
     }
 }

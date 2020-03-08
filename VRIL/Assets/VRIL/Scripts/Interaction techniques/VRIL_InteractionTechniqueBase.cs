@@ -1,14 +1,13 @@
-﻿namespace VRIL.InteractionTechniques
-{
-    using System.Collections.Generic;
-    using UnityEngine;
-    using VRIL.Interactable;
-    using VRIL.Manager;
-    using VRIL.ControllerActionEventArgs;
-    using VRIL.Base;
-    using VRIL.TechniqueBase;
-    using System;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using VRIL.Base;
+using VRIL.ControllerActionEventArgs;
+using VRIL.Interactable;
+using VRIL.Manager;
+using VRIL.TechniqueBase;
 
+namespace VRIL.InteractionTechniques
+{
     /// <summary>
     /// Base class for all VRIL Interaction Techniques
     /// </summary>

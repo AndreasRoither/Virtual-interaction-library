@@ -29,15 +29,14 @@ namespace VRIL.Manager
     {
         //[Header("Registered Controller and Techniques")]
         public List<VRIL_RegisteredController> RegisteredControllers = new List<VRIL_RegisteredController>();
-        
+
         //[Header("SDK Scripts")]
         public VRIL_LoadedSdkNames LoadedSdkName;
         public VRIL_SDKBase OpenVR_Script;
         public VRIL_SDKBase Oculus_Script;
         public VRIL_SDKBase CustomSDK_Script;
 
-        [HideInInspector]
-        public bool InputLocked = false;
+        [HideInInspector] public bool InputLocked = false;
 
         /// <summary>
         /// Should be called when a Controller input happened (Button pressed for example)
@@ -47,30 +46,36 @@ namespace VRIL.Manager
         /// <see cref="VRIL_ControllerActionEventArgs"/>
         public void OnControllerAction(VRIL_ControllerActionEventArgs e)
         {
-            if(InputLocked)
+            if (InputLocked)
             {
                 return;
             }
+
             if (e == null)
             {
-                Debug.LogWarning($"<b>{nameof(VRIL_Manager)}:</b>\n {nameof(VRIL_ControllerActionEventArgs)} was null at {nameof(OnControllerAction)}");
+                Debug.LogWarning(
+                    $"<b>{nameof(VRIL_Manager)}:</b>\n {nameof(VRIL_ControllerActionEventArgs)} was null at {nameof(OnControllerAction)}");
                 return;
             }
 
             if (e.ControllerIndex > RegisteredControllers.Count - 1)
             {
-                Debug.LogWarning($"<b>{nameof(VRIL_Manager)}:</b>\n {nameof(VRIL_ControllerActionEventArgs)} ControllerIndex was greater than registered controller number at {nameof(OnControllerAction)}");
+                Debug.LogWarning(
+                    $"<b>{nameof(VRIL_Manager)}:</b>\n {nameof(VRIL_ControllerActionEventArgs)} ControllerIndex was greater than registered controller number at {nameof(OnControllerAction)}");
                 return;
             }
 
-            foreach (VRIL_InteractionTechniqueBase technique in RegisteredControllers[e.ControllerIndex].InteractionTechniques)
+            foreach (VRIL_InteractionTechniqueBase technique in RegisteredControllers[e.ControllerIndex]
+                .InteractionTechniques)
             {
                 if (technique != null)
                 {
                     technique.ControllerAction(this, e);
                 }
             }
-            foreach (VRIL_NavigationTechniqueBase technique in RegisteredControllers[e.ControllerIndex].NavigationTechniques)
+
+            foreach (VRIL_NavigationTechniqueBase technique in RegisteredControllers[e.ControllerIndex]
+                .NavigationTechniques)
             {
                 if (technique != null)
                 {
@@ -97,6 +102,7 @@ namespace VRIL.Manager
                     {
                         return OpenVR_Script.GetButtonState(button, controller);
                     }
+
                     break;
 
                 case VRIL_LoadedSdkNames.Oculus:
@@ -104,6 +110,7 @@ namespace VRIL.Manager
                     {
                         return Oculus_Script.GetButtonState(button, controller);
                     }
+
                     break;
 
                 case VRIL_LoadedSdkNames.CustomSDK:
@@ -111,6 +118,7 @@ namespace VRIL.Manager
                     {
                         return CustomSDK_Script.GetButtonState(button, controller);
                     }
+
                     break;
             }
 
@@ -125,10 +133,11 @@ namespace VRIL.Manager
         public List<GameObject> GetRegisteredControllers(VRIL_TechniqueBase technique)
         {
             List<GameObject> controllers = new List<GameObject>();
-            if(technique is VRIL_InteractionTechniqueBase) {
+            if (technique is VRIL_InteractionTechniqueBase)
+            {
                 foreach (VRIL_RegisteredController registeredController in RegisteredControllers)
                 {
-                    if (registeredController.InteractionTechniques.Contains((VRIL_InteractionTechniqueBase)technique))
+                    if (registeredController.InteractionTechniques.Contains((VRIL_InteractionTechniqueBase) technique))
                         controllers.Add(registeredController.Controller);
                 }
             }
@@ -136,10 +145,11 @@ namespace VRIL.Manager
             {
                 foreach (VRIL_RegisteredController registeredController in RegisteredControllers)
                 {
-                    if (registeredController.NavigationTechniques.Contains((VRIL_NavigationTechniqueBase)technique))
+                    if (registeredController.NavigationTechniques.Contains((VRIL_NavigationTechniqueBase) technique))
                         controllers.Add(registeredController.Controller);
                 }
             }
+
             return controllers;
         }
     }

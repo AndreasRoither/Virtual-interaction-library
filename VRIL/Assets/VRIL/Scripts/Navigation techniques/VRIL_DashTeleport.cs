@@ -1,7 +1,5 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using VRIL.InteractionTechniques;
 using VRIL.ControllerActionEventArgs;
 
 namespace VRIL.NavigationTechniques
@@ -11,13 +9,11 @@ namespace VRIL.NavigationTechniques
     /// </summary>
     public class VRIL_DashTeleport : VRIL_TeleportBase
     {
-
         // *************************************
         // public properties
         // *************************************
 
-        [Header("Dash Settings")]
-        [Tooltip("Define velocity of dash movement")]
+        [Header("Dash Settings")] [Tooltip("Define velocity of dash movement")]
         public float Velocity = 60.0f;
 
 
@@ -46,10 +42,12 @@ namespace VRIL.NavigationTechniques
                 StartCoroutine(DashMovement());
                 DelayToNextTravel = true;
             }
-            if(HitEntity)
+
+            if (HitEntity)
             {
                 HitEntity.SetActive(false);
             }
+
             IsActivated = false;
         }
 
@@ -67,8 +65,10 @@ namespace VRIL.NavigationTechniques
                 }
                 else
                 {
-                    Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position, TargetPosition, Velocity * Time.deltaTime);
+                    Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position, TargetPosition,
+                        Velocity * Time.deltaTime);
                 }
+
                 TransferSelectedObjects();
 
                 // check if the positions are approximately equal
@@ -79,6 +79,7 @@ namespace VRIL.NavigationTechniques
                     Manager.InputLocked = false;
                     Timer = 0.0f;
                 }
+
                 yield return null;
             }
         }

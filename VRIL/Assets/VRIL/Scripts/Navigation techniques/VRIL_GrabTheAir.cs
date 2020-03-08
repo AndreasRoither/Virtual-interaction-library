@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
 using UnityEngine;
 using VRIL.Base;
 using VRIL.ControllerActionEventArgs;
@@ -16,20 +11,19 @@ namespace Assets.VRIL.Scripts.Navigation_techniques
     /// </summary>
     public class VRIL_GrabTheAir : VRIL_NavigationTechniqueBase
     {
-
-
         // *************************************
         // public properties
         // *************************************
 
-        [Header("Grab the Air Settings")]
-        [Tooltip("The parent object of the whole world")]
+        [Header("Grab the Air Settings")] [Tooltip("The parent object of the whole world")]
         public GameObject World;
+
         [Tooltip("The movement gets multiplicated with this factor")]
         public float MovementScalor = 1.0f;
 
         [Tooltip("Enable axes for navigation (for flying mode enable all axes for navigation)")]
         public bool EnableNavigationX = true;
+
         public bool EnableNavigationY = false;
         public bool EnableNavigationZ = true;
 
@@ -83,24 +77,28 @@ namespace Assets.VRIL.Scripts.Navigation_techniques
             {
                 Vector3 newDiff = (RegisteredControllers[0].transform.position - PrevPosition) * MovementScalor;
                 Vector3 nextPosition = Vector3.zero;
-                if(EnableNavigationX)
+                if (EnableNavigationX)
                 {
                     nextPosition.x = newDiff.x;
                 }
+
                 if (EnableNavigationY)
                 {
                     nextPosition.y = newDiff.y;
                 }
+
                 if (EnableNavigationZ)
                 {
                     nextPosition.z = newDiff.z;
                 }
+
                 SaveDistancesToViewpoint();
                 World.transform.position += nextPosition;
                 PrevPosition = RegisteredControllers[0].transform.position;
                 TransferSelectedObjects();
                 yield return null;
             }
+
             StopAudio();
         }
     }

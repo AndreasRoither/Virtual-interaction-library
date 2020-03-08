@@ -11,25 +11,25 @@ namespace VRIL.NavigationTechniques
     /// </summary>
     public class VRIL_Steering : VRIL_NavigationTechniqueBase
     {
-
-
         // *************************************
         // public properties
         // *************************************
 
         [Header("Steering Settings")]
-        [Tooltip("Enable axes for navigation (for flying mode enable all axes for navigation) and set separate velocities")]
+        [Tooltip(
+            "Enable axes for navigation (for flying mode enable all axes for navigation) and set separate velocities")]
         public bool EnableNavigationX = true;
+
         public float VelocityX = 2.0f;
         public bool EnableNavigationY = false;
         public float VelocityY = 2.0f;
         public bool EnableNavigationZ = true;
         public float VelocityZ = 2.0f;
 
-        [Tooltip("Select steering type")]
+        [Tooltip("Select steering type")] 
         public SteeringTechnique Technique;
-        [HideInInspector]
-        [Tooltip("Select steering mode")]
+
+        [HideInInspector] [Tooltip("Select steering mode")]
         public SteeringMode Mode;
 
 
@@ -37,29 +37,31 @@ namespace VRIL.NavigationTechniques
         // private and protected members
         // *************************************
 
-        private GameObject SteeringObject;
         protected bool IsActivated = false;
+        private GameObject SteeringObject;
         private GameObject Camera;
 
         public void Awake()
         {
             Initialize();
-            if(Mode == SteeringMode.CrosshairsMode || Technique == SteeringTechnique.GazeDirected)
+            if (Mode == SteeringMode.CrosshairsMode || Technique == SteeringTechnique.GazeDirected)
             {
-                if(Viewpoint.GetComponent<Camera>())
+                if (Viewpoint.GetComponent<Camera>())
                 {
                     Camera = Viewpoint;
                 }
-                else if(Viewpoint.GetComponentInChildren<Camera>())
+                else if (Viewpoint.GetComponentInChildren<Camera>())
                 {
                     Camera cam = Viewpoint.GetComponentInChildren<Camera>();
                     Camera = cam.gameObject;
                 }
                 else
                 {
-                    Debug.LogWarning("Could not set camera object. No camera found in viewpoint object! Use hand-directed steering or check camera first.");
+                    Debug.LogWarning(
+                        "Could not set camera object. No camera found in viewpoint object! Use hand-directed steering or check camera first.");
                 }
             }
+
             SteeringObject = Camera != null ? Camera : RegisteredControllers[0];
         }
 
@@ -100,22 +102,27 @@ namespace VRIL.NavigationTechniques
         {
             while (IsActivated)
             {
-                Vector3 direction = (Mode == SteeringMode.CrosshairsMode ? (RegisteredControllers[0].transform.position - Camera.transform.position) : SteeringObject.transform.forward).normalized;
-                
+                Vector3 direction = (Mode == SteeringMode.CrosshairsMode
+                    ? (RegisteredControllers[0].transform.position - Camera.transform.position)
+                    : SteeringObject.transform.forward).normalized;
+
 
                 Vector3 newPosition = Vector3.zero;
-                if(EnableNavigationX)
+                if (EnableNavigationX)
                 {
                     newPosition.x = direction.x;
                 }
+
                 if (EnableNavigationY)
                 {
                     newPosition.y = direction.y;
                 }
+
                 if (EnableNavigationZ)
                 {
                     newPosition.z = direction.z;
                 }
+
                 Vector3 vectorToNextPositon = newPosition;
                 float deltaTime = Time.deltaTime;
                 vectorToNextPositon.x *= VelocityX * deltaTime;
@@ -129,6 +136,7 @@ namespace VRIL.NavigationTechniques
                 TransferSelectedObjects();
                 yield return null;
             }
+
             StopAudio();
         }
 
@@ -155,7 +163,7 @@ namespace VRIL.NavigationTechniques
             DrawDefaultInspector();
             if (steering.Technique == VRIL_Steering.SteeringTechnique.HandDirected)
             {
-                steering.Mode = (VRIL_Steering.SteeringMode)EditorGUILayout.EnumPopup("Mode: ", steering.Mode);
+                steering.Mode = (VRIL_Steering.SteeringMode) EditorGUILayout.EnumPopup("Mode: ", steering.Mode);
             }
         }
     }

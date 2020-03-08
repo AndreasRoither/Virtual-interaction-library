@@ -218,7 +218,8 @@ namespace VRIL.Interactable
         {
             if (Interactable)
             {
-                if ((Interaction_HoldButtonToInteract == false) || (Interaction_HoldButtonToInteract == true && pressedButton == true))
+                if ((Interaction_HoldButtonToInteract == false) ||
+                    (Interaction_HoldButtonToInteract == true && pressedButton == true))
                 {
                     Interaction_Script?.OnCall();
 
@@ -273,6 +274,7 @@ namespace VRIL.Interactable
                             this.newSpeed = Release_MoveToReleaseLocationSpeed;
                             StartCoroutine(MoveAndRotateTowardsPosition());
                         }
+
                         break;
 
                     case ObjectReleaseLocationType.BaseLocationWithNewRotation:
@@ -288,6 +290,7 @@ namespace VRIL.Interactable
                             this.newSpeed = Release_MoveToReleaseLocationSpeed;
                             StartCoroutine(MoveAndRotateTowardsPosition());
                         }
+
                         break;
 
                     case ObjectReleaseLocationType.CurrentLocation:
@@ -406,6 +409,7 @@ namespace VRIL.Interactable
                 // exit if it's still runnning
                 yield break;
             }
+
             isMoving = true;
 
             // bool in case we want to exit from outside of the function
@@ -427,11 +431,13 @@ namespace VRIL.Interactable
                 // rotation
                 if (this.transform.rotation != this.newRotation)
                 {
-                    transform.rotation = Quaternion.Lerp(this.transform.rotation, this.newRotation, (Time.time - startTime) * newSpeed);
+                    transform.rotation = Quaternion.Lerp(this.transform.rotation, this.newRotation,
+                        (Time.time - startTime) * newSpeed);
                 }
 
                 // exit if finished moving
-                if (this.transform.position == this.newPosition && this.transform.rotation == this.newRotation) isMoving = false;
+                if (this.transform.position == this.newPosition && this.transform.rotation == this.newRotation)
+                    isMoving = false;
 
                 yield return null;
             }
