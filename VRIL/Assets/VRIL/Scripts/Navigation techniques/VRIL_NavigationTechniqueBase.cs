@@ -204,5 +204,25 @@ namespace VRIL.NavigationTechniques
         /// </summary>
         /// <param name="e">ControllerActionEventArgs</param>
         public abstract void OnTravel(VRIL_ControllerActionEventArgs e);
+
+        /// <summary>
+        /// Checks whether the given component is attached to the game object and returns it (out param)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="gameObject"></param>
+        /// <param name="component"></param>
+        /// <returns></returns>
+        protected bool HasComponent<C>(GameObject gameObject, out C component, bool inChildren = false) where C : class
+        {
+            if (inChildren)
+            {
+                component = gameObject.GetComponentInChildren<C>();
+            }
+            else
+            {
+                component = gameObject.GetComponent<C>();
+            }
+            return component != null && !component.Equals(null);
+        }
     }
 }

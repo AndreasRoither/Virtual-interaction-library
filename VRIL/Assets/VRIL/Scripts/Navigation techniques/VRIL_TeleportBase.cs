@@ -102,8 +102,7 @@ namespace VRIL.NavigationTechniques
 
             if (HitEntity != null)
             {
-                Renderer rend = HitEntity.GetComponent<Renderer>();
-                if (rend)
+                if (HasComponent(HitEntity, out Renderer rend))
                 {
                     rend.material.SetColor("_Color", ValidPositionColor);
                 }

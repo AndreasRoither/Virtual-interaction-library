@@ -188,7 +188,14 @@ namespace VRIL.NavigationTechniques
             WIMLineRenderer.shadowCastingMode = CastShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
 
             // get camera object
-            ViewpointCamera = Viewpoint.GetComponent<Camera>() ? Viewpoint.GetComponent<Camera>() : Viewpoint.GetComponentsInChildren<Camera>().FirstOrDefault();
+            if(HasComponent(Viewpoint, out Camera cam))
+            {
+                ViewpointCamera = cam;
+            }
+            else if(HasComponent(Viewpoint, out Camera camChild, true))
+            {
+                ViewpointCamera = camChild;
+            }
 
             // bot required for changing position and orientation (create empty in case nothing defined)
             if (!HitEntity)
@@ -215,8 +222,7 @@ namespace VRIL.NavigationTechniques
             }
 
             HitEntity.SetActive(false);
-            Renderer rend = HitEntity.transform.gameObject.GetComponent<Renderer>();
-            if (rend)
+            if (HasComponent(HitEntity, out Renderer rend))
             {
                 rend.material.SetColor("_Color", ValidPositionColor);
             }
@@ -300,9 +306,9 @@ namespace VRIL.NavigationTechniques
             objClone.gameObject.AddComponent<VRIL_WIMObject>();
 
             // set kinematic true for all WIM objects
-            if (objClone.GetComponent<Rigidbody>() != null)
+            if (HasComponent(objClone.gameObject, out Rigidbody rigibody))
             {
-                objClone.GetComponent<Rigidbody>().isKinematic = true;
+                rigibody.isKinematic = true;
             }
 
             if (RefreshWIM)

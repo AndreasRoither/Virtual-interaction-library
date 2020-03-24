@@ -36,7 +36,9 @@ namespace VRIL.Manager
         public VRIL_SDKBase Oculus_Script;
         public VRIL_SDKBase CustomSDK_Script;
 
-        [HideInInspector] public bool InputLocked = false;
+        public bool InputLocked { get; set; }
+
+        //[HideInInspector] public bool InputLocked = false;
 
         /// <summary>
         /// Should be called when a Controller input happened (Button pressed for example)

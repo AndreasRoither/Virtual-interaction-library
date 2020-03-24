@@ -30,7 +30,6 @@ namespace VRIL.InteractionTechniques
         /// <seealso cref="VRIL_ControllerActionEventArgs"/>
         public override void ControllerAction(object sender, VRIL_ControllerActionEventArgs e)
         {
-            Debug.Log(e.ControllerIndex);
             foreach (VRIL_ActionMapping mapping in Mappings)
             {
                 if (mapping.ButtonType == e.ButtonType)

@@ -9,6 +9,7 @@ namespace VRIL.NavigationTechniques
     /// <summary>
     /// Implementation of steering technique
     /// </summary>
+    [System.Serializable]
     public class VRIL_Steering : VRIL_NavigationTechniqueBase
     {
         // *************************************
@@ -46,13 +47,12 @@ namespace VRIL.NavigationTechniques
             Initialize();
             if (Mode == SteeringMode.CrosshairsMode || Technique == SteeringTechnique.GazeDirected)
             {
-                if (Viewpoint.GetComponent<Camera>())
+                if (HasComponent(Viewpoint, out Camera _))
                 {
                     Camera = Viewpoint;
                 }
-                else if (Viewpoint.GetComponentInChildren<Camera>())
+                else if (HasComponent(Viewpoint, out Camera cam, true))
                 {
-                    Camera cam = Viewpoint.GetComponentInChildren<Camera>();
                     Camera = cam.gameObject;
                 }
                 else
@@ -150,21 +150,6 @@ namespace VRIL.NavigationTechniques
         {
             PointingMode,
             CrosshairsMode
-        }
-    }
-
-    [CustomEditor(typeof(VRIL_Steering))]
-    public class SteeringEditor : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            var steering = target as VRIL_Steering;
-
-            DrawDefaultInspector();
-            if (steering.Technique == VRIL_Steering.SteeringTechnique.HandDirected)
-            {
-                steering.Mode = (VRIL_Steering.SteeringMode) EditorGUILayout.EnumPopup("Mode: ", steering.Mode);
-            }
         }
     }
 }
