@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.vril.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "E:\\FH\\VRIL Repository\\VRIL\\actions.json",
+      "action_manifest_path": "E:\\FH\\VRILNavigation\\VRIL\\actions.json",
       "strings": {
         "en_us": {
           "name": "VRIL [Testing]"
