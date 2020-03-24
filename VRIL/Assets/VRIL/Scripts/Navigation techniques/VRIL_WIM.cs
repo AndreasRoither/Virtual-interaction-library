@@ -746,15 +746,10 @@ namespace VRIL.NavigationTechniques
         {
             if (Wim)
             {
-                // upscale WIM to world scale
-                Wim.transform.position = OrigPos;
-                Wim.transform.rotation = OrigRot;
-                Wim.transform.localScale = Vector3.one;
-
                 // replace viewpoint
                 if (PositionSelected)
                 {
-                    TargetPosition = HitEntity.transform.position + new Vector3(0, DistanceViewpointToGround, 0);
+                    TargetPosition = HitEntity.transform.localPosition + new Vector3(0, DistanceViewpointToGround, 0);
                     Viewpoint.transform.position = TargetPosition;
 
                     float? rotationDiffY = null;

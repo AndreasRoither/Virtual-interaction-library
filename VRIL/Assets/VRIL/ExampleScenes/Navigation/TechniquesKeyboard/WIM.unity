@@ -1706,7 +1706,7 @@ MonoBehaviour:
   DistanceControllerToWIM: 0.05
   DisableCollidersInWIM: 1
   SecondsToWaitForNextWIM: 0.5
-  UseFlightIntoTheMiniature: 1
+  UseFlightIntoTheMiniature: 0
   ViewpointVelocity: 0.2
   ScaleVelocity: 1.1
   ViewPointRotationFactor: 10
