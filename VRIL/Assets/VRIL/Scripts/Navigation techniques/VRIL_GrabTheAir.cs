@@ -21,9 +21,8 @@ namespace Assets.VRIL.Scripts.Navigation_techniques
         [Tooltip("The movement gets multiplicated with this factor")]
         public float MovementScalor = 1.0f;
 
-        [Tooltip("Enable axes for navigation (for flying mode enable all axes for navigation)")]
+        [Header("Enable axes for navigation")]
         public bool EnableNavigationX = true;
-
         public bool EnableNavigationY = false;
         public bool EnableNavigationZ = true;
 
