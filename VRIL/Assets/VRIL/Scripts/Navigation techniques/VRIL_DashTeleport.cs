@@ -32,6 +32,7 @@ namespace VRIL.NavigationTechniques
 
         public override void OnTravel(VRIL_ControllerActionEventArgs e)
         {
+            // if a valid position is selected, travel is triggered
             if (PositionSelected && !DelayToNextTravel)
             {
                 // allow no other input while travelling to target position

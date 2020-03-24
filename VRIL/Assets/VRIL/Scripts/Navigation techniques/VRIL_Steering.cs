@@ -7,7 +7,8 @@ using VRIL.ControllerActionEventArgs;
 namespace VRIL.NavigationTechniques
 {
     /// <summary>
-    /// Implementation of steering technique
+    /// Implementation of steering based metaphors
+    /// This class contains gaze directed steering as well as hand directed steering
     /// </summary>
     [System.Serializable]
     public class VRIL_Steering : VRIL_NavigationTechniqueBase
@@ -35,16 +36,18 @@ namespace VRIL.NavigationTechniques
 
 
         // *************************************
-        // private and protected members
+        // private members
         // *************************************
 
-        protected bool IsActivated = false;
+        private bool IsActivated = false;
         private GameObject SteeringObject;
         private GameObject Camera;
 
         public void Awake()
         {
             Initialize();
+
+            // gaze directed steering and hand directed steering with pointing mode needs the camera object
             if (Mode == SteeringMode.CrosshairsMode || Technique == SteeringTechnique.GazeDirected)
             {
                 if (HasComponent(Viewpoint, out Camera _))
@@ -61,7 +64,6 @@ namespace VRIL.NavigationTechniques
                         "Could not set camera object. No camera found in viewpoint object! Use hand-directed steering or check camera first.");
                 }
             }
-
             SteeringObject = Camera != null ? Camera : RegisteredControllers[0];
         }
 
@@ -125,12 +127,15 @@ namespace VRIL.NavigationTechniques
 
                 Vector3 vectorToNextPositon = newPosition;
                 float deltaTime = Time.deltaTime;
+
+                // set movement for each axis separately
                 vectorToNextPositon.x *= VelocityX * deltaTime;
                 vectorToNextPositon.y *= VelocityY * deltaTime;
                 vectorToNextPositon.z *= VelocityZ * deltaTime;
 
-                Vector3 CalculatedPosition = Viewpoint.transform.position + vectorToNextPositon;
-                TargetPosition = CalculatedPosition;
+                TargetPosition = Viewpoint.transform.position + vectorToNextPositon;
+
+                // transfer viewpoint
                 SaveDistancesToViewpoint();
                 Viewpoint.transform.position = TargetPosition;
                 TransferSelectedObjects();
@@ -140,6 +145,9 @@ namespace VRIL.NavigationTechniques
             StopAudio();
         }
 
+        /// <summary>
+        /// enum for different steering techniques
+        /// </summary>
         public enum SteeringTechnique
         {
             HandDirected,

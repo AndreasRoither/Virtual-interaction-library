@@ -52,18 +52,18 @@ namespace VRIL.NavigationTechniques
         [Tooltip("Velocities for flying into the miniature")]
         public float ViewpointVelocity = 0.5f;
 
-        public float ScaleVelocity = 0.001f;
+        [Range(1.0f, 10.0f)]
+        public float ScaleVelocity = 1.001f;
         public float ViewPointRotationFactor = 3.0f;
 
         [Header("Doll Settings")]
         [Tooltip(
             "A doll is an object that represents the player in the WIM. Usually, it is a human figure but also a simple arrow can be used. " +
-            "The model needs to be in normal size (in larged-scaled world), it will be automatically downscaled with other objects. " +
-            "Since the viewpoint orientation changes are based on the doll object, a WIM without any doll will not change players orientation.")]
+            "The model needs to be in normal size (in larged-scaled world), it will be automatically downscaled with other objects.")]
         public GameObject Doll;
 
         [Tooltip(
-            "The shadow doll visualizes the new position and orientation of the viewpoint. It can be also null (a copy of the doll is used then).")]
+            "The shadow doll visualizes the new position and orientation of the viewpoint at the desired target position.")]
         public GameObject ShadowDoll;
 
         [Tooltip(
@@ -103,25 +103,37 @@ namespace VRIL.NavigationTechniques
 
 
         // *************************************
-        // private or protected members
+        // private members
         // *************************************
 
         private Vector3 PrevCameraRotationEuler;
+
+        // camera necessary to update doll according to camera
         private Camera ViewpointCamera;
+
+        // when technique is activated, the WIM is shown
         private bool IsActivated;
         private bool WIMObjectHit;
-        private float CurrentVelocity;
+
+        // the viewpoint velocity used for flying into the miniature
+        private float Velocity;
+
+        // both controller objects (used for ray and WIM)
         private GameObject WIMHand;
         private GameObject RayHand;
-        protected LineRenderer WIMLineRenderer;
-        protected GameObject WIMLineRendererObject;
-        protected float Timer = 0.0f;
+
+        // line renderer for the position selection on the WIM
+        private LineRenderer WIMLineRenderer;
+        private GameObject WIMLineRendererObject;
+
+        // allow next activation after given time
+        private float Timer = 0.0f;
         private bool DelayToNextTravel = false;
 
-        // current doll instance
+        // figure which represents the player in the WIM
         private GameObject CurrentDoll;
 
-        // shadow doll to visualize new position
+        // figure to visualize of the player on target position in the WIM
         private GameObject CurrentShadowDoll;
 
         // save current position rotation and scale of WIM
@@ -129,23 +141,24 @@ namespace VRIL.NavigationTechniques
         private Quaternion CurrentWIMRotation;
         private Vector3 CurrentScale;
 
+        // during flight into the miniature, no further inputs are allowed
         private bool TravelMode = false;
 
-        // wim object and init pos and rotation
+        // wim object and initial position and rotation of the miniature world
         private GameObject Wim;
         private Vector3 OrigPos;
         private Quaternion OrigRot;
 
-        // save temporary all clone objects in a list
+        // save all WIM components (used for synchronizing both worlds)
         private IList<MeshRenderer> Clones;
 
         // save original mesh renderer for each cloned object instanceID (required for refreshing WIM)
         private IDictionary<int, MeshRenderer> MappingCloneIdsToOriginals;
 
-        // necessary for doll ghost rotation
+        // necessary for shadow doll rotation manipulation
         private Vector3 PrevControllerRotation;
 
-        // necessary for viewpoint
+        // necessary for viewpoint rotation manipulation
         private Quaternion PrevViewpointRotation;
 
         protected virtual void Update()
@@ -256,7 +269,7 @@ namespace VRIL.NavigationTechniques
                     if (!IsActivated && !DelayToNextTravel)
                     {
                         TargetPosition = Viewpoint.transform.position;
-                        CurrentVelocity = ViewpointVelocity;
+                        Velocity = ViewpointVelocity;
                         CurrentScale = Vector3.one;
                         CurrentScale *= ScaleFactor;
                         CreateWim();
@@ -415,7 +428,7 @@ namespace VRIL.NavigationTechniques
                 }
             }
 
-            // check wether new objects exists and add them
+            // check wether new objects are added in the large-scaled world and add them in the WIM
             foreach (MeshRenderer m in findAll)
             {
                 bool found = false;
@@ -427,7 +440,6 @@ namespace VRIL.NavigationTechniques
                         break;
                     }
                 }
-
                 if (!found)
                 {
                     MeshRenderer clone = CloneMeshRenderer(m);
@@ -437,7 +449,7 @@ namespace VRIL.NavigationTechniques
                 }
             }
 
-            // refresh all WIM objects
+            // refresh position and rotation of all WIM objects according to their originals in the large-scaled world
             foreach (MeshRenderer clone in Clones)
             {
                 MeshRenderer m = MappingCloneIdsToOriginals[clone.GetInstanceID()];
@@ -689,22 +701,26 @@ namespace VRIL.NavigationTechniques
             // start animation
             while (TravelMode)
             {
+                // draw WIM with current scale
                 DrawWIM();
+
+                // calculate next scale (WIM becomes larger)
                 if (CurrentScale.x < FINAL_SCALE)
                 {
-                    CurrentScale *= (1 + ScaleVelocity);
+                    CurrentScale *= ScaleVelocity;
                 }
 
+                // perform a rotation step
                 if (CurrentShadowDoll)
                 {
                     float step = viewpointRotation * Time.deltaTime;
-                    //Viewpoint.transform.rotation = Quaternion.RotateTowards(Viewpoint.transform.rotation, CurrentShadowDoll.transform.rotation, step);
                     Viewpoint.transform.rotation =
                         Quaternion.RotateTowards(Viewpoint.transform.rotation, rotation, step);
                 }
 
+                // move viewpoint closer to the target position
                 Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position,
-                    HitEntity.transform.position, CurrentVelocity * Time.deltaTime);
+                    HitEntity.transform.position, Velocity * Time.deltaTime);
                 if (CurrentScale.x >= FINAL_SCALE)
                 {
                     TravelMode = false;
@@ -760,6 +776,13 @@ namespace VRIL.NavigationTechniques
 
                 DelayToNextTravel = true;
             }
+        }
+
+        /// <summary>
+        /// Empty component to identify WIM objects
+        /// </summary>
+        private class VRIL_WIMObject : MonoBehaviour
+        {
         }
     }
 }

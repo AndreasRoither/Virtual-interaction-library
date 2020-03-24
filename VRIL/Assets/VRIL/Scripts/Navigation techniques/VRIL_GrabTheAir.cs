@@ -29,10 +29,10 @@ namespace Assets.VRIL.Scripts.Navigation_techniques
 
 
         // *************************************
-        // private and protected members
+        // private members
         // *************************************
 
-        protected bool IsActivated = false;
+        private bool IsActivated = false;
         private Vector3 PrevPosition;
 
         public void Awake()
@@ -91,14 +91,12 @@ namespace Assets.VRIL.Scripts.Navigation_techniques
                 {
                     nextPosition.z = newDiff.z;
                 }
-
                 SaveDistancesToViewpoint();
                 World.transform.position += nextPosition;
                 PrevPosition = RegisteredControllers[0].transform.position;
                 TransferSelectedObjects();
                 yield return null;
             }
-
             StopAudio();
         }
     }

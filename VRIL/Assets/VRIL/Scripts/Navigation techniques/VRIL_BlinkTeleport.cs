@@ -31,7 +31,7 @@ namespace VRIL.NavigationTechniques
         // *************************************
 
         private bool SceneOff = false;
-        protected float SceneOffTimer = 0.0f;
+        private float SceneOffTimer = 0.0f;
 
 
         /// <summary>
@@ -42,6 +42,7 @@ namespace VRIL.NavigationTechniques
         {
             if (IsActivated && !DelayToNextTravel)
             {
+                // if a valid position is selected, travel is triggered
                 if (PositionSelected)
                 {
                     PlayAudio();
@@ -51,6 +52,8 @@ namespace VRIL.NavigationTechniques
                     PositionSelected = false;
                     Timer = 0.0f;
                     DelayToNextTravel = true;
+
+                    // blink scene away immediately
                     if (SceneBlinksAway)
                     {
                         SteamVR_Fade.View(SceneOffColor, 0);
@@ -64,6 +67,8 @@ namespace VRIL.NavigationTechniques
                 }
 
                 IsActivated = false;
+
+                // in case travel does not disabled technique, selection mode is actived again
                 if (!TravelDisablesTechnique)
                 {
                     IsActivated = true;
@@ -78,6 +83,8 @@ namespace VRIL.NavigationTechniques
             if (SceneOff)
             {
                 SceneOffTimer += Time.deltaTime;
+
+                // after a certain time, the scene fades in with the provided duration
                 if (SceneOffTimer >= SceneOffDuration)
                 {
                     SteamVR_Fade.View(Color.clear, FadeInDuration);

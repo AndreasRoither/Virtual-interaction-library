@@ -27,15 +27,16 @@ namespace VRIL.NavigationTechniques
 
 
         // *************************************
-        // protected members
+        // protected and private members
         // *************************************
 
         protected Dictionary<int, Vector3> SelectedObjectDistancesToViewpoint = new Dictionary<int, Vector3>();
         protected bool PositionSelected = false;
-        protected Vector3 TargetPosition = new Vector3(0, 0, 0);
+        protected Vector3 TargetPosition = Vector3.zero;
         protected bool TravelOnRelease = true;
         protected float DistanceViewpointToGround;
         protected bool MoveSelectedObjects = true;
+        private readonly IList<VRIL_Interactable> SelectedObjects = new List<VRIL_Interactable>();
 
         /// <summary>
         /// Called from <see cref="VRIL_Manager"/> when a button is pressed
@@ -87,15 +88,19 @@ namespace VRIL.NavigationTechniques
             {
                 return;
             }
-
+            SelectedObjects.Clear();
             foreach (VRIL_RegisteredController regController in Manager.RegisteredControllers)
             {
                 foreach (VRIL_InteractionTechniqueBase interactionTechnique in regController.InteractionTechniques)
                 {
                     foreach (VRIL_Interactable selectedObject in interactionTechnique.GetSelectedObjects())
                     {
-                        SelectedObjectDistancesToViewpoint[selectedObject.GetInstanceID()] =
-                            selectedObject.transform.position - Viewpoint.transform.position;
+                        if(selectedObject.Interaction_Manipulation_PositionChangeAble)
+                        {
+                            SelectedObjectDistancesToViewpoint[selectedObject.GetInstanceID()] =
+                                selectedObject.transform.position - Viewpoint.transform.position;
+                            SelectedObjects.Add(selectedObject);
+                        }
                     }
                 }
             }
@@ -106,31 +111,22 @@ namespace VRIL.NavigationTechniques
         /// </summary>
         protected void TransferSelectedObjects(float? angle = null)
         {
-            if (!MoveSelectedObjects || !Viewpoint)
+            if (!MoveSelectedObjects || SelectedObjects.Count <= 0 || !Viewpoint)
             {
                 return;
             }
-
-            foreach (VRIL_RegisteredController regController in Manager.RegisteredControllers)
+            foreach (VRIL_Interactable selectedObject in SelectedObjects)
             {
-                if (MoveSelectedObjects)
+                selectedObject.transform.position =
+                    SelectedObjectDistancesToViewpoint[selectedObject.GetInstanceID()] +
+                    Viewpoint.transform.position;
+                if (angle != null)
                 {
-                    foreach (VRIL_InteractionTechniqueBase interactionTechnique in regController.InteractionTechniques)
-                    {
-                        foreach (VRIL_Interactable selectedObject in interactionTechnique.GetSelectedObjects())
-                        {
-                            selectedObject.transform.position =
-                                SelectedObjectDistancesToViewpoint[selectedObject.GetInstanceID()] +
-                                Viewpoint.transform.position;
-                            if (angle != null)
-                            {
-                                selectedObject.transform.RotateAround(Viewpoint.transform.position,
-                                    Viewpoint.transform.up, angle ?? 0.0f);
-                            }
-                        }
-                    }
+                    selectedObject.transform.RotateAround(Viewpoint.transform.position,
+                        Viewpoint.transform.up, angle ?? 0.0f);
                 }
             }
+
         }
 
         /// <summary>
