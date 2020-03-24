@@ -27,7 +27,7 @@ namespace VRIL.NavigationTechniques
 
 
         // *************************************
-        // private and protected members
+        // private members
         // *************************************
 
         private bool SceneOff = false;

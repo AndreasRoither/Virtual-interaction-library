@@ -135,6 +135,7 @@ namespace VRIL.NavigationTechniques
 
         // figure to visualize of the player on target position in the WIM
         private GameObject CurrentShadowDoll;
+        private float DistanceToGroundShadowDoll = 0.0f;
 
         // save current position rotation and scale of WIM
         private Vector3 CurrentWIMPosition;
@@ -160,6 +161,7 @@ namespace VRIL.NavigationTechniques
 
         // necessary for viewpoint rotation manipulation
         private Quaternion PrevViewpointRotation;
+
 
         protected virtual void Update()
         {
@@ -220,6 +222,11 @@ namespace VRIL.NavigationTechniques
             {
                 Doll = new GameObject();
             }
+            if(!ShadowDoll)
+            {
+                ShadowDoll = Doll;
+            }
+            DistanceToGroundShadowDoll = ShadowDoll.transform.position.y;
         }
 
         public void Start()
@@ -268,7 +275,7 @@ namespace VRIL.NavigationTechniques
                 {
                     if (!IsActivated && !DelayToNextTravel)
                     {
-                        TargetPosition = Viewpoint.transform.position;
+                        TargetPosition = Viewpoint.transform.position - new Vector3(0, DistanceViewpointToGround, 0);
                         Velocity = ViewpointVelocity;
                         CurrentScale = Vector3.one;
                         CurrentScale *= ScaleFactor;
@@ -385,7 +392,7 @@ namespace VRIL.NavigationTechniques
                 CurrentDoll.transform.eulerAngles = new Vector3(CurrentDoll.transform.rotation.eulerAngles.x,
                     CurrentDoll.transform.rotation.eulerAngles.y, CurrentDoll.transform.rotation.eulerAngles.z);
                 CurrentDoll.transform.parent = Wim.transform;
-                CurrentShadowDoll = Instantiate(ShadowDoll != null ? ShadowDoll : new GameObject());
+                CurrentShadowDoll = Instantiate(ShadowDoll);
                 CurrentShadowDoll.transform.parent = Wim.transform;
                 if (ViewpointCamera)
                 {
@@ -572,9 +579,7 @@ namespace VRIL.NavigationTechniques
                         if (CurrentShadowDoll)
                         {
                             CurrentShadowDoll.transform.position = raycastHit.point;
-                            CurrentShadowDoll.transform.localPosition += new Vector3(0,
-                                (ShadowDoll ? ShadowDoll.transform.position.y : Doll.transform.position.y) +
-                                DistanceViewpointToGround, 0);
+                            CurrentShadowDoll.transform.localPosition += new Vector3(0, DistanceToGroundShadowDoll, 0);
                             float diffZ = RayHand.transform.localEulerAngles.z - PrevControllerRotation.z;
                             PrevControllerRotation = RayHand.transform.localEulerAngles;
 
@@ -697,6 +702,11 @@ namespace VRIL.NavigationTechniques
                 CurrentShadowDoll.transform.localEulerAngles = origRotShadowDoll;
             }
 
+            // use an empty hit entity object for correct position (includes distance to ground)
+            GameObject temporaryHitEntity = new GameObject();
+            temporaryHitEntity.transform.parent = Wim.transform;
+            temporaryHitEntity.transform.localPosition = HitEntity.transform.localPosition;
+            temporaryHitEntity.transform.localPosition += new Vector3(0, DistanceViewpointToGround, 0);
 
             // start animation
             while (TravelMode)
@@ -720,7 +730,7 @@ namespace VRIL.NavigationTechniques
 
                 // move viewpoint closer to the target position
                 Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position,
-                    HitEntity.transform.position, Velocity * Time.deltaTime);
+                    temporaryHitEntity.transform.position, Velocity * Time.deltaTime);
                 if (CurrentScale.x >= FINAL_SCALE)
                 {
                     TravelMode = false;

@@ -96,6 +96,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -131,7 +132,7 @@ GameObject:
   - component: {fileID: 526611921}
   - component: {fileID: 526611920}
   m_Layer: 0
-  m_Name: '---- VRIL Manager ----'
+  m_Name: ---- VRIL Manager ----
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -161,7 +162,6 @@ MonoBehaviour:
   OpenVR_Script: {fileID: 0}
   Oculus_Script: {fileID: 0}
   CustomSDK_Script: {fileID: 0}
-  InputLocked: 0
 --- !u!4 &526611921
 Transform:
   m_ObjectHideFlags: 0
@@ -223,6 +223,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -276,10 +277,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1109514740538745212, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_Text
+      value: 'Q,E to rotate viewpoint
+
+        W,S move controller up and down
+
+        A,
+        D rotate controller
+
+        F to activate the technique'
+      objectReference: {fileID: 0}
     - target: {fileID: 3255873710676035636, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
       propertyPath: m_Name
-      value: '---- World ----'
+      value: ---- World ----
       objectReference: {fileID: 0}
     - target: {fileID: 3255873710676035637, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
@@ -336,16 +349,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7870147975665568437, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -49.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 7870147975665568437, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 90
-      objectReference: {fileID: 0}
     - target: {fileID: 3255873711129459916, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
       propertyPath: m_Color.b
@@ -356,16 +359,15 @@ PrefabInstance:
       propertyPath: m_Color.g
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1109514740538745212, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+    - target: {fileID: 7870147975665568437, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
-      propertyPath: m_Text
-      value: 'Q,E to rotate viewpoint
-
-        W,S move controller up and down
-
-        A, D rotate controller
-
-        F to activate the technique'
+      propertyPath: m_AnchoredPosition.y
+      value: -49.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7870147975665568437, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 90
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85b8f3ce06cdce847bbb80d0df9b4f39, type: 3}
@@ -388,11 +390,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 9176674736536849282, guid: 5398f0b10160eba42a2c2be26063d119,
-        type: 3}
-      propertyPath: m_Name
-      value: Viewpoint
-      objectReference: {fileID: 0}
     - target: {fileID: 9176674736536849281, guid: 5398f0b10160eba42a2c2be26063d119,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -447,6 +444,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9176674736536849282, guid: 5398f0b10160eba42a2c2be26063d119,
+        type: 3}
+      propertyPath: m_Name
+      value: Viewpoint
       objectReference: {fileID: 0}
     - target: {fileID: 9176674738602040134, guid: 5398f0b10160eba42a2c2be26063d119,
         type: 3}
@@ -552,11 +554,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1986904515}
     m_Modifications:
-    - target: {fileID: 1640449799855184830, guid: 97854c00d53c20e45a5b5f10a0c0fde6,
-        type: 3}
-      propertyPath: m_Name
-      value: BlinkTeleport
-      objectReference: {fileID: 0}
     - target: {fileID: 1640449799855184829, guid: 97854c00d53c20e45a5b5f10a0c0fde6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -612,10 +609,15 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1640449799855184830, guid: 97854c00d53c20e45a5b5f10a0c0fde6,
+        type: 3}
+      propertyPath: m_Name
+      value: BlinkTeleport
+      objectReference: {fileID: 0}
     - target: {fileID: 4223839040704700718, guid: 97854c00d53c20e45a5b5f10a0c0fde6,
         type: 3}
       propertyPath: Mappings.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4223839040704700718, guid: 97854c00d53c20e45a5b5f10a0c0fde6,
         type: 3}
@@ -660,12 +662,12 @@ PrefabInstance:
     - target: {fileID: 4223839040704700718, guid: 97854c00d53c20e45a5b5f10a0c0fde6,
         type: 3}
       propertyPath: TravelDisablesTechnique
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4223839040704700718, guid: 97854c00d53c20e45a5b5f10a0c0fde6,
         type: 3}
       propertyPath: MaximumSurfaceAngle
-      value: 0
+      value: 45
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 97854c00d53c20e45a5b5f10a0c0fde6, type: 3}

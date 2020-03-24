@@ -24,78 +24,86 @@ public class VRIL_Keyboard2 : MonoBehaviour
 
     public GameObject Viewpoint = null;
 
-    private enum Controller
+    public enum Controller
     {
         LeftController,
         RightController,
     }
 
-    private Controller selectedController = Controller.LeftController;
+    public Controller SelectedController = Controller.LeftController;
     private readonly Dictionary<Controller, int> ControllerNumberMapping = new Dictionary<Controller, int>();
 
     void Start()
     {
-        UIText.text = "Selected Controller: LeftController";
+        if(!Viewpoint)
+        {
+            Debug.LogError("Viewpoint not set!");
+        }
+        if (!Manager)
+        {
+            Debug.LogError("Manager not set!");
+        }
+        UIText.text = SelectedController == Controller.LeftController ? "Selected Controller: LeftController" : "Selected Controller: RightController";
         ControllerNumberMapping[Controller.LeftController] = 0;
         ControllerNumberMapping[Controller.RightController] = 1;
     }
 
     void Update()
     {
-        if (LeftHand != null && RightHand != null)
+        if (LeftHand != null && RightHand != null && Manager != null && Viewpoint != null)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                selectedController = Controller.LeftController;
+                SelectedController = Controller.LeftController;
                 UIText.text = "Selected Controller: LeftController";
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                selectedController = Controller.RightController;
+                SelectedController = Controller.RightController;
                 UIText.text = "Selected Controller: RightController";
             }
 
             if (Input.GetMouseButtonDown(0))
             {
-                VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(ControllerNumberMapping[selectedController], VRIL.Base.VRIL_ButtonType.Button1, VRIL.Base.VRIL_ButtonInteractionType.Pressed);
-                Manager?.OnControllerAction(e);
+                VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(ControllerNumberMapping[SelectedController], VRIL.Base.VRIL_ButtonType.Button1, VRIL.Base.VRIL_ButtonInteractionType.Pressed);
+                Manager.OnControllerAction(e);
             }
 
             if (Input.GetMouseButtonUp(0))
             {
-                VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(ControllerNumberMapping[selectedController], VRIL.Base.VRIL_ButtonType.Button1, VRIL.Base.VRIL_ButtonInteractionType.Released);
-                Manager?.OnControllerAction(e);
+                VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(ControllerNumberMapping[SelectedController], VRIL.Base.VRIL_ButtonType.Button1, VRIL.Base.VRIL_ButtonInteractionType.Released);
+                Manager.OnControllerAction(e);
             }
 
             if (Input.GetMouseButtonDown(1))
             {
-                VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(ControllerNumberMapping[selectedController], VRIL.Base.VRIL_ButtonType.Button1, VRIL.Base.VRIL_ButtonInteractionType.Pressed);
-                Manager?.OnControllerAction(e);
+                VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(ControllerNumberMapping[SelectedController], VRIL.Base.VRIL_ButtonType.Button1, VRIL.Base.VRIL_ButtonInteractionType.Pressed);
+                Manager.OnControllerAction(e);
             }
 
             if (Input.GetMouseButtonUp(1))
             {
-                VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(ControllerNumberMapping[selectedController], VRIL.Base.VRIL_ButtonType.Button1, VRIL.Base.VRIL_ButtonInteractionType.Released);
-                Manager?.OnControllerAction(e);
+                VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(ControllerNumberMapping[SelectedController], VRIL.Base.VRIL_ButtonType.Button1, VRIL.Base.VRIL_ButtonInteractionType.Released);
+                Manager.OnControllerAction(e);
             }
 
             if (Input.GetKeyDown(KeyCode.R))
             {
-                VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(ControllerNumberMapping[selectedController], VRIL.Base.VRIL_ButtonType.Touchpad, VRIL.Base.VRIL_ButtonInteractionType.Pressed);
-                Manager?.OnControllerAction(e);
+                VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(ControllerNumberMapping[SelectedController], VRIL.Base.VRIL_ButtonType.Touchpad, VRIL.Base.VRIL_ButtonInteractionType.Pressed);
+                Manager.OnControllerAction(e);
             }
 
             if (Input.GetKeyDown(KeyCode.F) && pressedF == false)
             {
-                VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(ControllerNumberMapping[selectedController], VRIL.Base.VRIL_ButtonType.Trigger, VRIL.Base.VRIL_ButtonInteractionType.Pressed);
-                Manager?.OnControllerAction(e);
+                VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(ControllerNumberMapping[SelectedController], VRIL.Base.VRIL_ButtonType.Trigger, VRIL.Base.VRIL_ButtonInteractionType.Pressed);
+                Manager.OnControllerAction(e);
                 pressedF = true;
             }
             if (Input.GetKeyUp(KeyCode.F) && pressedF)
             {
-                VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(ControllerNumberMapping[selectedController], VRIL.Base.VRIL_ButtonType.Trigger, VRIL.Base.VRIL_ButtonInteractionType.Released);
-                Manager?.OnControllerAction(e);
+                VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(ControllerNumberMapping[SelectedController], VRIL.Base.VRIL_ButtonType.Trigger, VRIL.Base.VRIL_ButtonInteractionType.Released);
+                Manager.OnControllerAction(e);
                 pressedF = false;
             }
 
@@ -103,29 +111,29 @@ public class VRIL_Keyboard2 : MonoBehaviour
             if (Input.GetKey(KeyCode.Space))
             {
                 VRIL_ControllerActionEventArgs e = new VRIL_ControllerActionEventArgs(0, VRIL.Base.VRIL_ButtonType.Button2, VRIL.Base.VRIL_ButtonInteractionType.Pressed);
-                Manager?.OnControllerAction(e);
+                Manager.OnControllerAction(e);
 
                 VRIL_ControllerActionEventArgs e2 = new VRIL_ControllerActionEventArgs(2, VRIL.Base.VRIL_ButtonType.Button2, VRIL.Base.VRIL_ButtonInteractionType.Pressed);
-                Manager?.OnControllerAction(e2);
+                Manager.OnControllerAction(e2);
             }
 
             // rotation
             if (Input.GetKey(KeyCode.Q))
             {
-                Viewpoint?.transform.Rotate(0, -RotationFactor, 0);
+                Viewpoint.transform.Rotate(0, -RotationFactor, 0);
             }
 
             if (Input.GetKey(KeyCode.E))
             {
-                Viewpoint?.transform.Rotate(0, RotationFactor, 0);
+                Viewpoint.transform.Rotate(0, RotationFactor, 0);
             }
             if (Input.GetKey(KeyCode.W))
             {
-                if (selectedController == Controller.LeftController)
+                if (SelectedController == Controller.LeftController)
                 {
                     LeftHand.transform.position = new Vector3(LeftHand.transform.position.x, LeftHand.transform.position.y + MoveFactor, LeftHand.transform.position.z);
                 }
-                else if (selectedController == Controller.RightController)
+                else if (SelectedController == Controller.RightController)
                 {
                     RightHand.transform.position = new Vector3(RightHand.transform.position.x, RightHand.transform.position.y + MoveFactor, RightHand.transform.position.z);
                 }
@@ -133,11 +141,11 @@ public class VRIL_Keyboard2 : MonoBehaviour
 
             if (Input.GetKey(KeyCode.S))
             {
-                if (selectedController == Controller.LeftController)
+                if (SelectedController == Controller.LeftController)
                 {
                     LeftHand.transform.position = new Vector3(LeftHand.transform.position.x, LeftHand.transform.position.y - MoveFactor, LeftHand.transform.position.z);
                 }
-                else if (selectedController == Controller.RightController)
+                else if (SelectedController == Controller.RightController)
                 {
                     RightHand.transform.position = new Vector3(RightHand.transform.position.x, RightHand.transform.position.y - MoveFactor, RightHand.transform.position.z);
                 }
@@ -145,11 +153,11 @@ public class VRIL_Keyboard2 : MonoBehaviour
 
             if (Input.GetKey(KeyCode.Y))
             {
-                if (selectedController == Controller.LeftController)
+                if (SelectedController == Controller.LeftController)
                 {
                     LeftHand.transform.Rotate(-RotationFactor, 0, 0);
                 }
-                else if (selectedController == Controller.RightController)
+                else if (SelectedController == Controller.RightController)
                 {
                     RightHand.transform.Rotate(-RotationFactor, 0, 0);
                 }
@@ -157,11 +165,11 @@ public class VRIL_Keyboard2 : MonoBehaviour
 
             if (Input.GetKey(KeyCode.X))
             {
-                if (selectedController == Controller.LeftController)
+                if (SelectedController == Controller.LeftController)
                 {
                     LeftHand.transform.Rotate(RotationFactor, 0, 0);
                 }
-                else if (selectedController == Controller.RightController)
+                else if (SelectedController == Controller.RightController)
                 {
                     RightHand.transform.Rotate(RotationFactor, 0, 0);
                 }
@@ -169,11 +177,11 @@ public class VRIL_Keyboard2 : MonoBehaviour
 
             if (Input.GetKey(KeyCode.A))
             {
-                if (selectedController == Controller.LeftController)
+                if (SelectedController == Controller.LeftController)
                 {
                     LeftHand.transform.Rotate(0, -RotationFactor, 0);
                 }
-                else if (selectedController == Controller.RightController)
+                else if (SelectedController == Controller.RightController)
                 {
                     RightHand.transform.Rotate(0, -RotationFactor, 0);
                 }
@@ -181,16 +189,20 @@ public class VRIL_Keyboard2 : MonoBehaviour
 
             if (Input.GetKey(KeyCode.D))
             {
-                if (selectedController == Controller.LeftController)
+                if (SelectedController == Controller.LeftController)
                 {
                     LeftHand.transform.Rotate(0, RotationFactor, 0);
                 }
-                else if (selectedController == Controller.RightController)
+                else if (SelectedController == Controller.RightController)
                 {
                     RightHand.transform.Rotate(0, RotationFactor, 0);
                 }
             }
 
+        }
+        else
+        {
+            Debug.LogWarning("Controller, Manager or Viewpoint not set! No action is performed.");
         }
     }
 }

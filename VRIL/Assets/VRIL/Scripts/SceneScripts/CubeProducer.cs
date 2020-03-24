@@ -11,6 +11,12 @@ public class CubeProducer : MonoBehaviour
 
     private readonly float maxTime = 3.0f;
 
+    public float CubeSizeX = 3.0f;
+    public float CubeSizeY = 3.0f;
+    public float CubeSizeZ = 3.0f;
+
+    public float SpawnHeight = 20.0f;
+
     public GameObject Prefab;
 
     // Start is called before the first frame update
@@ -27,8 +33,8 @@ public class CubeProducer : MonoBehaviour
         {
             GameObject g = Instantiate(Prefab);
             g.AddComponent<SelfDestruction>();
-            g.transform.localScale = new Vector3(4, 4, 4);
-            g.transform.position += new Vector3(0, 30, 0);
+            g.transform.localScale = new Vector3(CubeSizeX, CubeSizeY, CubeSizeZ);
+            g.transform.position += new Vector3(0, SpawnHeight, 0);
             curTime = 0;
         }
     }
