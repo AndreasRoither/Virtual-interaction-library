@@ -208,15 +208,15 @@ namespace VRIL.NavigationTechniques
         /// <param name="gameObject"></param>
         /// <param name="component"></param>
         /// <returns></returns>
-        protected bool HasComponent<C>(GameObject gameObject, out C component, bool inChildren = false) where C : class
+        protected bool HasComponent<T>(GameObject gameObject, out T component, bool inChildren = false) where T : class
         {
             if (inChildren)
             {
-                component = gameObject.GetComponentInChildren<C>();
+                component = gameObject.GetComponentInChildren<T>();
             }
             else
             {
-                component = gameObject.GetComponent<C>();
+                component = gameObject.GetComponent<T>();
             }
             return component != null && !component.Equals(null);
         }
