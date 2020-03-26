@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.VRIL.Scripts;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -302,6 +303,7 @@ namespace VRIL.NavigationTechniques
                      m.gameObject.activeSelf &&
                      m.GetComponent<Collider>() != null &&
                      m.GetComponent<VRIL_WIMObject>() == null &&
+                     m.GetComponent<VRIL_WIMIgnore>() == null &&
                      Array.IndexOf(RegisteredControllers.ToArray(), m.gameObject) < 0 &&
                      (m.gameObject.GetInstanceID() != HitEntity.gameObject.GetInstanceID()) &&
                      (m.bounds.size.x >= ObjectTresholdX || m.bounds.size.y >= ObjectTresholdY ||
