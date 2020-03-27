@@ -1,55 +1,34 @@
-﻿namespace VRIL.InteractionTechniques
-{
-    using System.Collections.Generic;
-    using UnityEngine;
-    using VRIL.Interactable;
-    using VRIL.Manager;
-    using VRIL.ControllerActionEventArgs;
-    using VRIL.Base;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using VRIL.Base;
+using VRIL.ControllerActionEventArgs;
+using VRIL.Interactable;
+using VRIL.Manager;
+using VRIL.TechniqueBase;
 
+namespace VRIL.InteractionTechniques
+{
     /// <summary>
     /// Base class for all VRIL Interaction Techniques
     /// </summary>
-    public abstract class VRIL_InteractionTechniqueBase : MonoBehaviour
+    public abstract class VRIL_InteractionTechniqueBase : VRIL_TechniqueBase
     {
-        [Header("VRIL Manager")]
-        public VRIL_Manager Manager;
-
-        [Header("Controller - Action Mapping")]
-        public List<VRIL_ActionMapping> Mappings = new List<VRIL_ActionMapping>();
         public List<VRIL_Interactable> SelectableObjects = new List<VRIL_Interactable>();
 
         protected List<VRIL_Interactable> SelectedObjects = new List<VRIL_Interactable>();
-        protected List<GameObject> RegisteredControllers = new List<GameObject>();
 
         [Header("Controller")]
         [Tooltip("First Controller has Index 0!")]
         public int DominantControllerIndex;
 
         /// <summary>
-        /// Initalizes needed components
-        /// <para>Checks if a Manager is applied and gets the necessary ressources</para>
-        /// </summary>
-        public void Initialize()
-        {
-            if (Manager != null)
-            {
-                RegisteredControllers = Manager.GetRegisteredControllers(this);
-            }
-            else
-            {
-                Debug.LogWarning($"<b>VRIL:</b>\nManager not assigned at {this.GetType().Name}");
-            }
-        }
-
-        /// <summary>
-        /// Called from VRIL_Manager when a button is pressed
+        /// Called from <see cref="VRIL_Manager"/> when a button is pressed
         /// </summary>
         /// <param name="sender">sending class</param>
         /// <param name="e">EventArgs that contains the controller, buttonType, buttonInteractionType</param>
         /// <see cref="VRIL_Manager"/>
         /// <seealso cref="VRIL_ControllerActionEventArgs"/>
-        public virtual void ControllerAction(object sender, VRIL_ControllerActionEventArgs e)
+        public override void ControllerAction(object sender, VRIL_ControllerActionEventArgs e)
         {
             foreach (VRIL_ActionMapping mapping in Mappings)
             {
@@ -83,12 +62,6 @@
         }
 
         /// <summary>
-        /// Called when the interaction technique is activated
-        /// </summary>
-        /// <param name="e">ControllerActionEventArgs</param>
-        public abstract void OnActivation(VRIL_ControllerActionEventArgs e);
-
-        /// <summary>
         /// Called when the interaction technique should stop
         /// </summary>
         /// <param name="e">ControllerActionEventArgs</param>
@@ -112,6 +85,11 @@
 
             SelectableObjects.Clear();
             SelectedObjects.Clear();
+        }
+
+        public IEnumerable<VRIL_Interactable> GetSelectedObjects()
+        {
+            return SelectedObjects;
         }
 
         /// <summary>
@@ -156,7 +134,7 @@
         }
 
         /// <summary>
-        /// Check ButtonState
+        /// Check ButtonState of a <see cref="VRIL_ButtonType"/> for a specific controller
         /// </summary>
         /// <param name="button">Button that should be checked</param>
         /// <param name="controller">Controller that should be checked</param>

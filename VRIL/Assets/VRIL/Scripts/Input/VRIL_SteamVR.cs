@@ -58,15 +58,26 @@ namespace VRIL_SteamVR
                 return;
             }
 
-            interactUIAction.AddOnStateDownListener(OnInteractUIDown, SteamVR_Input_Sources.Any);
-            teleportAction.AddOnStateDownListener(OnTeleportDown, SteamVR_Input_Sources.Any);
-            grabPinchAction.AddOnStateDownListener(OnGrabPinchDown, SteamVR_Input_Sources.Any);
-            grabGripAction.AddOnStateDownListener(OnGripActionDown, SteamVR_Input_Sources.Any);
+            interactUIAction.AddOnStateDownListener(OnInteractUIDown, SteamVR_Input_Sources.LeftHand);
+            teleportAction.AddOnStateDownListener(OnTeleportDown, SteamVR_Input_Sources.LeftHand);
+            grabPinchAction.AddOnStateDownListener(OnGrabPinchDown, SteamVR_Input_Sources.LeftHand);
+            grabGripAction.AddOnStateDownListener(OnGripActionDown, SteamVR_Input_Sources.LeftHand);
 
-            interactUIAction.AddOnStateUpListener(OnInteractUIUp, SteamVR_Input_Sources.Any);
-            teleportAction.AddOnStateUpListener(OnTeleportUp, SteamVR_Input_Sources.Any);
-            grabPinchAction.AddOnStateUpListener(OnGrabPinchUp, SteamVR_Input_Sources.Any);
-            grabGripAction.AddOnStateUpListener(OnGrabGripUp, SteamVR_Input_Sources.Any);
+            interactUIAction.AddOnStateUpListener(OnInteractUIUp, SteamVR_Input_Sources.LeftHand);
+            teleportAction.AddOnStateUpListener(OnTeleportUp, SteamVR_Input_Sources.LeftHand);
+            grabPinchAction.AddOnStateUpListener(OnGrabPinchUp, SteamVR_Input_Sources.LeftHand);
+            grabGripAction.AddOnStateUpListener(OnGrabGripUp, SteamVR_Input_Sources.LeftHand);
+
+            interactUIAction.AddOnStateDownListener(OnInteractUIDown, SteamVR_Input_Sources.RightHand);
+            teleportAction.AddOnStateDownListener(OnTeleportDown, SteamVR_Input_Sources.RightHand);
+            grabPinchAction.AddOnStateDownListener(OnGrabPinchDown, SteamVR_Input_Sources.RightHand);
+            grabGripAction.AddOnStateDownListener(OnGripActionDown, SteamVR_Input_Sources.RightHand);
+
+            interactUIAction.AddOnStateUpListener(OnInteractUIUp, SteamVR_Input_Sources.RightHand);
+            teleportAction.AddOnStateUpListener(OnTeleportUp, SteamVR_Input_Sources.RightHand);
+            grabPinchAction.AddOnStateUpListener(OnGrabPinchUp, SteamVR_Input_Sources.RightHand);
+            grabGripAction.AddOnStateUpListener(OnGrabGripUp, SteamVR_Input_Sources.RightHand);
+
         }
 
         /// <summary>
@@ -74,15 +85,26 @@ namespace VRIL_SteamVR
         /// </summary>
         public void OnDisable()
         {
-            interactUIAction?.RemoveOnStateDownListener(OnInteractUIDown, SteamVR_Input_Sources.Any);
-            teleportAction?.RemoveOnStateDownListener(OnTeleportDown, SteamVR_Input_Sources.Any);
-            grabPinchAction?.RemoveOnStateDownListener(OnGrabPinchDown, SteamVR_Input_Sources.Any);
-            grabGripAction?.RemoveOnStateDownListener(OnGripActionDown, SteamVR_Input_Sources.Any);
+            interactUIAction?.RemoveOnStateDownListener(OnInteractUIDown, SteamVR_Input_Sources.LeftHand);
+            teleportAction?.RemoveOnStateDownListener(OnTeleportDown, SteamVR_Input_Sources.LeftHand);
+            grabPinchAction?.RemoveOnStateDownListener(OnGrabPinchDown, SteamVR_Input_Sources.LeftHand);
+            grabGripAction?.RemoveOnStateDownListener(OnGripActionDown, SteamVR_Input_Sources.LeftHand);
 
-            interactUIAction?.RemoveOnStateUpListener(OnInteractUIUp, SteamVR_Input_Sources.Any);
-            teleportAction?.RemoveOnStateUpListener(OnTeleportUp, SteamVR_Input_Sources.Any);
-            grabPinchAction?.RemoveOnStateUpListener(OnGrabPinchUp, SteamVR_Input_Sources.Any);
-            grabGripAction?.RemoveOnStateUpListener(OnGrabGripUp, SteamVR_Input_Sources.Any);
+            interactUIAction?.RemoveOnStateUpListener(OnInteractUIUp, SteamVR_Input_Sources.LeftHand);
+            teleportAction?.RemoveOnStateUpListener(OnTeleportUp, SteamVR_Input_Sources.LeftHand);
+            grabPinchAction?.RemoveOnStateUpListener(OnGrabPinchUp, SteamVR_Input_Sources.LeftHand);
+            grabGripAction?.RemoveOnStateUpListener(OnGrabGripUp, SteamVR_Input_Sources.LeftHand);
+
+            interactUIAction?.RemoveOnStateDownListener(OnInteractUIDown, SteamVR_Input_Sources.RightHand);
+            teleportAction?.RemoveOnStateDownListener(OnTeleportDown, SteamVR_Input_Sources.RightHand);
+            grabPinchAction?.RemoveOnStateDownListener(OnGrabPinchDown, SteamVR_Input_Sources.RightHand);
+            grabGripAction?.RemoveOnStateDownListener(OnGripActionDown, SteamVR_Input_Sources.RightHand);
+
+            interactUIAction?.RemoveOnStateUpListener(OnInteractUIUp, SteamVR_Input_Sources.RightHand);
+            teleportAction?.RemoveOnStateUpListener(OnTeleportUp, SteamVR_Input_Sources.RightHand);
+            grabPinchAction?.RemoveOnStateUpListener(OnGrabPinchUp, SteamVR_Input_Sources.RightHand);
+            grabGripAction?.RemoveOnStateUpListener(OnGrabGripUp, SteamVR_Input_Sources.RightHand);
+
         }
 
         /* ****************
@@ -149,11 +171,10 @@ namespace VRIL_SteamVR
             {
                 v.ControllerIndex = 0;
             }
-            else if (fromSource == SteamVR_Input_Sources.LeftHand)
+            else if (fromSource == SteamVR_Input_Sources.RightHand)
             {
                 v.ControllerIndex = 1;
             }
-
             manager.OnControllerAction(v);
         }
     }

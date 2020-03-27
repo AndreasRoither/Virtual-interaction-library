@@ -54,7 +54,7 @@ LightmapSettings:
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 1
   m_LightmapEditorSettings:
-    serializedVersion: 10
+    serializedVersion: 12
     m_Resolution: 2
     m_BakeResolution: 40
     m_AtlasSize: 1024
@@ -62,6 +62,7 @@ LightmapSettings:
     m_AOMaxDistance: 1
     m_CompAOExponent: 1
     m_CompAOExponentDirect: 0
+    m_ExtractAmbientOcclusion: 0
     m_Padding: 2
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
@@ -76,10 +77,16 @@ LightmapSettings:
     m_PVRDirectSampleCount: 32
     m_PVRSampleCount: 500
     m_PVRBounces: 2
+    m_PVREnvironmentSampleCount: 500
+    m_PVREnvironmentReferencePointCount: 2048
+    m_PVRFilteringMode: 2
+    m_PVRDenoiserTypeDirect: 0
+    m_PVRDenoiserTypeIndirect: 0
+    m_PVRDenoiserTypeAO: 0
     m_PVRFilterTypeDirect: 0
     m_PVRFilterTypeIndirect: 0
     m_PVRFilterTypeAO: 0
-    m_PVRFilteringMode: 1
+    m_PVREnvironmentMIS: 0
     m_PVRCulling: 1
     m_PVRFilteringGaussRadiusDirect: 1
     m_PVRFilteringGaussRadiusIndirect: 5
@@ -87,7 +94,9 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaDirect: 0.5
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
-    m_ShowResolutionOverlay: 1
+    m_ExportTrainingData: 0
+    m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -303,6 +312,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -314,6 +324,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -341,10 +352,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3255873709769256329, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873709820566338, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2078909f331693a4c8cd995ad1d359a8, type: 2}
+    - target: {fileID: 3255873710632021380, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2078909f331693a4c8cd995ad1d359a8, type: 2}
     - target: {fileID: 3255873710676035636, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
       propertyPath: m_Name
-      value: '---- World ----'
+      value: ---- World ----
       objectReference: {fileID: 0}
     - target: {fileID: 3255873710676035637, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
@@ -406,16 +432,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Interactable Capsule 2
       objectReference: {fileID: 0}
-    - target: {fileID: 3255873709820566338, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+    - target: {fileID: 3255873711686322631, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2078909f331693a4c8cd995ad1d359a8, type: 2}
-    - target: {fileID: 3255873710632021380, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2078909f331693a4c8cd995ad1d359a8, type: 2}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85b8f3ce06cdce847bbb80d0df9b4f39, type: 3}
 --- !u!1 &627165229
@@ -464,6 +485,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -475,6 +497,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -505,7 +528,7 @@ GameObject:
   m_Component:
   - component: {fileID: 674171520}
   m_Layer: 0
-  m_Name: '---- VRIL Controller ----'
+  m_Name: ---- VRIL Controller ----
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -567,9 +590,10 @@ Camera:
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_GateFitMode: 2
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -657,6 +681,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -668,6 +693,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -700,6 +726,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DepthRay
       objectReference: {fileID: 0}
+    - target: {fileID: 1475255867422227624, guid: 800d7268e9f92b047b846169284bfc7d,
+        type: 3}
+      propertyPath: Manager
+      value: 
+      objectReference: {fileID: 1430524493}
     - target: {fileID: 1475255867422227626, guid: 800d7268e9f92b047b846169284bfc7d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -755,11 +786,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1475255867422227624, guid: 800d7268e9f92b047b846169284bfc7d,
-        type: 3}
-      propertyPath: Manager
-      value: 
-      objectReference: {fileID: 1430524493}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 800d7268e9f92b047b846169284bfc7d, type: 3}
 --- !u!4 &1151573250 stripped
@@ -791,7 +817,7 @@ GameObject:
   - component: {fileID: 1430524492}
   - component: {fileID: 1430524493}
   m_Layer: 0
-  m_Name: '---- VRIL Manager ----'
+  m_Name: ---- VRIL Manager ----
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -825,15 +851,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RegisteredControllers:
   - Controller: {fileID: 291185440}
-    Techniques:
+    InteractionTechniques:
     - {fileID: 1151573251}
+    NavigationTechniques: []
   - Controller: {fileID: 104849693}
-    Techniques:
+    InteractionTechniques:
     - {fileID: 1151573251}
+    NavigationTechniques: []
   LoadedSdkName: 0
   OpenVR_Script: {fileID: 0}
   Oculus_Script: {fileID: 0}
   CustomSDK_Script: {fileID: 0}
+  InputLocked: 0
 --- !u!1 &1692017927
 GameObject:
   m_ObjectHideFlags: 0
@@ -880,6 +909,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -891,6 +921,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -920,7 +951,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2132313522

@@ -1,4 +1,4 @@
-﻿
+﻿using System;
 using VRIL.Callable;
 
 namespace VRIL.Base
@@ -25,6 +25,7 @@ namespace VRIL.Base
         OnInteraction,
         OnRelease,
         OnStop,
+        OnTravel,
         CustomScript
     }
 
@@ -74,7 +75,7 @@ namespace VRIL.Base
     /// <summary>
     /// Used to map a controller action to an action type
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class VRIL_ActionMapping
     {
         public VRIL_ButtonType ButtonType = VRIL_ButtonType.None;

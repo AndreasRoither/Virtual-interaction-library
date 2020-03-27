@@ -15,10 +15,10 @@ namespace VRIL.ControllerActionEventArgs
 
         public VRIL_ControllerActionEventArgs()
         {
-
         }
 
-        public VRIL_ControllerActionEventArgs(int controllerIndex, VRIL_ButtonType buttonType, VRIL_ButtonInteractionType interactionType)
+        public VRIL_ControllerActionEventArgs(int controllerIndex, VRIL_ButtonType buttonType,
+            VRIL_ButtonInteractionType interactionType)
         {
             ControllerIndex = controllerIndex;
             ButtonType = buttonType;
@@ -26,7 +26,8 @@ namespace VRIL.ControllerActionEventArgs
             ButtonPressStrength = 0f;
         }
 
-        public VRIL_ControllerActionEventArgs(int controllerIndex, VRIL_ButtonType buttonType, VRIL_ButtonInteractionType interactionType, float buttonPressStrength)
+        public VRIL_ControllerActionEventArgs(int controllerIndex, VRIL_ButtonType buttonType,
+            VRIL_ButtonInteractionType interactionType, float buttonPressStrength)
         {
             ControllerIndex = controllerIndex;
             ButtonType = buttonType;

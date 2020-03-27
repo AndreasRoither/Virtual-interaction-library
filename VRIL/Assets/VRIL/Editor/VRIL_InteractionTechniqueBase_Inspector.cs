@@ -14,10 +14,10 @@ namespace VRIL.CustomInspector
 
         private void OnEnable()
         {
-            t = (VRIL_Manager)target;
+            t = (VRIL_Manager) target;
             GetTarget = new SerializedObject(t);
 
-            // Find the List in our script and create a refrence of it
+            // Find the List in our script and create a reference of it
             RegisteredControllers = GetTarget.FindProperty("RegisteredControllers");
         }
 
@@ -29,21 +29,8 @@ namespace VRIL.CustomInspector
             // Update the serializedProperty - always do this in the beginning of OnInspectorGUI.
             serializedObject.Update();
 
-            //RegisteredControllers = GetTarget.FindProperty("RegisteredControllers");
-
-            //GeneralUI();
-            //ControllerAndTechniqueUI();
-
             // Apply changes to the serializedProperty - always do this in the end of OnInspectorGUI.
             serializedObject.ApplyModifiedProperties();
-        }
-
-        public void GeneralUI()
-        {
-            using (new EditorGUILayout.VerticalScope("Box"))
-            {
-                EditorGUILayout.LabelField("General", EditorStyles.boldLabel);
-            }
         }
     }
 }

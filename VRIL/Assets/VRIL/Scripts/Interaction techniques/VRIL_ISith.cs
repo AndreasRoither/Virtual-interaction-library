@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
 using VRIL.Base;
 using VRIL.ControllerActionEventArgs;
 using VRIL.Interactable;
@@ -58,7 +59,7 @@ namespace VRIL.InteractionTechniques
         public float CoroutineWaitTime = 0.03f;
 
         /// <summary>
-        /// Called before the start function to initialize base
+        /// Called before the start function to initialize base class
         /// </summary>
         public void Awake()
         {
@@ -114,15 +115,15 @@ namespace VRIL.InteractionTechniques
 
             if (CastShadows)
             {
-                ISithLineRendererLeftHand.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
-                ISithLineRendererRightHand.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
-                ISithLineRendererConnection.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+                ISithLineRendererLeftHand.shadowCastingMode = ShadowCastingMode.On;
+                ISithLineRendererRightHand.shadowCastingMode = ShadowCastingMode.On;
+                ISithLineRendererConnection.shadowCastingMode = ShadowCastingMode.On;
             }
             else
             {
-                ISithLineRendererLeftHand.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-                ISithLineRendererRightHand.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-                ISithLineRendererConnection.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                ISithLineRendererLeftHand.shadowCastingMode = ShadowCastingMode.Off;
+                ISithLineRendererRightHand.shadowCastingMode = ShadowCastingMode.Off;
+                ISithLineRendererConnection.shadowCastingMode = ShadowCastingMode.Off;
             }
         }
 
@@ -158,8 +159,8 @@ namespace VRIL.InteractionTechniques
         }
 
         /// <summary>
-        /// Unity specific, When drawing gizmos is activated
-        /// Shows the sphere in which Interactable Objects can be selected
+        /// Unity specific, when drawing gizmos is activated
+        /// Shows the sphere in which <see cref="VRIL_Interactable"/> objects can be selected
         /// </summary>
         public void OnDrawGizmos()
         {
