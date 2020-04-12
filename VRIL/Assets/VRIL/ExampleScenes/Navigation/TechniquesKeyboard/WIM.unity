@@ -212,7 +212,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 103563596}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 55d4b543d9836f3488133e9971ef146b, type: 3}
   m_Name: 
@@ -908,6 +908,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.g
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459916, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_Intensity
+      value: 1.15
       objectReference: {fileID: 0}
     - target: {fileID: 3255873711362901446, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
@@ -1704,7 +1709,7 @@ MonoBehaviour:
   AudioSource: {fileID: 0}
   RefreshWIM: 1
   MaximumSurfaceAngle: 20
-  ScaleFactor: 0.02
+  ScaleFactor: 0.016
   ObjectTresholdX: 1
   ObjectTresholdY: 1
   ObjectTresholdZ: 1

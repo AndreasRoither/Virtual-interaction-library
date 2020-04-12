@@ -208,6 +208,41 @@ PrefabInstance:
       propertyPath: m_Color.a
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459917, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.55634093
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459917, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.09276397
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459917, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.61722356
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459917, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.548557
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459917, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 46.459003
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459917, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 58.126003
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459917, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -236.426
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85b8f3ce06cdce847bbb80d0df9b4f39, type: 3}
 --- !u!114 &223330712 stripped
@@ -264,6 +299,11 @@ PrefabInstance:
         type: 3}
       propertyPath: EnableNavigationZ
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5811676580241535281, guid: d7e745bfcb35c644eb8b20170a0c3405,
+        type: 3}
+      propertyPath: MovementScalor
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5811676580241535286, guid: d7e745bfcb35c644eb8b20170a0c3405,
         type: 3}
@@ -449,6 +489,7 @@ MonoBehaviour:
   UIText: {fileID: 223330712}
   pressedF: 0
   Viewpoint: {fileID: 1634647307}
+  SelectedController: 0
 --- !u!1001 &1634647306
 PrefabInstance:
   m_ObjectHideFlags: 0

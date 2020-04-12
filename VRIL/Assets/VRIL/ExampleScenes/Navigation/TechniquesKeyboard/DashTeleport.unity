@@ -257,6 +257,41 @@ PrefabInstance:
       propertyPath: m_Intensity
       value: 1.15
       objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459917, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.33318308
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459917, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.3102247
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459917, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.22791943
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459917, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.8606988
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459917, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 45.639004
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459917, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -326.868
+      objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459917, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -15.396001
+      objectReference: {fileID: 0}
     - target: {fileID: 7870147975665568437, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -523,7 +558,7 @@ PrefabInstance:
     - target: {fileID: 7510354414291315108, guid: ae38aedf2bd5a72499bb6c3f72cd9c3d,
         type: 3}
       propertyPath: CurveVelocity
-      value: 10
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7510354414291315108, guid: ae38aedf2bd5a72499bb6c3f72cd9c3d,
         type: 3}
@@ -553,7 +588,7 @@ PrefabInstance:
     - target: {fileID: 7510354414291315108, guid: ae38aedf2bd5a72499bb6c3f72cd9c3d,
         type: 3}
       propertyPath: NumberOfRayFragments
-      value: 50
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7510354414291315109, guid: ae38aedf2bd5a72499bb6c3f72cd9c3d,
         type: 3}
