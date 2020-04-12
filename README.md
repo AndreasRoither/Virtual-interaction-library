@@ -131,3 +131,7 @@ An example of this technique can be seen below.
 <img src="./images/VRIL_SpindleWheel_1.png" width="400"/>
 
 ## Navigation Techniques
+###steering
+###Grab the Air
+###Point and Teleport
+###World in Miniature
