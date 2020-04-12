@@ -170,3 +170,7 @@ This approach allows the user to fly into the miniature world until the position
 ```csharp
 Viewpoint.transform.rotation = Quaternion.RotateTowards(Viewpoint.transform.rotation, rotation, step);
 ```
+
+An example of the WIM technique can be seen below.
+
+<img src="./images/VRIL_WIM.png" width="400"/>
