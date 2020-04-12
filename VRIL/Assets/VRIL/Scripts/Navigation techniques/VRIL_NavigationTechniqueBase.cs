@@ -58,22 +58,24 @@ namespace VRIL.NavigationTechniques
                             actionDone = true;
                             break;
                         case VRIL_ActionTypes.OnActivation:
-                            actionDone = true;
-                            OnActivation(e);
+                            // invoked once
+                            if(!actionDone)
+                            {
+                                actionDone = true;
+                                OnActivation(e);
+                            }
                             break;
                         case VRIL_ActionTypes.OnTravel:
-                            actionDone = true;
-                            OnTravel(e);
+                            // invoked once
+                            if (!actionDone)
+                            {
+                                actionDone = true;
+                                OnTravel(e);
+                            }
                             break;
                         case VRIL_ActionTypes.CustomScript:
-                            actionDone = true;
                             mapping.Script.OnCall();
                             break;
-                    }
-
-                    if (actionDone)
-                    {
-                        return;
                     }
                 }
             }

@@ -57,19 +57,19 @@ namespace VRIL.NavigationTechniques
         public float ScaleVelocity = 1.001f;
         public float ViewPointRotationFactor = 3.0f;
 
-        [Header("Doll Settings")]
+        [Header("Avatar Settings")]
         [Tooltip(
-            "A doll is an object that represents the player in the WIM. Usually, it is a human figure but also a simple arrow can be used. " +
+            "An avatar is an object that represents the player in the WIM. Usually, it is a human figure but also a simple arrow can be used. " +
             "The model needs to be in normal size (in larged-scaled world), it will be automatically downscaled with other objects.")]
-        public GameObject Doll;
+        public GameObject Avatar;
 
         [Tooltip(
-            "The shadow doll visualizes the new position and orientation of the viewpoint at the desired target position.")]
-        public GameObject ShadowDoll;
+            "The shadow avatar visualizes the new position and orientation of the viewpoint at the desired target position.")]
+        public GameObject ShadowAvatar;
 
         [Tooltip(
-            "True: Shadow doll looks away from viewpoint. False: It is possible to change orientation of shadow doll by rotating ray hand controller around.")]
-        public bool FixedShadowDollOrientation = true;
+            "True: Shadow avatar looks away from viewpoint. False: It is possible to change orientation of shadow avatar by rotating ray hand controller around.")]
+        public bool FixedShadowAvatarOrientation = true;
 
         [Header("Ray Settings")] public float MaxRayDistance = 1.0f;
         public Color ValidPositionColor = Color.green;
@@ -92,6 +92,12 @@ namespace VRIL.NavigationTechniques
         [Tooltip("Distance of hit entity object to WIM ground.")]
         public float DistanceHitEntityToGround = 0.005f;
 
+        [Header("Light Settings")]
+        [Tooltip("Create Layer for WIM and set CullingMask in LightSource according to")]
+        public LayerMask Layer;
+        [Tooltip("Set how far above the WIM the light source should be")]
+        public float DistanceLightToWim = 0.5f;
+        public Light LightSource;
 
         // *************************************
         // constants
@@ -109,7 +115,7 @@ namespace VRIL.NavigationTechniques
 
         private Vector3 PrevCameraRotationEuler;
 
-        // camera necessary to update doll according to camera
+        // camera necessary to update avatar according to camera
         private Camera ViewpointCamera;
 
         // when technique is activated, the WIM is shown
@@ -132,11 +138,11 @@ namespace VRIL.NavigationTechniques
         private bool DelayToNextTravel = false;
 
         // figure which represents the player in the WIM
-        private GameObject CurrentDoll;
+        private GameObject CurrentAvatar;
 
         // figure to visualize of the player on target position in the WIM
-        private GameObject CurrentShadowDoll;
-        private float DistanceToGroundShadowDoll = 0.0f;
+        private GameObject CurrentShadowAvatar;
+        private float DistanceToGroundShadowAvatar = 0.0f;
 
         // save current position rotation and scale of WIM
         private Vector3 CurrentWIMPosition;
@@ -157,12 +163,19 @@ namespace VRIL.NavigationTechniques
         // save original mesh renderer for each cloned object instanceID (required for refreshing WIM)
         private IDictionary<int, MeshRenderer> MappingCloneIdsToOriginals;
 
-        // necessary for shadow doll rotation manipulation
+        // reverse mapping for faster access
+        private IDictionary<int, MeshRenderer> MappingOriginalIdsToClones;
+
+        // necessary for shadow avatar rotation manipulation
         private Vector3 PrevControllerRotation;
 
         // necessary for viewpoint rotation manipulation
         private Quaternion PrevViewpointRotation;
 
+        // calculated layer
+        private int layer = 0;
+
+        private bool checkWIMIgnores = false;
 
         protected virtual void Update()
         {
@@ -180,7 +193,7 @@ namespace VRIL.NavigationTechniques
         public void Awake()
         {
             Initialize();
-            
+            layer = LayerMaskToLayer(Layer);
             WIMLineRendererObject = new GameObject(LINE_RENDERER);
             WIMLineRendererObject.AddComponent<LineRenderer>();
             WIMLineRenderer = WIMLineRendererObject.GetComponent<LineRenderer>();
@@ -191,14 +204,14 @@ namespace VRIL.NavigationTechniques
             WIMLineRenderer.material = LaserMaterial;
             WIMLineRenderer.enabled = false;
             
-            if (Doll)
+            if (Avatar)
             {
-                Doll.SetActive(false);
+                Avatar.SetActive(false);
             }
 
-            if (ShadowDoll)
+            if (ShadowAvatar)
             {
-                ShadowDoll.SetActive(false);
+                ShadowAvatar.SetActive(false);
             }
 
             WIMLineRenderer.shadowCastingMode = CastShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
@@ -219,15 +232,19 @@ namespace VRIL.NavigationTechniques
                 HitEntity = new GameObject();
             }
 
-            if (!Doll)
+            if (!Avatar)
             {
-                Doll = new GameObject();
+                Avatar = new GameObject();
             }
-            if(!ShadowDoll)
+            if(!ShadowAvatar)
             {
-                ShadowDoll = Doll;
+                ShadowAvatar = Avatar;
             }
-            DistanceToGroundShadowDoll = ShadowDoll.transform.position.y;
+            DistanceToGroundShadowAvatar = ShadowAvatar.transform.position.y;
+            if(FindObjectsOfType<CanvasRenderer>() != null)
+            {
+                checkWIMIgnores = true;
+            }
         }
 
         public void Start()
@@ -248,9 +265,9 @@ namespace VRIL.NavigationTechniques
                 rend.material.SetColor("_Color", ValidPositionColor);
             }
 
-            if (Doll == null)
+            if (Avatar == null)
             {
-                Debug.Log("Orientation changes not possible for WIM technique because no doll was set.");
+                Debug.Log("Orientation changes not possible for WIM technique because no avatar was set.");
             }
         }
 
@@ -303,7 +320,7 @@ namespace VRIL.NavigationTechniques
                      m.gameObject.activeSelf &&
                      m.GetComponent<Collider>() != null &&
                      m.GetComponent<VRIL_WIMObject>() == null &&
-                     m.GetComponent<VRIL_WIMIgnore>() == null &&
+                     (checkWIMIgnores ? m.GetComponent<VRIL_WIMIgnore>() == null : true) &&
                      Array.IndexOf(RegisteredControllers.ToArray(), m.gameObject) < 0 &&
                      (m.gameObject.GetInstanceID() != HitEntity.gameObject.GetInstanceID()) &&
                      (m.bounds.size.x >= ObjectTresholdX || m.bounds.size.y >= ObjectTresholdY ||
@@ -320,7 +337,10 @@ namespace VRIL.NavigationTechniques
         {
             MeshRenderer objClone = Instantiate(obj);
             objClone.name = WIM_OBJECT_NAME + obj.gameObject.name;
-
+            if(layer != -1)
+            {
+                objClone.gameObject.layer = layer;
+            }
             // append object to WIM
             objClone.transform.SetParent(Wim.transform, false);
 
@@ -336,24 +356,47 @@ namespace VRIL.NavigationTechniques
             if (RefreshWIM)
             {
                 MappingCloneIdsToOriginals[objClone.GetInstanceID()] = obj;
+                MappingOriginalIdsToClones[obj.GetInstanceID()] = objClone;
             }
 
             return objClone;
         }
 
         /// <summary>
-        /// Creates the world in miniature with player doll on viewpoint position
+        /// https://answers.unity.com/questions/1288179/layer-layermask-which-is-set-in-inspector.html
+        /// </summary>
+        /// <param name="layerMask"></param>
+        /// <returns></returns>
+        private int LayerMaskToLayer(LayerMask layerMask)
+        {
+            int layerNumber = 0;
+            int layer = layerMask.value;
+            while (layer > 0)
+            {
+                layer >>= 1;
+                layerNumber++;
+            }
+            return layerNumber - 1;
+        }
+
+        /// <summary>
+        /// Creates the world in miniature with player avatar on viewpoint position
         /// </summary>
         private void CreateWim()
         {
             // create WIM as new object
             Wim = new GameObject(WIM_OBJECT_NAME);
+            
             Wim.AddComponent<VRIL_WIMObject>();
             Wim.transform.localScale = Vector3.one;
             Wim.transform.position = new Vector3(0, 0, 0);
             if (!TravelMode)
             {
                 HitEntity.SetActive(false);
+                if (layer != -1)
+                {
+                    HitEntity.gameObject.layer = layer;
+                }
             }
 
             // clone all relevant MeshRenderer objects which have a collider
@@ -362,6 +405,7 @@ namespace VRIL.NavigationTechniques
             if (RefreshWIM)
             {
                 MappingCloneIdsToOriginals = new Dictionary<int, MeshRenderer>();
+                MappingOriginalIdsToClones = new Dictionary<int, MeshRenderer>();
             }
 
             // clone all and add to list
@@ -372,30 +416,38 @@ namespace VRIL.NavigationTechniques
             }
 
             // add figure to represent current position in WIM
-            if (Doll)
+            if (Avatar)
             {
-                CurrentDoll = Instantiate(Doll);
-                CurrentDoll.SetActive(true);
-                CurrentDoll.transform.position = TargetPosition;
-                CurrentDoll.transform.localPosition += new Vector3(0, Doll.transform.position.y, 0);
+                CurrentAvatar = Instantiate(Avatar);
+                CurrentAvatar.SetActive(true);
+                CurrentAvatar.transform.position = TargetPosition;
+                CurrentAvatar.transform.localPosition += new Vector3(0, Avatar.transform.position.y, 0);
 
                 if (ViewpointCamera)
                 {
-                    CurrentDoll.transform.forward = new Vector3(ViewpointCamera.transform.forward.x, 0,
+                    CurrentAvatar.transform.forward = new Vector3(ViewpointCamera.transform.forward.x, 0,
                         ViewpointCamera.transform.forward.z);
                 }
                 else
                 {
-                    CurrentDoll.transform.forward =
+                    CurrentAvatar.transform.forward =
                         new Vector3(Viewpoint.transform.forward.x, 0, Viewpoint.transform.forward.z);
                 }
 
-                CurrentDoll.AddComponent<VRIL_WIMObject>();
-                CurrentDoll.transform.eulerAngles = new Vector3(CurrentDoll.transform.rotation.eulerAngles.x,
-                    CurrentDoll.transform.rotation.eulerAngles.y, CurrentDoll.transform.rotation.eulerAngles.z);
-                CurrentDoll.transform.parent = Wim.transform;
-                CurrentShadowDoll = Instantiate(ShadowDoll);
-                CurrentShadowDoll.transform.parent = Wim.transform;
+                CurrentAvatar.AddComponent<VRIL_WIMObject>();
+                CurrentAvatar.transform.eulerAngles = new Vector3(CurrentAvatar.transform.rotation.eulerAngles.x,
+                    CurrentAvatar.transform.rotation.eulerAngles.y, CurrentAvatar.transform.rotation.eulerAngles.z);
+                CurrentAvatar.transform.parent = Wim.transform;
+                if (layer != -1)
+                {
+                    CurrentAvatar.gameObject.layer = layer;
+                }
+                CurrentShadowAvatar = Instantiate(ShadowAvatar);
+                CurrentShadowAvatar.transform.parent = Wim.transform;
+                if (layer != -1)
+                {
+                    CurrentShadowAvatar.gameObject.layer = layer;
+                }
                 if (ViewpointCamera)
                 {
                     PrevCameraRotationEuler = ViewpointCamera.transform.localEulerAngles;
@@ -433,6 +485,7 @@ namespace VRIL.NavigationTechniques
                         .FirstOrDefault();
                     Clones.Remove(mToDelete);
                     MappingCloneIdsToOriginals.Remove(m.Key);
+                    MappingOriginalIdsToClones.Remove(m.Value.GetInstanceID());
                     Destroy(mToDelete);
                 }
             }
@@ -440,16 +493,18 @@ namespace VRIL.NavigationTechniques
             // check wether new objects are added in the large-scaled world and add them in the WIM
             foreach (MeshRenderer m in findAll)
             {
-                bool found = false;
-                foreach (MeshRenderer orig in MappingCloneIdsToOriginals.Values)
-                {
-                    if (orig.GetInstanceID() == m.GetInstanceID())
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
+                //bool found = MappingOriginalIdsToClones[m.GetInstanceID()] != default;
+
+                //foreach (MeshRenderer orig in MappingCloneIdsToOriginals.Values)
+                //{
+                //    if (orig.GetInstanceID() == m.GetInstanceID())
+                //    {
+                //        found = true;
+                //        break;
+                //    }
+                //}
+                
+                if (!MappingOriginalIdsToClones.ContainsKey(m.GetInstanceID()))
                 {
                     MeshRenderer clone = CloneMeshRenderer(m);
                     clone.transform.localPosition = m.transform.position;
@@ -486,19 +541,24 @@ namespace VRIL.NavigationTechniques
                 CurrentWIMRotation = WIMHand.transform.rotation;
                 Wim.transform.position = CurrentWIMPosition;
                 Wim.transform.rotation = CurrentWIMRotation;
-                if (CurrentDoll && ViewpointCamera)
+                if(LightSource)
+                {
+                    Vector3 lightPosition = ray.GetPoint(DistanceLightToWim);
+                    LightSource.transform.position = lightPosition;
+                }
+                if (CurrentAvatar && ViewpointCamera)
                 {
                     float rotationDiffY = ViewpointCamera.transform.localEulerAngles.y - PrevCameraRotationEuler.y;
-                    CurrentDoll.transform.RotateAround(CurrentDoll.transform.position, CurrentDoll.transform.up,
+                    CurrentAvatar.transform.RotateAround(CurrentAvatar.transform.position, CurrentAvatar.transform.up,
                         rotationDiffY);
                     PrevCameraRotationEuler = ViewpointCamera.transform.localEulerAngles;
 
-                    if (FixedShadowDollOrientation)
+                    if (FixedShadowAvatarOrientation)
                     {
-                        //Doll should look away from viewpoint
-                        CurrentShadowDoll.transform.LookAt(Viewpoint.transform.position);
-                        CurrentShadowDoll.transform.localEulerAngles = new Vector3(0,
-                            CurrentShadowDoll.transform.localEulerAngles.y - HALF_CIRCLE, 0);
+                        //Avatar should look away from viewpoint
+                        CurrentShadowAvatar.transform.LookAt(Viewpoint.transform.position);
+                        CurrentShadowAvatar.transform.localEulerAngles = new Vector3(0,
+                            CurrentShadowAvatar.transform.localEulerAngles.y - HALF_CIRCLE, 0);
                     }
                 }
             }
@@ -531,9 +591,9 @@ namespace VRIL.NavigationTechniques
 
                 // prevent from blocking raycasts
                 HitEntity.SetActive(false);
-                if (Doll)
+                if (Avatar)
                 {
-                    CurrentShadowDoll.SetActive(false);
+                    CurrentShadowAvatar.SetActive(false);
                 }
 
                 PositionSelected = false;
@@ -577,21 +637,21 @@ namespace VRIL.NavigationTechniques
                         HitEntity.transform.position = raycastHit.point;
                         PositionSelected = true;
 
-                        // set doll clone orientation
-                        if (CurrentShadowDoll)
+                        // set avatar clone orientation
+                        if (CurrentShadowAvatar)
                         {
-                            CurrentShadowDoll.transform.position = raycastHit.point;
-                            CurrentShadowDoll.transform.localPosition += new Vector3(0, DistanceToGroundShadowDoll, 0);
+                            CurrentShadowAvatar.transform.position = raycastHit.point;
+                            CurrentShadowAvatar.transform.localPosition += new Vector3(0, DistanceToGroundShadowAvatar, 0);
                             float diffZ = RayHand.transform.localEulerAngles.z - PrevControllerRotation.z;
                             PrevControllerRotation = RayHand.transform.localEulerAngles;
 
-                            if (!FixedShadowDollOrientation)
+                            if (!FixedShadowAvatarOrientation)
                             {
-                                CurrentShadowDoll.transform.RotateAround(CurrentShadowDoll.transform.position,
-                                    CurrentShadowDoll.transform.up, -diffZ);
+                                CurrentShadowAvatar.transform.RotateAround(CurrentShadowAvatar.transform.position,
+                                    CurrentShadowAvatar.transform.up, -diffZ);
                             }
 
-                            CurrentShadowDoll.SetActive(true);
+                            CurrentShadowAvatar.SetActive(true);
                         }
                     }
                     else
@@ -604,9 +664,9 @@ namespace VRIL.NavigationTechniques
                         WIMLineRenderer.startColor = InvalidPositionColor;
                         WIMLineRenderer.endColor = InvalidPositionColor;
                         HitEntity.SetActive(false);
-                        if (CurrentShadowDoll)
+                        if (CurrentShadowAvatar)
                         {
-                            CurrentShadowDoll.SetActive(false);
+                            CurrentShadowAvatar.SetActive(false);
                         }
                     }
                 }
@@ -677,31 +737,31 @@ namespace VRIL.NavigationTechniques
             PrevViewpointRotation = Viewpoint.transform.rotation;
             TravelMode = true;
             float viewpointRotation = 0.0f;
-            if (CurrentShadowDoll)
+            if (CurrentShadowAvatar)
             {
                 // calculation of rotation during flight. The angle is multiplied by a constant factor
                 // the result is multiplied with the remaining distance to max ray length
                 // (the closer the point, the higher the rotation. The farer away, the lower the rotation)
                 viewpointRotation = ViewPointRotationFactor * Vector3.Angle(ViewpointCamera.transform.eulerAngles,
-                                                                CurrentShadowDoll.transform.eulerAngles)
+                                                                CurrentShadowAvatar.transform.eulerAngles)
                                                             * (MaxRayDistance -
                                                                Vector3.Distance(RayHand.transform.position,
-                                                                   CurrentShadowDoll.transform.position));
-                CurrentDoll.SetActive(false);
+                                                                   CurrentShadowAvatar.transform.position));
+                CurrentAvatar.SetActive(false);
             }
 
             Manager.InputLocked = true;
 
             Quaternion rotation = new Quaternion();
-            if (CurrentShadowDoll)
+            if (CurrentShadowAvatar)
             {
-                // target rotation is not rotation of shadow doll - subtract local camera rotation first!
-                Vector3 origRotShadowDoll = CurrentShadowDoll.transform.localEulerAngles;
-                Vector3 temp = CurrentShadowDoll.transform.localEulerAngles;
+                // target rotation is not rotation of shadow avatar - subtract local camera rotation first!
+                Vector3 origRotShadowAvatar = CurrentShadowAvatar.transform.localEulerAngles;
+                Vector3 temp = CurrentShadowAvatar.transform.localEulerAngles;
                 temp.y -= ViewpointCamera.transform.localEulerAngles.y;
-                CurrentShadowDoll.transform.localEulerAngles = temp;
-                rotation = Quaternion.Euler(CurrentShadowDoll.transform.eulerAngles);
-                CurrentShadowDoll.transform.localEulerAngles = origRotShadowDoll;
+                CurrentShadowAvatar.transform.localEulerAngles = temp;
+                rotation = Quaternion.Euler(CurrentShadowAvatar.transform.eulerAngles);
+                CurrentShadowAvatar.transform.localEulerAngles = origRotShadowAvatar;
             }
 
             // use an empty hit entity object for correct position (includes distance to ground)
@@ -723,7 +783,7 @@ namespace VRIL.NavigationTechniques
                 }
 
                 // perform a rotation step
-                if (CurrentShadowDoll)
+                if (CurrentShadowAvatar)
                 {
                     float step = viewpointRotation * Time.deltaTime;
                     Viewpoint.transform.rotation =
@@ -755,14 +815,14 @@ namespace VRIL.NavigationTechniques
                     Viewpoint.transform.position = TargetPosition;
 
                     float? rotationDiffY = null;
-                    if (Doll)
+                    if (Avatar)
                     {
-                        Vector3 temp = CurrentShadowDoll.transform.localEulerAngles;
+                        Vector3 temp = CurrentShadowAvatar.transform.localEulerAngles;
                         temp.y -= ViewpointCamera.transform.localEulerAngles.y;
                         Quaternion rotation = Quaternion.Euler(temp);
-                        Viewpoint.transform.rotation = rotation; //CurrentShadowDoll.transform.localRotation;
-                        rotationDiffY = CurrentDoll.transform.localEulerAngles.y -
-                                        CurrentShadowDoll.transform.localEulerAngles.y;
+                        Viewpoint.transform.rotation = rotation; //CurrentShadowAvatar.transform.localRotation;
+                        rotationDiffY = CurrentAvatar.transform.localEulerAngles.y -
+                                        CurrentShadowAvatar.transform.localEulerAngles.y;
                     }
 
                     TransferSelectedObjects(rotationDiffY);

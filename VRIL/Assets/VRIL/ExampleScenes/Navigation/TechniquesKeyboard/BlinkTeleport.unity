@@ -359,6 +359,11 @@ PrefabInstance:
       propertyPath: m_Color.g
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3255873711129459916, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
+        type: 3}
+      propertyPath: m_Intensity
+      value: 1.15
+      objectReference: {fileID: 0}
     - target: {fileID: 7870147975665568437, guid: 85b8f3ce06cdce847bbb80d0df9b4f39,
         type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -532,6 +537,7 @@ MonoBehaviour:
   UIText: {fileID: 1161961335}
   pressedF: 0
   Viewpoint: {fileID: 1214890655}
+  SelectedController: 0
 --- !u!4 &1986904515
 Transform:
   m_ObjectHideFlags: 0

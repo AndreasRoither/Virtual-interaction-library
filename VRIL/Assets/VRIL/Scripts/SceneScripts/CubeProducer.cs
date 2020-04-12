@@ -32,7 +32,6 @@ public class CubeProducer : MonoBehaviour
         if (curTime >= maxTime)
         {
             GameObject g = Instantiate(Prefab);
-            g.AddComponent<SelfDestruction>();
             g.transform.localScale = new Vector3(CubeSizeX, CubeSizeY, CubeSizeZ);
             g.transform.position += new Vector3(0, SpawnHeight, 0);
             curTime = 0;

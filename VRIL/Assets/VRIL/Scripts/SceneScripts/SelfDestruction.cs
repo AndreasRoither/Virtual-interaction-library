@@ -10,7 +10,7 @@ public class SelfDestruction : MonoBehaviour
 
     private float curTime = 0.0f;
 
-    private readonly float maxTime = 60.0f;
+    public float LiveTime = 60.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -22,7 +22,7 @@ public class SelfDestruction : MonoBehaviour
     void Update()
     {
         curTime += Time.deltaTime;
-        if (curTime >= maxTime)
+        if (curTime >= LiveTime)
         {
             Destroy(gameObject);
         }

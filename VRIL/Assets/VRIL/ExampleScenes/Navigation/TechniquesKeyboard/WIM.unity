@@ -678,6 +678,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6462329768020416118, guid: 2245ca7e35fcac84d91ebf973bd0b1bd,
+        type: 3}
+      propertyPath: LiveTime
+      value: 20
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2245ca7e35fcac84d91ebf973bd0b1bd, type: 3}
 --- !u!1 &420613564 stripped
@@ -1263,7 +1268,7 @@ GameObject:
   m_Component:
   - component: {fileID: 882170851}
   m_Layer: 0
-  m_Name: Doll
+  m_Name: Avatar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1645,7 +1650,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1766339811}
   m_Layer: 0
-  m_Name: ShadowDoll
+  m_Name: ShadowAvatar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1706,13 +1711,13 @@ MonoBehaviour:
   DistanceControllerToWIM: 0.05
   DisableCollidersInWIM: 1
   SecondsToWaitForNextWIM: 0.5
-  UseFlightIntoTheMiniature: 0
+  UseFlightIntoTheMiniature: 1
   ViewpointVelocity: 0.2
   ScaleVelocity: 1.1
   ViewPointRotationFactor: 10
-  Doll: {fileID: 882170850}
-  ShadowDoll: {fileID: 1766339810}
-  FixedShadowDollOrientation: 1
+  Avatar: {fileID: 882170850}
+  ShadowAvatar: {fileID: 1766339810}
+  FixedShadowAvatarOrientation: 1
   MaxRayDistance: 1
   ValidPositionColor: {r: 0, g: 1, b: 0, a: 1}
   InvalidPositionColor: {r: 1, g: 0, b: 0, a: 1}
@@ -1722,6 +1727,11 @@ MonoBehaviour:
   EndRayWidth: 0.005
   HitEntity: {fileID: 0}
   DistanceHitEntityToGround: 0.00001
+  Layer:
+    serializedVersion: 2
+    m_Bits: 0
+  DistanceLightToWim: 0.5
+  LightSource: {fileID: 0}
 --- !u!1 &1996869595
 GameObject:
   m_ObjectHideFlags: 0
