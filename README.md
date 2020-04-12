@@ -10,15 +10,20 @@
     - [Depth-Ray](#depth-ray)
     - [iSith](#isith)
     - [Spindle + Wheel technique](#spindle--wheel-technique)
+   - [Navigation Techniques](#navigation-techniques)
+    - [Steering](#steering)
+    - [Grab the Air](#grab-the-air)
+    - [Point and Teleport](#point-and-teleport)
+    - [World in Miniature](#world-in-miniature)
 
 # Virtual-interaction-library
-Library for interaction techniques. References as links with names.
+Library for interaction and navigation techniques. References as links with names.
 
 ## Summary and Goal
-The main goal of this library is to provide an easy to use framework with a few interaction techniques as a base for developers to implement new interaction techniques. 
+The main goal of this library is to provide an easy to use framework with a few interaction and navigation techniques as a base for developers to implement new techniques. 
 Techniques that are created using this library do not have to rely on a specific hardware solution. 
-This is achieved by using a component that manages all interaction techniques and registered controllers while providing a method to notify interaction techniques that can be invoked from any script. 
-Upon invocation, the library notifies all interaction techniques that are registered for a controller with the necessary information on which button was pressed or in which state a button currently is. 
+This is achieved by using a component that manages all techniques and registered controllers while providing a method to notify techniques that can be invoked from any script. 
+Upon invocation, the library notifies all interaction and navigation techniques that are registered for a controller with the necessary information on which button was pressed or in which state a button currently is. 
 This allows for integration into any existing solution by simply rerouting the inputs to the managing component (VRIL_Manager).
 
 ## Example Integration
@@ -124,3 +129,5 @@ An example of this technique can be seen below.
 
 <img src="./images/VRIL_SpindleWheel_1.png" width="400"/>
 <img src="./images/VRIL_SpindleWheel_1.png" width="400"/>
+
+## Navigation Techniques
