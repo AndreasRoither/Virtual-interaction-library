@@ -129,7 +129,6 @@ The manipulation mode then allows users to manipulate an object's rotation, posi
 An example of this technique can be seen below.
 
 <img src="./images/VRIL_SpindleWheel_1.png" width="400"/>
-<img src="./images/VRIL_SpindleWheel_1.png" width="400"/>
 
 ## Navigation Techniques
 These are the navigation techniques that are implemented in the library. An example image demonstrates the use of the technique described.
