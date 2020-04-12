@@ -158,7 +158,7 @@ SteamVR_Fade.View(Color.clear, FadeInDuration);
 #### Dash Teleport
 The dash teleport transfers the viewpoint continuously towards the selected position by a given velocity. For this dash movement, a co-routine is started which moves the viewpoint step by step towards the target position until it is close enough. For each step, the *MoveTowards* function from the Unity scripting API is used to update the viewpoint position.
 
-An example of the point and teleport technique can be seen below.
+An example of the point and teleport technique using dash mode can be seen below.
 
 <img src="./images/VRIL_Teleport_Example.gif" width="400"/>
 
