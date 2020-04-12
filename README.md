@@ -177,4 +177,4 @@ Viewpoint.transform.rotation = Quaternion.RotateTowards(Viewpoint.transform.rota
 
 An example of the WIM technique can be seen below.
 
-<img src="./images/VRIL_WIM.png" width="400"/>
+<img src="./images/VRIL_WIM_Example.gif" width="400"/>
