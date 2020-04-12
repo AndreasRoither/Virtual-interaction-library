@@ -10,11 +10,12 @@
     - [Depth-Ray](#depth-ray)
     - [iSith](#isith)
     - [Spindle + Wheel technique](#spindle--wheel-technique)
-   - [Navigation Techniques](#navigation-techniques)
+  - [Navigation Techniques](#navigation-techniques)
     - [Steering](#steering)
     - [Grab the Air](#grab-the-air)
     - [Point and Teleport](#point-and-teleport)
     - [World in Miniature](#world-in-miniature)
+
 
 # Virtual-interaction-library
 Library for interaction and navigation techniques. References as links with names.
