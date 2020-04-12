@@ -178,6 +178,8 @@ This approach allows the user to fly into the miniature world until the position
 ```csharp
 Viewpoint.transform.rotation = Quaternion.RotateTowards(Viewpoint.transform.rotation, rotation, step);
 ```
+The function is provided with the viewpoint rotation as the quaternion of origin, the rotation of the shadow avatar as target quaternion and an angular step. The latter is calculated by a provided rotation factor, the difference of rotation between viewpoint and shadow avatar and the ray length. When the viewpoint arrives at the target position, the flight animation ends and the WIM object is destroyed.
+
 
 An example of the WIM technique can be seen below.
 
