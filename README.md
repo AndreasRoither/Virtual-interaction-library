@@ -131,7 +131,13 @@ An example of this technique can be seen below.
 <img src="./images/VRIL_SpindleWheel_1.png" width="400"/>
 
 ## Navigation Techniques
+These are the navigation techniques that are implemented in the library. An example image demonstrates the use of the technique described.
+
 ### Steering
+The library provides both gaze-directed steering and hand-directed steering techniques [Mine](https://pdfs.semanticscholar.org/69ff/1367d0221357a806d3c05df2b787ed90bdb7.pdf). On application startup, it is identified whether the camera or controller object is used for steering, depending on the value provided in option *Technique*. When the steering technique gets activated, the viewpoint is transferred repeatedly to a new position as long as the button is pressed. The target position is calculated by adding the object's forwards to the current position of the viewpoint. In addition, the result is calculated by the provided velocity. The steering technique provides options that must be set in advance to enable movement along the desired axes. For example, to be able to fly through the virtual space, all axes have to be enabled.
+
 ### Grab the Air
+The grab the air technique [Mapes and Moshell.](https://dl.acm.org/doi/abs/10.1162/pres.1995.4.4.403) transfers not the viewpoint to a new position, but the whole virtual world around the user. The position of the user remains the same. To avoid moving each individual object separately, a parent world object containing all objects of the virtual world has to be attached to the technique component in the Unity editor. This world object is then used by the technique to apply position changes of the controller to the world. When the technique gets activated, a co-routine is started which continuously applies the position changes of the controller to the world object as long as the button is pressed. Each controller position change is determined by the vector from its previous position (world is not attached to the controller!). Similar to the steering techniques, options are provided to enable individual axes. To prevent the user from being affected by any position changes, the viewpoint cannot be a child object of the world, it must be separated from it. Since many grab motions are needed for travelling larger distances within the virtual world, a scale factor is provided. The vector for the difference of the controller positions is multiplied by this movement scalor to achieve that every controller motion results in larger position changes of the world.
+
 ### Point and Teleport
 ### World in Miniature
