@@ -67,7 +67,7 @@ The ray is provided with a point of origin, direction and a maximum length and a
 An example of the Ray-Cast technique can be seen in below.
 
 
-<img src="./images/VRIL_SingleRayCast_example.png" width="400"/>
+<img src="./images/VRIL_RayCast_Example.gif" width="400"/>
 
 ### Depth-Ray
 The Depth-Ray technique ([Grossman and Balakrishnan](https://dl.acm.org/citation.cfm?doid=1166253.1166257)) is similar to the single Ray-Cast technique but instead of relying on the ray to select objects, a sphere is used to indicate the area where objects can be selected. 
