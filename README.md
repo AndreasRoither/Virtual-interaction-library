@@ -106,7 +106,7 @@ If the model is invisible no objects can be selected even if the rays point at o
 
 An example of the iSith implementation in action can be seen below.
 
-<img src="./images/VRIL_iSith_example.png" width="400"/>
+<img src="./images/VRIL_iSith_Example.gif" width="400"/>
 
 
 ### Spindle + Wheel technique
