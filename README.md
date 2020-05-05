@@ -78,7 +78,7 @@ This technique provides a small set of options like the model size, initial sphe
 
 An example of this technique can be seen below.
 
-<img src="./images/VRIL_DepthRay.png" width="400"/>
+<img src="./images/VRIL_DepthRay_Example.gif" width="400"/>
 
 
 ### iSith
