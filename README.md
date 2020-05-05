@@ -67,7 +67,7 @@ The ray is provided with a point of origin, direction and a maximum length and a
 An example of the Ray-Cast technique can be seen in below.
 
 
-<img src="./images/VRIL_RayCast_Example.gif" width="400"/>
+<img src="./images/gifs/VRIL_RayCast_Example.gif" width="400"/>
 
 ### Depth-Ray
 The Depth-Ray technique ([Grossman and Balakrishnan](https://dl.acm.org/citation.cfm?doid=1166253.1166257)) is similar to the single Ray-Cast technique but instead of relying on the ray to select objects, a sphere is used to indicate the area where objects can be selected. 
@@ -106,7 +106,7 @@ If the model is invisible no objects can be selected even if the rays point at o
 
 An example of the iSith implementation in action can be seen below.
 
-<img src="./images/VRIL_iSith_Example.gif" width="400"/>
+<img src="./images/gifs/VRIL_iSith_Example.gif" width="400"/>
 
 
 ### Spindle + Wheel technique
@@ -128,7 +128,7 @@ The manipulation mode then allows users to manipulate an object's rotation, posi
   
 An example of this technique can be seen below.
 
-<img src="./images/VRIL_SpindleWheel_Example.gif" width="400"/>
+<img src="./images/gifs/VRIL_SpindleWheel_Example.gif" width="400"/>
 
 ## Navigation Techniques
 These are the navigation techniques that are implemented in the library. An example image demonstrates the use of the technique described.
@@ -136,12 +136,12 @@ These are the navigation techniques that are implemented in the library. An exam
 ### Steering
 The library provides both gaze-directed steering and hand-directed steering techniques ([Mine](https://pdfs.semanticscholar.org/69ff/1367d0221357a806d3c05df2b787ed90bdb7.pdf)). On application startup, it is identified whether the camera or controller object is used for steering, depending on the value provided in option *Technique*. When the steering technique is activated, the viewpoint is transferred repeatedly to a new position as long as the button is pressed. The target position is calculated by adding the object's forwards to the current position of the viewpoint. In addition, the result is calculated by the provided velocity. The steering technique provides options that must be set in advance to enable movement along the desired axes. For example, to be able to fly through the virtual space, all axes have to be enabled. When the hand-directed steering technique is used, an additional option provided in the Inspector window allows to enable either the pointing mode or crosshairs mode. While former simply uses the forward vector of the controller object as steering direction, the latter calculates a vector from camera to controller object. This vector is used then for the direction.
 
-<img src="./images/VRIL_Steering_Example.gif" width="400"/>
+<img src="./images/gifs/VRIL_Steering_Example.gif" width="400"/>
 
 ### Grab the Air
 The grab the air technique ([Mapes and Moshell.](https://dl.acm.org/doi/abs/10.1162/pres.1995.4.4.403)) transfers not the viewpoint to a new position, but the whole virtual world around the user. The position of the user remains the same. To avoid moving each individual object separately, a parent world object containing all objects of the virtual world has to be attached to the technique component in the Unity editor. This world object is then used by the technique to apply position changes of the controller to the world. When the technique is activated, a co-routine is started which continuously applies the position changes of the controller to the world object as long as the button is pressed. Each controller position change is determined by the vector from its previous position (world is not attached to the controller!). Similar to steering, options are provided to enable individual axes. To prevent the user from being affected by any position changes, the viewpoint cannot be a child object of the world, it must be separated from it. Since many grabbing motions are necessary to cover larger distances within the virtual world, a scaling factor is provided to scale every motion of the controller by a given value. The distance of both controller positions (previous and new) is multiplied by this scaling factor to achieve controller motions result in larger position changes of the world.
 
-<img src="./images/VRIL_GrabTheAir_Example.gif" width="400"/>
+<img src="./images/gifs/VRIL_GrabTheAir_Example.gif" width="400"/>
 
 ### Point and Teleport
 The point and teleport technique ([Bozgeyikli, Raij, Katkoori and Dubey](https://dl.acm.org/doi/abs/10.1145/2967934.2968105)) allows the user to select the desired target position in advance. The viewpoint is then transferred to this selected target position. The library provides two types: Blink teleport and dash teleport ([Bhandari, MacNeilage and Folmer](https://dl.acm.org/doi/10.20380/GI2018.22)). On activation, the technique enables a selection mode where a coroutine is started to display a parabola which can be controlled by the user to target to any object surfaces in the virtual space. This parabola is drawn from the controller object up to a maximum distance. When the parabola hits any object, the collision point is checked whether it can be used as a valid position to travel to. For the position detection, the target object has to be navigable and a [collider](https://docs.unity3d.com/ScriptReference/Collider.html) component must be attached to it. Also a maximum surface angle can be specified. The parabola itself is based on the [projectile motion curve](https://en.wikipedia.org/wiki/Projectile_motion) and is composed of multiple rays. The curve can be modified by setting the projectile velocity in Unity editor. A ray cast is then used that moves along these points in the parabola to check for collision within the distance between them until either a defined maximum number of segments is reached or a navigable object is hit.
@@ -160,7 +160,7 @@ The dash teleport transfers the viewpoint continuously towards the selected posi
 
 An example of the point and teleport technique using dash mode can be seen below.
 
-<img src="./images/VRIL_Teleport_Example.gif" width="400"/>
+<img src="./images/gifs/VRIL_Teleport_Example.gif" width="400"/>
 
 ### World in Miniature
 The world in miniature (WIM) technique ([Stoakley, Conway and Pausch](https://dl.acm.org/doi/pdf/10.1145/223904.223938)) allows the user to select a target position by pointing with a ray on a miniature representation of the virtual world. The viewpoint is then transferred to the corresponding position in the large-scaled world. This technique requires two controllers. The ray hand controller activates the technique and enables the ray for the selection on the miniature world, which is attached to the second controller (WIM hand). On activation, the technique enables the ray and the miniature world is created. First, all objects having a [MeshRenderer](https://docs.unity3d.com/560/Documentation/Manual/class-MeshRenderer.html) component attached are selected. Since not all objects are necessary in the WIM, these objects are filtered in advance. Objects having the ignore component attached, the controllers and too small objects are ignored in the WIM. For the latter, options are provided to define threshold values for X, Y and Z an object have to exceed to be included in the miniature world. The filtered objects are then cloned by invoking [Object.Instantiate](https://docs.unity3d.com/ScriptReference/Object.Instantiate.html}). These clones are assigned to the WIM object as children, which is an empty game object. The newly created world is scaled down by simply setting the local scale of the WIM object to a provided scale factor. The WIM is then rendered on top of the controller of the WIM hand. To avoid the miniature version becoming poorly visible in darker virtual worlds, a light source can be added (placed above the controller). It is possible to provide a layer in order the light source only illuminates the WIM by using a suitable culling mask. The WIM objects can also be updated according to their original's in the large-scaled world. When the option "Refresh WIM" is enabled, the synchronization of both worlds is performed whereby new objects get cloned and attached to the WIM and deleted ones get also deleted in the WIM. 
@@ -183,4 +183,4 @@ The function is provided with the viewpoint rotation as the quaternion of origin
 
 An example of the WIM technique can be seen below.
 
-<img src="./images/VRIL_WIM_Example.gif" width="400"/>
+<img src="./images/gifs/VRIL_WIM_Example.gif" width="400"/>
