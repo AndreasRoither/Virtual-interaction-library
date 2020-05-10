@@ -180,6 +180,7 @@ Viewpoint.transform.rotation = Quaternion.RotateTowards(Viewpoint.transform.rota
 ```
 The function is provided with the viewpoint rotation as the quaternion of origin, the rotation of the shadow avatar as target quaternion and an angular step. The latter is calculated by a provided rotation factor, the difference of rotation between viewpoint and shadow avatar and the ray length. When the viewpoint arrives at the target position, the flight animation ends and the WIM object is destroyed.
 
+To keep the user's focus on the miniature world during the travel, a property in the Unity editor provides the possibility to hide the large-scaled world while flying into the miniature. Here the references to the original objects are used to deactivate the renderer component for the object. This prevents the object from being drawn.
 
 An example of the WIM technique can be seen below.
 
