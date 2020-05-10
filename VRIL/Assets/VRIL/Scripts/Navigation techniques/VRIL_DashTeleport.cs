@@ -13,7 +13,8 @@ namespace VRIL.NavigationTechniques
         // public properties
         // *************************************
 
-        [Header("Dash Settings")] [Tooltip("Define velocity of dash movement")]
+        [Header("Dash Settings")]
+        [Tooltip("Define velocity of dash movement")]
         public float Velocity = 60.0f;
 
 
@@ -60,14 +61,15 @@ namespace VRIL.NavigationTechniques
         {
             while (TravelMode)
             {
-                if (Vector3.Distance(Viewpoint.transform.position, TargetPosition) <= Velocity * Time.deltaTime)
+                float toMove = Velocity * Time.deltaTime;
+                if (Vector3.Distance(Viewpoint.transform.position, TargetPosition) <= toMove)
                 {
                     Viewpoint.transform.position = TargetPosition;
                 }
                 else
                 {
                     Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position, TargetPosition,
-                        Velocity * Time.deltaTime);
+                        toMove);
                 }
 
                 TransferSelectedObjects();

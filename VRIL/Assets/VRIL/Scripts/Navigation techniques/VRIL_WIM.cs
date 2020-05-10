@@ -29,7 +29,8 @@ namespace VRIL.NavigationTechniques
         [Range(0.0f, 90.0f)]
         public float MaximumSurfaceAngle = 20.0f;
 
-        [Tooltip("Factor to scale down the world")] [Range(0.0f, 0.99f)]
+        [Tooltip("Factor to scale down the world")]
+        [Range(0.0f, 0.99f)]
         public float ScaleFactor = 0.001f;
 
         [Tooltip("Min object sizes for WIM, smaller objects will be not cloned")]
@@ -49,6 +50,9 @@ namespace VRIL.NavigationTechniques
         [Header("Flight Into the Miniature Settings")]
         [Tooltip("True: Fly into the new position in WIM (triggers an animation). False: Instant teleportation")]
         public bool UseFlightIntoTheMiniature = false;
+
+        [Tooltip("Disables the large-scaled world while flying into the miniature")]
+        public bool DisableWorldWhileFlying = false;
 
         [Tooltip("Velocities for flying into the miniature")]
         public float ViewpointVelocity = 0.5f;
@@ -105,7 +109,7 @@ namespace VRIL.NavigationTechniques
 
         private const float FINAL_SCALE = 1.0f;
         private const float HALF_CIRCLE = 180.0f;
-        private const string WIM_OBJECT_NAME = "WIM";
+        private const string WIM_OBJECT_NAME = "WIM_";
         private const string LINE_RENDERER = "VRIL_WIM_LineRenderer";
 
 
@@ -203,7 +207,7 @@ namespace VRIL.NavigationTechniques
             WIMLineRenderer.endColor = ValidPositionColor;
             WIMLineRenderer.material = LaserMaterial;
             WIMLineRenderer.enabled = false;
-            
+
             if (Avatar)
             {
                 Avatar.SetActive(false);
@@ -217,11 +221,11 @@ namespace VRIL.NavigationTechniques
             WIMLineRenderer.shadowCastingMode = CastShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
 
             // get camera object
-            if(HasComponent(Viewpoint, out Camera cam))
+            if (HasComponent(Viewpoint, out Camera cam))
             {
                 ViewpointCamera = cam;
             }
-            else if(HasComponent(Viewpoint, out Camera camChild, true))
+            else if (HasComponent(Viewpoint, out Camera camChild, true))
             {
                 ViewpointCamera = camChild;
             }
@@ -236,12 +240,12 @@ namespace VRIL.NavigationTechniques
             {
                 Avatar = new GameObject();
             }
-            if(!ShadowAvatar)
+            if (!ShadowAvatar)
             {
                 ShadowAvatar = Avatar;
             }
             DistanceToGroundShadowAvatar = ShadowAvatar.transform.position.y;
-            if(FindObjectsOfType<CanvasRenderer>() != null)
+            if (FindObjectsOfType<CanvasRenderer>() != null)
             {
                 checkWIMIgnores = true;
             }
@@ -263,11 +267,6 @@ namespace VRIL.NavigationTechniques
             if (HasComponent(HitEntity, out Renderer rend))
             {
                 rend.material.SetColor("_Color", ValidPositionColor);
-            }
-
-            if (Avatar == null)
-            {
-                Debug.Log("Orientation changes not possible for WIM technique because no avatar was set.");
             }
         }
 
@@ -315,8 +314,16 @@ namespace VRIL.NavigationTechniques
         /// <returns></returns>
         private MeshRenderer[] FindMeshRenderers()
         {
+            // disable the avatar objects to avoid cloning during WIM refresh!
+            if (CurrentAvatar)
+            {
+                CurrentAvatar.SetActive(false);
+                CurrentShadowAvatar.SetActive(false);
+            }
+
             MeshRenderer[] meshRenderer = FindObjectsOfType<MeshRenderer>().Where(
                 m => m.gameObject != null &&
+                     m.gameObject.activeInHierarchy &&
                      m.gameObject.activeSelf &&
                      m.GetComponent<Collider>() != null &&
                      m.GetComponent<VRIL_WIMObject>() == null &&
@@ -325,6 +332,13 @@ namespace VRIL.NavigationTechniques
                      (m.gameObject.GetInstanceID() != HitEntity.gameObject.GetInstanceID()) &&
                      (m.bounds.size.x >= ObjectTresholdX || m.bounds.size.y >= ObjectTresholdY ||
                       m.bounds.size.z >= ObjectTresholdZ)).ToArray();
+
+            if (CurrentAvatar)
+            {
+                CurrentAvatar.SetActive(true);
+                CurrentShadowAvatar.SetActive(true);
+            }
+
             return meshRenderer;
         }
 
@@ -336,15 +350,26 @@ namespace VRIL.NavigationTechniques
         private MeshRenderer CloneMeshRenderer(MeshRenderer obj)
         {
             MeshRenderer objClone = Instantiate(obj);
+
             objClone.name = WIM_OBJECT_NAME + obj.gameObject.name;
-            if(layer != -1)
+            if (layer != -1)
             {
                 objClone.gameObject.layer = layer;
             }
-            // append object to WIM
+
+            // append object to WIM            
             objClone.transform.SetParent(Wim.transform, false);
 
+            objClone.transform.localPosition = obj.transform.position;
+            objClone.transform.localRotation = obj.transform.rotation;
+            objClone.transform.localScale = obj.transform.lossyScale; // global scale!
+
+            if (obj.transform.parent)
+            {
+                objClone.transform.localScale = Vector3.Scale(objClone.transform.localScale, obj.transform.parent.localScale);
+            }
             objClone.transform.position = obj.transform.position;
+
             objClone.gameObject.AddComponent<VRIL_WIMObject>();
 
             // set kinematic true for all WIM objects
@@ -353,13 +378,34 @@ namespace VRIL.NavigationTechniques
                 rigibody.isKinematic = true;
             }
 
-            if (RefreshWIM)
-            {
-                MappingCloneIdsToOriginals[objClone.GetInstanceID()] = obj;
-                MappingOriginalIdsToClones[obj.GetInstanceID()] = objClone;
-            }
+            MappingCloneIdsToOriginals[objClone.GetInstanceID()] = obj;
+            MappingOriginalIdsToClones[obj.GetInstanceID()] = objClone;
+
+            // remove children to avoid double existing objects in WIM
+            ClearChildren(objClone.gameObject);
 
             return objClone;
+        }
+
+        private void ClearChildren(GameObject param)
+        {
+            int i = 0;
+
+            //Array to hold all child obj
+            GameObject[] allChildren = new GameObject[param.transform.childCount];
+
+            //Find all child obj and store to that array
+            foreach (Transform child in param.transform)
+            {
+                allChildren[i] = child.gameObject;
+                i += 1;
+            }
+
+            //Now destroy them
+            foreach (GameObject child in allChildren)
+            {
+                Destroy(child.gameObject);
+            }
         }
 
         /// <summary>
@@ -386,7 +432,6 @@ namespace VRIL.NavigationTechniques
         {
             // create WIM as new object
             Wim = new GameObject(WIM_OBJECT_NAME);
-            
             Wim.AddComponent<VRIL_WIMObject>();
             Wim.transform.localScale = Vector3.one;
             Wim.transform.position = new Vector3(0, 0, 0);
@@ -401,12 +446,8 @@ namespace VRIL.NavigationTechniques
 
             // clone all relevant MeshRenderer objects which have a collider
             MeshRenderer[] allObjects = FindMeshRenderers();
-
-            if (RefreshWIM)
-            {
-                MappingCloneIdsToOriginals = new Dictionary<int, MeshRenderer>();
-                MappingOriginalIdsToClones = new Dictionary<int, MeshRenderer>();
-            }
+            MappingCloneIdsToOriginals = new Dictionary<int, MeshRenderer>();
+            MappingOriginalIdsToClones = new Dictionary<int, MeshRenderer>();
 
             // clone all and add to list
             Clones = new List<MeshRenderer>();
@@ -416,42 +457,37 @@ namespace VRIL.NavigationTechniques
             }
 
             // add figure to represent current position in WIM
-            if (Avatar)
+            CurrentAvatar = Instantiate(Avatar);
+            CurrentAvatar.SetActive(true);
+            CurrentAvatar.transform.position = TargetPosition;
+            CurrentAvatar.transform.localPosition += new Vector3(0, Avatar.transform.position.y, 0);
+
+            if (ViewpointCamera)
             {
-                CurrentAvatar = Instantiate(Avatar);
-                CurrentAvatar.SetActive(true);
-                CurrentAvatar.transform.position = TargetPosition;
-                CurrentAvatar.transform.localPosition += new Vector3(0, Avatar.transform.position.y, 0);
-
-                if (ViewpointCamera)
-                {
-                    CurrentAvatar.transform.forward = new Vector3(ViewpointCamera.transform.forward.x, 0,
-                        ViewpointCamera.transform.forward.z);
-                }
-                else
-                {
-                    CurrentAvatar.transform.forward =
-                        new Vector3(Viewpoint.transform.forward.x, 0, Viewpoint.transform.forward.z);
-                }
-
-                CurrentAvatar.AddComponent<VRIL_WIMObject>();
-                CurrentAvatar.transform.eulerAngles = new Vector3(CurrentAvatar.transform.rotation.eulerAngles.x,
-                    CurrentAvatar.transform.rotation.eulerAngles.y, CurrentAvatar.transform.rotation.eulerAngles.z);
-                CurrentAvatar.transform.parent = Wim.transform;
-                if (layer != -1)
-                {
-                    CurrentAvatar.gameObject.layer = layer;
-                }
-                CurrentShadowAvatar = Instantiate(ShadowAvatar);
-                CurrentShadowAvatar.transform.parent = Wim.transform;
-                if (layer != -1)
-                {
-                    CurrentShadowAvatar.gameObject.layer = layer;
-                }
-                if (ViewpointCamera)
-                {
-                    PrevCameraRotationEuler = ViewpointCamera.transform.localEulerAngles;
-                }
+                CurrentAvatar.transform.forward = new Vector3(ViewpointCamera.transform.forward.x, 0,
+                    ViewpointCamera.transform.forward.z);
+            }
+            else
+            {
+                CurrentAvatar.transform.forward =
+                    new Vector3(Viewpoint.transform.forward.x, 0, Viewpoint.transform.forward.z);
+            }
+            CurrentAvatar.transform.eulerAngles = new Vector3(CurrentAvatar.transform.rotation.eulerAngles.x,
+                CurrentAvatar.transform.rotation.eulerAngles.y, CurrentAvatar.transform.rotation.eulerAngles.z);
+            CurrentAvatar.transform.parent = Wim.transform;
+            if (layer != -1)
+            {
+                CurrentAvatar.gameObject.layer = layer;
+            }
+            CurrentShadowAvatar = Instantiate(ShadowAvatar);
+            CurrentShadowAvatar.transform.parent = Wim.transform;
+            if (layer != -1)
+            {
+                CurrentShadowAvatar.gameObject.layer = layer;
+            }
+            if (ViewpointCamera)
+            {
+                PrevCameraRotationEuler = ViewpointCamera.transform.localEulerAngles;
             }
 
             // attach selection point
@@ -489,26 +525,12 @@ namespace VRIL.NavigationTechniques
                     Destroy(mToDelete);
                 }
             }
-
             // check wether new objects are added in the large-scaled world and add them in the WIM
             foreach (MeshRenderer m in findAll)
             {
-                //bool found = MappingOriginalIdsToClones[m.GetInstanceID()] != default;
-
-                //foreach (MeshRenderer orig in MappingCloneIdsToOriginals.Values)
-                //{
-                //    if (orig.GetInstanceID() == m.GetInstanceID())
-                //    {
-                //        found = true;
-                //        break;
-                //    }
-                //}
-                
                 if (!MappingOriginalIdsToClones.ContainsKey(m.GetInstanceID()))
                 {
                     MeshRenderer clone = CloneMeshRenderer(m);
-                    clone.transform.localPosition = m.transform.position;
-                    clone.transform.localRotation = m.transform.rotation;
                     Clones.Add(clone);
                 }
             }
@@ -519,6 +541,7 @@ namespace VRIL.NavigationTechniques
                 MeshRenderer m = MappingCloneIdsToOriginals[clone.GetInstanceID()];
                 clone.transform.localPosition = m.transform.position;
                 clone.transform.localRotation = m.transform.rotation;
+                clone.transform.localScale = m.transform.lossyScale; // global scale!
             }
         }
 
@@ -541,12 +564,12 @@ namespace VRIL.NavigationTechniques
                 CurrentWIMRotation = WIMHand.transform.rotation;
                 Wim.transform.position = CurrentWIMPosition;
                 Wim.transform.rotation = CurrentWIMRotation;
-                if(LightSource)
+                if (LightSource)
                 {
                     Vector3 lightPosition = ray.GetPoint(DistanceLightToWim);
                     LightSource.transform.position = lightPosition;
                 }
-                if (CurrentAvatar && ViewpointCamera)
+                if (ViewpointCamera)
                 {
                     float rotationDiffY = ViewpointCamera.transform.localEulerAngles.y - PrevCameraRotationEuler.y;
                     CurrentAvatar.transform.RotateAround(CurrentAvatar.transform.position, CurrentAvatar.transform.up,
@@ -568,7 +591,6 @@ namespace VRIL.NavigationTechniques
             {
                 Vector3 hitEntityPosBeforeScale = HitEntity.transform.position;
                 Wim.transform.localScale = CurrentScale;
-
                 // adapt world position: Selected position is always in center!
                 HitEntity.transform.parent = null;
                 Wim.transform.parent = HitEntity.transform;
@@ -577,7 +599,6 @@ namespace VRIL.NavigationTechniques
                 HitEntity.transform.parent = Wim.transform;
             }
         }
-
 
         /// <summary>
         /// Coroutine for WIM technique
@@ -591,10 +612,7 @@ namespace VRIL.NavigationTechniques
 
                 // prevent from blocking raycasts
                 HitEntity.SetActive(false);
-                if (Avatar)
-                {
-                    CurrentShadowAvatar.SetActive(false);
-                }
+                CurrentShadowAvatar.SetActive(false);
 
                 PositionSelected = false;
                 WIMLineRenderer.enabled = false;
@@ -635,24 +653,22 @@ namespace VRIL.NavigationTechniques
                         WIMLineRenderer.endColor = ValidPositionColor;
                         HitEntity.SetActive(true);
                         HitEntity.transform.position = raycastHit.point;
+                        HitEntity.transform.up = raycastHit.normal;
                         PositionSelected = true;
+                        TargetPosition = HitEntity.transform.localPosition + new Vector3(0, DistanceViewpointToGround, 0);
 
                         // set avatar clone orientation
-                        if (CurrentShadowAvatar)
+                        CurrentShadowAvatar.transform.position = raycastHit.point;
+                        CurrentShadowAvatar.transform.localPosition += new Vector3(0, DistanceToGroundShadowAvatar, 0);
+                        float diffZ = RayHand.transform.localEulerAngles.z - PrevControllerRotation.z;
+                        PrevControllerRotation = RayHand.transform.localEulerAngles;
+
+                        if (!FixedShadowAvatarOrientation)
                         {
-                            CurrentShadowAvatar.transform.position = raycastHit.point;
-                            CurrentShadowAvatar.transform.localPosition += new Vector3(0, DistanceToGroundShadowAvatar, 0);
-                            float diffZ = RayHand.transform.localEulerAngles.z - PrevControllerRotation.z;
-                            PrevControllerRotation = RayHand.transform.localEulerAngles;
-
-                            if (!FixedShadowAvatarOrientation)
-                            {
-                                CurrentShadowAvatar.transform.RotateAround(CurrentShadowAvatar.transform.position,
-                                    CurrentShadowAvatar.transform.up, -diffZ);
-                            }
-
-                            CurrentShadowAvatar.SetActive(true);
+                            CurrentShadowAvatar.transform.RotateAround(CurrentShadowAvatar.transform.position,
+                                CurrentShadowAvatar.transform.up, -diffZ);
                         }
+                        CurrentShadowAvatar.SetActive(true);
                     }
                     else
                     {
@@ -664,10 +680,7 @@ namespace VRIL.NavigationTechniques
                         WIMLineRenderer.startColor = InvalidPositionColor;
                         WIMLineRenderer.endColor = InvalidPositionColor;
                         HitEntity.SetActive(false);
-                        if (CurrentShadowAvatar)
-                        {
-                            CurrentShadowAvatar.SetActive(false);
-                        }
+                        CurrentShadowAvatar.SetActive(false);
                     }
                 }
                 else
@@ -684,7 +697,6 @@ namespace VRIL.NavigationTechniques
                         c.enabled = false;
                     }
                 }
-
                 yield return null;
             }
 
@@ -736,39 +748,40 @@ namespace VRIL.NavigationTechniques
             // prepare flight
             PrevViewpointRotation = Viewpoint.transform.rotation;
             TravelMode = true;
-            float viewpointRotation = 0.0f;
-            if (CurrentShadowAvatar)
-            {
-                // calculation of rotation during flight. The angle is multiplied by a constant factor
-                // the result is multiplied with the remaining distance to max ray length
-                // (the closer the point, the higher the rotation. The farer away, the lower the rotation)
-                viewpointRotation = ViewPointRotationFactor * Vector3.Angle(ViewpointCamera.transform.eulerAngles,
-                                                                CurrentShadowAvatar.transform.eulerAngles)
-                                                            * (MaxRayDistance -
-                                                               Vector3.Distance(RayHand.transform.position,
-                                                                   CurrentShadowAvatar.transform.position));
-                CurrentAvatar.SetActive(false);
-            }
-
+            // calculation of rotation during flight. The angle is multiplied by a constant factor
+            // the result is multiplied with the remaining distance to max ray length
+            // (the closer the point, the higher the rotation. The farer away, the lower the rotation)
+            float viewpointRotation = ViewPointRotationFactor * Vector3.Angle(ViewpointCamera.transform.eulerAngles,
+                                                            CurrentShadowAvatar.transform.eulerAngles)
+                                                        * (MaxRayDistance -
+                                                           Vector3.Distance(RayHand.transform.position,
+                                                               CurrentShadowAvatar.transform.position));
+            CurrentAvatar.SetActive(false);
             Manager.InputLocked = true;
 
-            Quaternion rotation = new Quaternion();
-            if (CurrentShadowAvatar)
-            {
-                // target rotation is not rotation of shadow avatar - subtract local camera rotation first!
-                Vector3 origRotShadowAvatar = CurrentShadowAvatar.transform.localEulerAngles;
-                Vector3 temp = CurrentShadowAvatar.transform.localEulerAngles;
-                temp.y -= ViewpointCamera.transform.localEulerAngles.y;
-                CurrentShadowAvatar.transform.localEulerAngles = temp;
-                rotation = Quaternion.Euler(CurrentShadowAvatar.transform.eulerAngles);
-                CurrentShadowAvatar.transform.localEulerAngles = origRotShadowAvatar;
-            }
+            // target rotation is not rotation of shadow avatar - subtract local camera rotation first!
+            Vector3 origRotShadowAvatar = CurrentShadowAvatar.transform.localEulerAngles;
+            Vector3 temp = CurrentShadowAvatar.transform.localEulerAngles;
+            temp.y -= ViewpointCamera.transform.localEulerAngles.y;
+            CurrentShadowAvatar.transform.localEulerAngles = temp;
+            Quaternion rotation = Quaternion.Euler(CurrentShadowAvatar.transform.eulerAngles);
+            CurrentShadowAvatar.transform.localEulerAngles = origRotShadowAvatar;
 
             // use an empty hit entity object for correct position (includes distance to ground)
-            GameObject temporaryHitEntity = new GameObject();
-            temporaryHitEntity.transform.parent = Wim.transform;
-            temporaryHitEntity.transform.localPosition = HitEntity.transform.localPosition;
+            GameObject temporaryHitEntity = Instantiate(HitEntity);
             temporaryHitEntity.transform.localPosition += new Vector3(0, DistanceViewpointToGround, 0);
+            temporaryHitEntity.transform.parent = Wim.transform;
+
+            bool moveFinished = false;
+
+            // disable originals
+            if (DisableWorldWhileFlying)
+            {
+                foreach (MeshRenderer original in MappingCloneIdsToOriginals.Values)
+                {
+                    original.enabled = false;
+                }
+            }
 
             // start animation
             while (TravelMode)
@@ -783,23 +796,37 @@ namespace VRIL.NavigationTechniques
                 }
 
                 // perform a rotation step
-                if (CurrentShadowAvatar)
-                {
-                    float step = viewpointRotation * Time.deltaTime;
-                    Viewpoint.transform.rotation =
-                        Quaternion.RotateTowards(Viewpoint.transform.rotation, rotation, step);
-                }
+                float step = viewpointRotation * Time.deltaTime;
+                Viewpoint.transform.rotation =
+                    Quaternion.RotateTowards(Viewpoint.transform.rotation, rotation, step);
 
                 // move viewpoint closer to the target position
-                Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position,
-                    temporaryHitEntity.transform.position, Velocity * Time.deltaTime);
+                if (!moveFinished)
+                {
+                    float toMove = Velocity * Time.deltaTime;
+                    float distance = Vector3.Distance(Viewpoint.transform.position, temporaryHitEntity.transform.position);
+                    if (toMove >= distance)
+                    {
+                        toMove = distance;
+                        moveFinished = true;
+                    }
+                    Viewpoint.transform.position = Vector3.MoveTowards(Viewpoint.transform.position, temporaryHitEntity.transform.position, toMove);
+                }
+
                 if (CurrentScale.x >= FINAL_SCALE)
                 {
+                    // enable originals
+                    if (DisableWorldWhileFlying)
+                    {
+                        foreach (MeshRenderer original in MappingCloneIdsToOriginals.Values)
+                        {
+                            original.enabled = true;
+                        }
+                    }
                     TravelMode = false;
                     Viewpoint.transform.rotation = PrevViewpointRotation;
                     Finish();
                 }
-
                 yield return null;
             }
         }
@@ -811,20 +838,17 @@ namespace VRIL.NavigationTechniques
                 // replace viewpoint
                 if (PositionSelected)
                 {
-                    TargetPosition = HitEntity.transform.localPosition + new Vector3(0, DistanceViewpointToGround, 0);
                     Viewpoint.transform.position = TargetPosition;
-
                     float? rotationDiffY = null;
                     if (Avatar)
                     {
                         Vector3 temp = CurrentShadowAvatar.transform.localEulerAngles;
                         temp.y -= ViewpointCamera.transform.localEulerAngles.y;
                         Quaternion rotation = Quaternion.Euler(temp);
-                        Viewpoint.transform.rotation = rotation; //CurrentShadowAvatar.transform.localRotation;
+                        Viewpoint.transform.rotation = rotation;
                         rotationDiffY = CurrentAvatar.transform.localEulerAngles.y -
                                         CurrentShadowAvatar.transform.localEulerAngles.y;
                     }
-
                     TransferSelectedObjects(rotationDiffY);
                     PositionSelected = false;
                 }
@@ -837,10 +861,8 @@ namespace VRIL.NavigationTechniques
                 }
 
                 HitEntity.transform.parent = null;
-
                 // finally destroy WIM
                 DestroyImmediate(Wim);
-
                 DelayToNextTravel = true;
             }
         }

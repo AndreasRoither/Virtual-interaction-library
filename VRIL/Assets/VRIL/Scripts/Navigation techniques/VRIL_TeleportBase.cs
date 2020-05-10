@@ -17,7 +17,8 @@ namespace VRIL.NavigationTechniques
         // public properties
         // *************************************
 
-        [Header("Teleport settings")] [Tooltip("Time in seconds to unlock next teleport (avoids too many teleports)")]
+        [Header("Teleport settings")]
+        [Tooltip("Time in seconds to unlock next teleport (avoids too many teleports)")]
         public float DelayToNextActivation = 0.5f;
 
         [Tooltip("Travel task triggers selection mode again.")]
@@ -28,7 +29,8 @@ namespace VRIL.NavigationTechniques
         [Range(0.0f, 90.0f)]
         public float MaximumSurfaceAngle = 0;
 
-        [Header("Ray Settings")] [Range(0.01f, 1f)]
+        [Header("Ray Settings")]
+        [Range(0.01f, 1f)]
         public float StartRayWidth = 0.01f;
 
         [Range(0.01f, 1f)] public float EndRayWidth = 0.01f;
@@ -50,7 +52,8 @@ namespace VRIL.NavigationTechniques
         [Tooltip("Velocity to take for trajectory calculation (base is thrown objects curve)")]
         public float CurveVelocity = 6f;
 
-        [Header("Selection Point Settings")] [Tooltip("Visualisation object")]
+        [Header("Selection Point Settings")]
+        [Tooltip("Visualisation object")]
         public GameObject HitEntity;
 
         [Tooltip("Distance of hit entity object to ground")]
@@ -222,7 +225,7 @@ namespace VRIL.NavigationTechniques
 
                 // first point of curve is at controller
                 Vector3 p0 = RegisteredControllers[0].transform.position;
-                List<Vector3> positions = new List<Vector3>() {p0};
+                List<Vector3> positions = new List<Vector3>() { p0 };
 
                 // save last point
                 Vector3 lastPoint = p0;
@@ -254,6 +257,7 @@ namespace VRIL.NavigationTechniques
                                 HitEntity.transform.position =
                                     TargetPosition + new Vector3(0f, DistanceHitEntityToGround, 0f);
                                 HitEntity.SetActive(true);
+                                HitEntity.transform.up = raycastHit.normal;
                             }
 
                             TargetPosition += new Vector3(0, DistanceViewpointToGround, 0);
