@@ -1400,6 +1400,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2077421998}
     m_Modifications:
+    - target: {fileID: 1930058809, guid: e5902176b018ca641afb27e157efb285, type: 3}
+      propertyPath: Manager
+      value: 
+      objectReference: {fileID: 736257553}
+    - target: {fileID: 1930058809, guid: e5902176b018ca641afb27e157efb285, type: 3}
+      propertyPath: Viewpoint
+      value: 
+      objectReference: {fileID: 1284599308}
+    - target: {fileID: 1930058809, guid: e5902176b018ca641afb27e157efb285, type: 3}
+      propertyPath: Avatar
+      value: 
+      objectReference: {fileID: 882170850}
+    - target: {fileID: 1930058809, guid: e5902176b018ca641afb27e157efb285, type: 3}
+      propertyPath: ShadowAvatar
+      value: 
+      objectReference: {fileID: 1766339810}
     - target: {fileID: 3101742832042281134, guid: e5902176b018ca641afb27e157efb285,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1681,62 +1697,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1930058808 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4729080717754904476, guid: e5902176b018ca641afb27e157efb285,
+--- !u!114 &1930058809 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1930058809, guid: e5902176b018ca641afb27e157efb285,
     type: 3}
   m_PrefabInstance: {fileID: 1180277602}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1930058809
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1930058808}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff040244436fb6e4bba37b30ea2d2c6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Manager: {fileID: 736257553}
-  Mappings:
-  - ButtonType: 5
-    ActionType: 2
-    Script: {fileID: 0}
-  Viewpoint: {fileID: 1284599308}
-  AudioClip: {fileID: 0}
-  AudioSource: {fileID: 0}
-  RefreshWIM: 1
-  MaximumSurfaceAngle: 20
-  ScaleFactor: 0.016
-  ObjectTresholdX: 1
-  ObjectTresholdY: 1
-  ObjectTresholdZ: 1
-  DistanceControllerToWIM: 0.05
-  DisableCollidersInWIM: 1
-  SecondsToWaitForNextWIM: 0.5
-  UseFlightIntoTheMiniature: 1
-  ViewpointVelocity: 0.2
-  ScaleVelocity: 1.1
-  ViewPointRotationFactor: 10
-  Avatar: {fileID: 882170850}
-  ShadowAvatar: {fileID: 1766339810}
-  FixedShadowAvatarOrientation: 1
-  MaxRayDistance: 1
-  ValidPositionColor: {r: 0, g: 1, b: 0, a: 1}
-  InvalidPositionColor: {r: 1, g: 0, b: 0, a: 1}
-  LaserMaterial: {fileID: 2100000, guid: 753a9b80e714a8a43a0c1ff5a89d0bc9, type: 2}
-  CastShadows: 0
-  StartRayWidth: 0.005
-  EndRayWidth: 0.005
-  HitEntity: {fileID: 0}
-  DistanceHitEntityToGround: 0.00001
-  Layer:
-    serializedVersion: 2
-    m_Bits: 0
-  DistanceLightToWim: 0.5
-  LightSource: {fileID: 0}
 --- !u!1 &1996869595
 GameObject:
   m_ObjectHideFlags: 0
